@@ -9,8 +9,12 @@ This repository contains the complete implementation and publication materials f
 
 **"Constrained Optimal Binary HVAC Scheduling over an Infinite Time Horizon in Saudi Residential Buildings: A Hybrid Rule-Based Reinforcement Learning Framework"**
 
-By Hamzah Faraj  
-Department of Science and Technology, Ranyah College, Taif University, Saudi Arabia
+## Contact
+
+**Hamzah Faraj**  
+- Department of Science and Technology  
+- Ranyah College, Taif University, Taif 21944, Saudi Arabia  
+- Email: [email removed]
 
 ## Abstract
 
@@ -42,13 +46,6 @@ hvac-scheduling-saudi-arabia/
 │   ├── monthly_trajectories.csv          # 12-month cost trajectories
 │   ├── riyadh_epw_metadata.txt           # Weather data summary (Riyadh)
 │   └── jeddah_epw_metadata.txt           # Weather data summary (Jeddah)
-│
-├── figures/                  # Publication-quality figures
-│   ├── generate_figures.py   # Script to reproduce all paper figures
-│   ├── fig_cost_models.pdf   # Figure 1: Cost model comparison
-│   ├── fig_configs.pdf       # Figure 2: Zone topologies
-│   ├── fig_savings.pdf       # Figure 3: Monthly cost trajectories
-│   └── fig_ablation.pdf      # Ablation study visualizations
 │
 ├── src/                      # Source code
 │   ├── __init__.py
@@ -228,15 +225,6 @@ All experimental data, trained models, and weather files (EPW format) are availa
 - **Results**: CSV files with complete experimental results
 - **Models**: Pre-trained RBRL agents for reproducibility
 
-## Recent Updates
-
-### March 2026
-- ✨ **NEW**: Added `rbrl_optimizer.py` - Simplified PPO training and schedule extraction
-- ✨ **NEW**: Complete usage documentation in `docs/OPTIMIZER_USAGE.md`
-- ✨ **NEW**: Example workflow script with visualization
-- 🔧 Updated `src/__init__.py` to export optimizer functions
-- 📝 Enhanced README with quick start examples
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -244,18 +232,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Acknowledgments
 
 This research was supported by Taif University, Saudi Arabia.
-
-## Contact
-
-**Hamzah Faraj**  
-Department of Science and Technology  
-Ranyah College, Taif University  
-Taif 21944, Saudi Arabia  
-Email: [email removed]
-
-## Related Work
-
-- [Water Quality Edge AI](https://github.com/drhamzahfaraj/water-quality-edge-ai) - Dynamic quantization for water quality monitoring
 
 ---
 
