@@ -231,7 +231,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-This research was supported by Taif University, Saudi Arabia.
+The authors would like to acknowledge the Deanship of Graduate Studies and Scientific Research, Taif University for funding this work.
 
 ---
 
