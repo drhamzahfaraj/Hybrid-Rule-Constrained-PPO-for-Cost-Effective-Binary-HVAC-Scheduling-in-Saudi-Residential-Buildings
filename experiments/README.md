@@ -155,15 +155,3 @@ ppo_params:
 training:
   total_episodes: 100  # More episodes
 ```
-
-## Citation
-
-If you use these experimental scripts, please cite:
-
-```bibtex
-@article{Faraj2026HVAC,
-  author = {Faraj, Hamzah},
-  title = {Constrained Optimal Binary {HVAC} Scheduling},
-  year = {2026}
-}
-```
