@@ -13,6 +13,12 @@ from .cost_models import LinearCostModel, ExponentialCostModel, StepwiseCostMode
 from .rbrl_agent import RBRLAgent
 from .rules import HardConstraintRules
 from .environment import HVACEnvironment
+from .rbrl_optimizer import (
+    RBRLWrapper,
+    train_rbrl_ppo,
+    extract_monthly_schedule,
+    load_and_extract_schedule,
+)
 
 __all__ = [
     "ThermalModel",
@@ -23,4 +29,8 @@ __all__ = [
     "RBRLAgent",
     "HardConstraintRules",
     "HVACEnvironment",
+    "RBRLWrapper",
+    "train_rbrl_ppo",
+    "extract_monthly_schedule",
+    "load_and_extract_schedule",
 ]
