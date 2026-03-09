@@ -55,10 +55,17 @@ hvac-scheduling-saudi-arabia/
 │   ├── thermal_model.py      # RC thermal dynamics (Eq. 2)
 │   ├── cost_models.py        # Models L, E, S implementation
 │   ├── rbrl_agent.py         # Hybrid RBRL framework
+│   ├── rbrl_optimizer.py     # PPO-based optimizer (NEW)
 │   ├── ppo_trainer.py        # PPO training loop
 │   ├── rules.py              # Hard comfort constraint rules (R1, R2, R3)
 │   ├── environment.py        # Gym-compatible HVAC environment
 │   └── utils.py              # Helper functions and constants
+│
+├── examples/                 # Usage examples (NEW)
+│   └── train_and_extract_schedule.py  # Complete workflow demo
+│
+├── docs/                     # Documentation (NEW)
+│   └── OPTIMIZER_USAGE.md    # Detailed optimizer usage guide
 │
 ├── experiments/              # Experimental configurations
 │   ├── config_riyadh.yaml    # Riyadh case study parameters
@@ -96,27 +103,65 @@ pip install -r requirements.txt
 
 ## Quick Start
 
-### 1. Train RBRL Agent
+### Option 1: Using the RBRL Optimizer (Recommended)
+
+```python
+from src.rbrl_optimizer import train_rbrl_ppo, extract_monthly_schedule
+
+# Train PPO agent
+model = train_rbrl_ppo(
+    Nz=4,
+    topology="1x4",
+    city="Riyadh",
+    total_episodes=2000,
+    model_save_path="models/ppo_riyadh_1x4",
+)
+
+# Extract optimal 30-day schedule
+schedule, temps, costs = extract_monthly_schedule(
+    model=model,
+    Nz=4,
+    topology="1x4",
+    city="Riyadh",
+    month_hours=720,
+)
+
+print(f"Total monthly cost: {sum(costs):.2f} SAR")
+```
+
+**Complete example with visualization:**
 
 ```bash
+python examples/train_and_extract_schedule.py
+```
+
+See [docs/OPTIMIZER_USAGE.md](docs/OPTIMIZER_USAGE.md) for detailed documentation.
+
+### Option 2: Command-Line Interface
+
+```bash
+# Train and extract schedule in one command
+python -m src.rbrl_optimizer \
+    --Nz 4 \
+    --topology 1x4 \
+    --city Riyadh \
+    --episodes 2000 \
+    --output models/ppo_riyadh_1x4
+```
+
+### Option 3: Using Original Experiment Scripts
+
+```bash
+# Train RBRL agent
 python experiments/train_rbrl.py --config experiments/config_riyadh.yaml --topology 4x4
-```
 
-### 2. Evaluate Baselines
-
-```bash
+# Evaluate baselines
 python experiments/evaluate_baselines.py --city riyadh --model S --topology 4x4
-```
 
-### 3. Reproduce Paper Figures
-
-```bash
+# Reproduce paper figures
 python figures/generate_figures.py --output-dir figures/
-```
 
-### 4. Run Ablation Study
-
-```bash
+# Run ablation study
 python experiments/run_ablation.py --config experiments/config_riyadh.yaml
 ```
 
@@ -126,6 +171,7 @@ python experiments/run_ablation.py --config experiments/config_riyadh.yaml
 - **Hard Rules (R1-R3)**: Guarantee thermal comfort at all times
 - **PPO Agent**: Learns optimal switching strategy within safe region
 - **State Space**: Includes inter-zone temperatures for coordination
+- **Model S**: Actual Saudi 4-tier step-wise tariff implementation
 
 ### Cost Models
 1. **Model L (Linear)**: Constant tariff (baseline)
@@ -155,6 +201,12 @@ python experiments/run_ablation.py --config experiments/config_riyadh.yaml
 | DDPG [Du2021] | 15% | Continuous | ✗ |
 | Q-learning [Azuatalam2020] | 22% | Continuous | ✗ |
 
+## Documentation
+
+- **[METHODS.md](METHODS.md)**: Detailed methodology, algorithms, and theoretical foundations
+- **[docs/OPTIMIZER_USAGE.md](docs/OPTIMIZER_USAGE.md)**: Complete optimizer usage guide with examples
+- **[examples/](examples/)**: Practical examples and workflow demonstrations
+
 ## Citation
 
 If you use this code or methodology in your research, please cite:
@@ -168,10 +220,6 @@ If you use this code or methodology in your research, please cite:
 }
 ```
 
-## Methodology
-
-Detailed methodology, algorithms, and theoretical foundations are documented in [METHODS.md](METHODS.md).
-
 ## Data Availability
 
 All experimental data, trained models, and weather files (EPW format) are available in the `data/` and `models/` directories.
@@ -179,6 +227,15 @@ All experimental data, trained models, and weather files (EPW format) are availa
 - **Weather Data**: EnergyPlus Weather (EPW) files for Riyadh and Jeddah
 - **Results**: CSV files with complete experimental results
 - **Models**: Pre-trained RBRL agents for reproducibility
+
+## Recent Updates
+
+### March 2026
+- ✨ **NEW**: Added `rbrl_optimizer.py` - Simplified PPO training and schedule extraction
+- ✨ **NEW**: Complete usage documentation in `docs/OPTIMIZER_USAGE.md`
+- ✨ **NEW**: Example workflow script with visualization
+- 🔧 Updated `src/__init__.py` to export optimizer functions
+- 📝 Enhanced README with quick start examples
 
 ## License
 
