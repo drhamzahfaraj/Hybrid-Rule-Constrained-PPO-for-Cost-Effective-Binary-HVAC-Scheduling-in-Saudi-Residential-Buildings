@@ -67,15 +67,4 @@ EPW files are not included in this repository due to size constraints. Download 
   - Jeddah: `SAU_Jeddah.410240_IWEC.epw`
 
 Place downloaded EPW files in `data/weather/` directory.
-
-## Citation
-
-If you use this data, please cite the paper:
-
-```bibtex
-@article{Faraj2026HVAC,
-  author = {Faraj, Hamzah},
-  title = {Constrained Optimal Binary {HVAC} Scheduling over an Infinite Time Horizon in {Saudi} Residential Buildings},
-  year = {2026}
-}
 ```
