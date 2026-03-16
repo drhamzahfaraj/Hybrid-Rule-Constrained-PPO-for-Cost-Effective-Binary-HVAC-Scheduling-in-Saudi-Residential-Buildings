@@ -1,0 +1,17 @@
+# Component ablation (4x4, Riyadh, Model S, summer). Mean +- std over 30 test weeks.
+variant,ref,cost_sar_zone_day,cost_std,vc_pct,switches_zone_day,delta_rbrl_pct
+Rules only (THERM),[18],2.42,0.18,0.0,5.0,+22.2
+RL only (no rules),"[8,27]",2.03,0.22,0.5,2.6,+2.5
+RBRL hard rules only,[10],2.05,0.15,0.0,2.8,+3.5
+RBRL full,This work,1.98,0.13,0.0,2.5,0.0
+# Cost model ablation (4x4, Riyadh, summer) - trained under stated model evaluated under true Model S
+training_model,ref,true_cost_sar_zone_day,true_cost_std,delta_pct
+Step-wise (S),This work,1.98,0.13,0.0
+Exponential (E),[6],2.11,0.13,+6.6
+Linear (L),"[32,33]",2.24,0.14,+13.1
+# Switching cost sensitivity (1x1, Riyadh, Model S, summer)
+csw_sar,cost_sar_zone_day,switches_zone_day,vc_pct
+0.00,1.62,4.7,0.0
+0.05,1.68,3.3,0.0
+0.15,1.75,2.9,0.0
+0.30,1.88,2.1,0.1

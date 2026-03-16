@@ -1,0 +1,9 @@
+city,config,therm_kwh_zone_day,rbrl_kwh_zone_day,therm_sar_zone_month,rbrl_sar_zone_month,saving_pct
+Riyadh,1x1,3.52,2.87,64.6,52.7,18.4
+Riyadh,1x4,3.73,3.05,68.5,55.7,18.7
+Riyadh,2x2,3.65,2.97,67.0,54.5,18.7
+Riyadh,4x4,3.98,3.25,73.0,59.7,18.2
+Jeddah,1x1,3.21,2.70,58.9,49.5,16.0
+Jeddah,1x4,3.35,2.79,61.5,51.2,16.7
+Jeddah,2x2,3.28,2.74,60.2,50.2,16.6
+Jeddah,4x4,3.57,2.97,65.5,54.5,16.8
