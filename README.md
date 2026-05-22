@@ -11,7 +11,7 @@
 **Hamzah Faraj**
 Department of Science and Technology  
 Ranyah College, Taif University  
-Taif 21944, Saudi Arabia
+Taif 21944, Saudi Arabia  
 Email: [email removed]
 
 ## Repository Structure
