@@ -66,17 +66,7 @@
  
 \begin{frontmatter}
  
-\title{Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC
-Scheduling in Saudi Residential Buildings}
-
-\author[tu]{Hamzah Faraj\corref{cor1}}
-\ead{f.hamzah@tu.edu.sa}
-\cortext[cor1]{Corresponding author}
-\affiliation[tu]{organization={Department of Science and Technology, Ranyah College, Taif University},
-                 city={Taif},
-                 postcode={21944},
-                 country={Saudi Arabia}}
-
+\title{Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings}
  
 \begin{abstract}
 Residential buildings in Saudi Arabia account for approximately half of national electricity consumption, with HVAC systems responsible for up to 70\% of residential demand.
@@ -1937,31 +1927,12 @@ Validation, Formal Analysis, Investigation, Writing -- Original Draft, Writing
 \section {Declaration of Competing Interest}
 The author declares no conflicts of interest.
 
-\section {Funding}
-The authors would like to acknowledge the Deanship of Graduate Studies and Scientific Research, Taif University for funding this work.
- 
-Finally, the policy relevance is worth stating explicitly. Residential
-buildings consume approximately half of Saudi electricity and HVAC accounts for
-up to $70\%$ of that demand, so the efficiency targets of Saudi
-Vision~2030~\cite{Belaid2025} cannot be met by envelope measures alone: the
-existing stock is already being brought to SBC~2018 standards through mandatory
-code enforcement, yet its \emph{control} remains a reactive thermostat. RBRL
-requires no envelope retrofit, no additional sensing beyond zone and outdoor
-temperature, and $0.52\,\text{ms}$ of inference on a single CPU core
-(Table~\ref{tab:scalability}), so it is deployable on existing split-unit stock
-as a firmware or smart-thermostat update. Within the simulation scope of this
-study, the savings reported here are therefore obtained from scheduling alone,
-at essentially zero capital cost---a complementary lever to the fabric-first
-measures the Code already mandates. Field validation, as set out in
-Section~\ref{subsec:disc_limits}, is required before any deployment claim can be
-made.
-
 \section {Ethics Declaration}
 This study is based entirely on computational simulation using publicly available weather data (EnergyPlus Weather files) and standardised building parameters (Saudi Building Code 2018, ASHRAE 55-2023).
 No human subjects, animals, or personal data were involved in any stage of this research.
 No ethical approval was required for this work.
 \section {Data Availability}
-The run configurations for both cities, the weather-file specifications, and a reference implementation of the RBRL framework are available at \href{https://github.com/drhamzahfaraj/hvac-scheduling-saudi-arabia}{\textcolor{blue}{github.com/drhamzahfaraj/hvac-scheduling-saudi-arabia}}.
+The run configurations for both cities, the weather-file specifications, and a reference implementation of the RBRL framework are available at:  \href{https://github.com/drhamzahfaraj/hvac-scheduling-saudi-arabia}{\textcolor{blue}{Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings }}.
 The weather data are public: the IWEC typical-year files for Riyadh (WMO~404380) and Jeddah (WMO~410240) may be downloaded from the EnergyPlus weather repository~\cite{EPW2023} and are not redistributed here.
 All building parameters are those of Table~\ref{tab:params} and follow SBC~2018, with the comfort band taken from ASHRAE~55-2023~\cite{ASHRAE55_2023}, so the model is fully specified by the manuscript.
 
