@@ -1,0 +1,30 @@
+[project]
+name = "rbrl-hvac-scheduling"
+version = "1.0.0"
+description = "Hybrid rule-constrained PPO for binary HVAC scheduling under a step-wise electricity tariff"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Hamzah Faraj", email = "f.hamzah@tu.edu.sa" }]
+keywords = ["HVAC", "reinforcement-learning", "PPO", "building-energy", "demand-side-management"]
+dependencies = [
+    "numpy>=1.24",
+    "gymnasium>=0.29",
+    "torch>=2.1",
+    "stable-baselines3>=2.2",
+    "pyyaml>=6.0",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4"]
+
+[project.urls]
+Repository = "https://github.com/drhamzahfaraj/hvac-scheduling-saudi-arabia"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"

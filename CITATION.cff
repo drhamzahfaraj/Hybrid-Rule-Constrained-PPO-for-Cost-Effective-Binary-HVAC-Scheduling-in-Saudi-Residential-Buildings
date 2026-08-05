@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software or the accompanying paper, please cite it as below."
+title: "Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings"
+authors:
+  - family-names: Faraj
+    given-names: Hamzah
+    affiliation: "Department of Science and Technology, Ranyah College, Taif University"
+    email: f.hamzah@tu.edu.sa
+license: MIT
+preferred-citation:
+  type: article
+  title: "Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings"
+  authors:
+    - family-names: Faraj
+      given-names: Hamzah
+  journal: "Journal of King Saud University - Engineering Sciences"
+  year: 2026

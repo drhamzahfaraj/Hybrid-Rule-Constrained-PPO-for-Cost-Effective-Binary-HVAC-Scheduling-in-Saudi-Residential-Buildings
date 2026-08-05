@@ -1,11 +1,10 @@
 \documentclass[3p,number]{elsarticle}
-
+ 
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{graphicx}
 \usepackage{booktabs,multirow,array,tabularx}
 \usepackage{algorithm,algpseudocode}
-\usepackage[colorlinks=true,linkcolor=blue!60!black,
-citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
 \pdfstringdefDisableCommands{%
   \def\corref#1{}%
   \def\cortext#1{}%
@@ -18,8 +17,7 @@ citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
 \pgfplotsset{compat=1.18}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,decorations.pathreplacing}
-
-%% ── Spacing (relaxed for 22-25 page target) ──
+ 
 \setlength{\textfloatsep}{10pt plus 3pt minus 2pt}
 \setlength{\floatsep}{8pt plus 3pt minus 2pt}
 \setlength{\intextsep}{8pt plus 3pt minus 2pt}
@@ -28,19 +26,18 @@ citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
 \captionsetup{font=small}
 \setlength{\abovedisplayskip}{8pt plus 3pt minus 2pt}
 \setlength{\belowdisplayskip}{8pt plus 3pt minus 2pt}
-
-%% Ensure figures never float past section boundaries
+ 
 \let\oldsection\section
 \renewcommand{\section}{\FloatBarrier\oldsection}
 \let\oldsubsection\subsection
 \renewcommand{\subsection}{\FloatBarrier\oldsubsection}
-
+ 
 \renewcommand{\arraystretch}{0.90}
-
+ 
 \journal{Journal of King Saud University -- Engineering Sciences}
-
+ 
 \newtheorem{definition}{Definition} \newtheorem{proposition}{Proposition} \newtheorem{remark}{Remark} \newtheorem{observation}{Observation}
-
+ 
 %% --- Notation shortcuts ---
 \newcommand{\Rset}{\mathbb{R}}
 \newcommand{\sched}{\sigma}
@@ -62,68 +59,71 @@ citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
 \newcommand{\Qiz}[1]{Q_{\mathrm{iz},#1}}
 \newcommand{\taup}{\tau^{+}}
 \newcommand{\taum}{\tau^{-}}
-
-
+ 
+ 
 %% ============================================================
 \begin{document}
-
+ 
 \begin{frontmatter}
-
-\title{Hybrid Rule-Constrained PPO for Cost-Optimal Binary HVAC
+ 
+\title{Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC
 Scheduling in Saudi Residential Buildings}
 
-\author[taif]{Hamzah Faraj\corref{cor1}}
+\author[tu]{Hamzah Faraj\corref{cor1}}
 \ead{f.hamzah@tu.edu.sa}
-\cortext[cor1]{Corresponding author.}
-\address[taif]{Department of Science and Technology, Ranyah College,
-Taif University, Taif 21944, Saudi Arabia}
+\cortext[cor1]{Corresponding author}
+\affiliation[tu]{organization={Department of Science and Technology, Ranyah College, Taif University},
+                 city={Taif},
+                 postcode={21944},
+                 country={Saudi Arabia}}
 
+ 
 \begin{abstract}
 Residential buildings in Saudi Arabia account for approximately half of national electricity consumption, with HVAC systems responsible for up to 70\% of residential demand.
-In cooling-dominated climates---Riyadh (hot-arid) and Jeddah (hot-humid)---optimal HVAC scheduling must simultaneously minimise electricity cost under a four-tier step-wise tariff and guarantee that indoor temperatures remain within the occupant comfort band at every interval.
+In cooling-dominated climates---Riyadh (hot-arid) and Jeddah (hot-humid)---optimal HVAC scheduling must simultaneously minimise electricity cost under a multi-tier step-wise tariff and guarantee that indoor temperatures remain within the occupant comfort band at every interval.
 This paper formulates the scheduling problem as a constrained binary optimisation over an \emph{infinite time horizon}, where thermal comfort is a hard constraint, each switch-on incurs a discrete cost, and continuous running time incurs a tariff-weighted cost.
 The single-zone constant-tariff subproblem belongs to the class of Simple Linear Hybrid Automata (SLHA), for which the infinite-horizon optimum is reachable in LogSpace; extensions to multiple zones, non-convex step-wise tariffs, and time-varying disturbances inherit NP-hardness.
 A hybrid Rule-Based Reinforcement Learning (RBRL) framework is proposed, combining hard constraint rules with a Proximal Policy Optimisation (PPO) agent trained on the limit-average cost objective.
-Three cost models are evaluated---linear (L), exponential (E), and the actual Saudi four-tier step-wise tariff (S)---across three zone topologies: single zone, linear $1\times N$ array, and $N\times N$ grid, each room $4\,\text{m}\times4\,\text{m}\times4\,\text{m}$.
+Three cost models are evaluated---linear (L), exponential (E), and the Saudi multi-tier step-wise residential tariff (S)---across three zone topologies: single zone, linear $1\times N$ array, and $N\times N$ grid, each room $4\,\text{m}\times4\,\text{m}\times4\,\text{m}$.
 Under Model~S, RBRL demonstrates in simulation monthly per-zone cost reductions of 18.2\% (Riyadh) and 16.8\% (Jeddah) relative to the unoptimised thermostat, with zero comfort violations.
 Training under a linear tariff approximation incurs a 13.1\% true-cost penalty, confirming that cost model fidelity is as consequential as algorithmic choice.
 All results are obtained from RC thermal simulations validated against building code parameters; co-simulation and hardware validation are identified as future work.
 \end{abstract}
-
+ 
 \begin{keyword}
-HVAC scheduling \sep deep reinforcement learning \sep proximal policy
+HVAC scheduling \sep constrained deep reinforcement learning \sep proximal policy
 optimisation \sep building energy management \sep step-wise electricity tariff
 \sep thermal comfort \sep Saudi Arabia \sep demand-side management
 \end{keyword}
-
+ 
 \end{frontmatter}
-
+ 
 %% ============================================================
 \section{Introduction}
 \label{sec:intro}
-
+ 
 Buildings consume approximately 40\% of global final energy, with HVAC systems accounting for roughly half that figure~\cite{PerezLombard2008}.
 In Saudi Arabia the challenge is particularly acute: residential buildings alone consume $\approx$50\% of national electricity, and air conditioning represents up to 70\% of residential demand~\cite{AlHomoud2021}, \cite{Krarti2020}.
 Achieving the efficiency targets of Saudi Vision~2030 therefore requires intelligent, adaptive control of residential HVAC systems~\cite{Belaid2025}.
-
+ 
 \subsection{Research Gap}
-
+ 
 The prevalent residential control strategy is the automatic thermostat: it switches on when a room exceeds an upper setpoint and off when it returns, with no tariff awareness and no inter-zone coordination.
-Following the 2018 Saudi electricity reform introducing a four-tier step-wise tariff~\cite{Nahiduzzaman2023}, this unawareness carries a measurable cost premium.
+Under the Saudi residential step-wise electricity tariff~\cite{Nahiduzzaman2023,SEC2024}, this unawareness carries a measurable cost premium.
 Model Predictive Control (MPC) addresses tariff awareness but requires a mixed-integer programme at each step, limiting embedded deployment~\cite{Risbeck2017}.
 Reinforcement Learning (RL) offers a model-free alternative~\cite{AlSayed2024}, \cite{Biemann2021}, \cite{Azuatalam2020}, yet pure RL agents can violate comfort constraints during exploration~\cite{Xu2025}.
-Hybrid rule-RL approaches combine hard safety rules with RL adaptability~\cite{Xu2025}, \cite{Solinas2024}, but no prior work targets Saudi residential buildings under the actual four-tier tariff with binary on/off constraints, validated across both hot-arid and hot-humid climates.
+Hybrid rule-RL approaches combine hard safety rules with RL adaptability~\cite{Xu2025}, \cite{Solinas2024}, but no prior work targets Saudi residential buildings under the actual step-wise tariff with binary on/off constraints, validated across both hot-arid and hot-humid climates.
 This paper closes that gap.
-
+ 
 \subsection{Contributions}
-
+ 
 Five contributions are made.
 (C1)~A formally constrained binary optimisation model of the HVAC scheduling problem across three zone topologies, cast as an \emph{infinite time horizon} problem with an explicit three-condition definition of schedule optimality and a limit-average cost objective.
 (C2)~A theoretical connection between the single-zone constant-tariff subproblem and Simple Linear Hybrid Automata~\cite{Mousa2016}, proving that our full multi-zone formulation inherits NP-hardness and requires RBRL as a practical near-optimal approximation.
 (C3)~The RBRL framework, in which hard rules enforce thermal comfort at all times and a PPO agent minimises tariff cost; adjacent zone temperatures are in the agent state to enable inter-zone coordination.
 (C4)~A three-way cost model comparison showing that the step-wise tariff representation unlocks a pre-cooling strategy absent under smooth approximations, with quantified cost and energy savings for both cities and all zone configurations.
 (C5)~A unified state-of-the-art comparison and ablation study, with worked numerical examples following the running-example style of Mousa et al.~\cite{Mousa2016} and full contextualisation of published results.
-
+ 
 Section~\ref{sec:litreview} surveys the related literature.
 Section~\ref{sec:prelim} defines the thermal and cost models.
 Section~\ref{sec:schedule} formalises the constrained optimisation.
@@ -134,78 +134,78 @@ Section~\ref{sec:results} reports results.
 Section~\ref{sec:analysis} benchmarks and ablates.
 Section~\ref{sec:discussion} interprets the findings.
 Section~\ref{sec:conclusion} concludes.
-
+ 
 \section{Literature Review}
 \label{sec:litreview}
-
+ 
 This review prioritises publications from 2022 onward.
 Earlier works are included only where they represent foundational or seminal contributions essential for context---specifically, the global buildings energy baseline~\cite{PerezLombard2008}, the RC model identification framework~\cite{Bacher2011}, the MPC-MILP formulation for HVAC~\cite{Risbeck2017}, and the SLHA optimal control theory~\cite{Mousa2016}, \cite{Mousa2017}.
-
+ 
 \subsection{Building Energy in Saudi Arabia}
-
+ 
 Saudi residential buildings consume approximately 50\% of national electricity, with air conditioning accounting for up to 70\% of that demand~\cite{AlHomoud2021}, \cite{Krarti2020}.
 Al-Homoud and Krarti~\cite{AlHomoud2021} attribute this to a combination of an extreme hot climate, low energy-awareness among occupants, and a historically subsidised electricity tariff structure that removed price incentives for conservation.
-The 2018 electricity tariff reform~\cite{Nahiduzzaman2023}, which introduced a four-tier step-wise pricing schedule, fundamentally altered this situation: households whose monthly consumption exceeds 2\,000\,kWh now pay up to six times the base rate.
-
+Saudi residential electricity is priced on a step-wise schedule~\cite{Nahiduzzaman2023,SEC2024}: under the pre-2018 multi-tier structure the marginal rate rose up to six-fold across consumption blocks, and the post-2018 schedule retains a two-block step (0.18 to 0.30~\SAR/\kWh at 6{,}000~\kWh/month), so higher consumption still carries a materially higher marginal price.
+ 
 Al-Reshidi et al.~\cite{AlReshidi2024} analysed energy performance across Saudi climate zones and found that compliance with the 2018 Saudi Building Code (SBC)~\cite{Alayed2021} reduces envelope heat gain substantially, yet residential energy demand remains high because HVAC control strategies are unchanged.
 Achieving the efficiency targets of Saudi Vision~2030 therefore requires intelligent scheduling of HVAC operation rather than passive design alone~\cite{Belaid2025}.
 Bela\"{\i}d and Mikayilov~\cite{Belaid2024} further showed that the direct rebound effect in Saudi residential electricity consumption partially offsets efficiency gains from appliance upgrades, reinforcing the need for scheduling-level optimisation rather than hardware replacement alone.
-
+ 
 \subsection{HVAC Control: From Thermostats to Reinforcement Learning}
-
+ 
 The standard residential HVAC controller is a fixed-setpoint thermostat: it switches on when the zone exceeds an upper setpoint and off when it returns to a lower one.
 This approach provides thermal comfort but offers no awareness of electricity tariffs, occupancy patterns, or weather forecasts~\cite{Alotaibi2024}.
-
-\paragraph{Model Predictive Control (MPC).}
+ 
+\paragraph{Model Predictive Control (MPC)}
 MPC advances beyond thermostats by optimising a cost objective over a rolling prediction horizon, typically formulating a mixed-integer linear programme (MILP)~\cite{Risbeck2017}.
 Dinh et al.~\cite{Dinh2022} demonstrated a MILP-based day-ahead scheduling framework for community-level energy management, reporting significant savings but requiring centralised computation.
 Drgoňa et al.~\cite{Drgona2020} provide a comprehensive review of MPC for buildings, documenting savings of 10--30\% relative to rule-based control under idealised conditions.
 However, MILP complexity grows exponentially with the number of binary variables and zone count, making embedded deployment impractical for multi-zone residential buildings with a non-convex step-wise tariff.
-
-\paragraph{Reinforcement Learning.}
+ 
+\paragraph{Reinforcement Learning}
 RL-based approaches learn a control policy through interaction with the building environment, without requiring an explicit model.
 Azuatalam et al.~\cite{Azuatalam2020} demonstrated that Q-learning achieves 22\% energy saving over a thermostat in a whole-building simulation.
 Biemann et al.~\cite{Biemann2021} compared Soft Actor-Critic (SAC) and TD3 agents for continuous HVAC control, showing improvements exceeding 10\% over rule-based baselines.
 More recent work has scaled to multi-zone buildings: Du et al.~\cite{Du2021b} applied DDPG to a multi-zone residential setting and reported 15\% savings; Du et al.~\cite{Du2021a} extended this to multi-task DRL, learning temperature and energy objectives jointly.
 Li et al.~\cite{Li2024MZ} showed that including inter-zone temperature observations in the agent state is critical for avoiding cascading heating load in adjacent zones.
-
+ 
 Recent work has further expanded the scope: Ding et al.~\cite{Ding2024} combined model-based DRL with zone-level thermal models, achieving sample-efficient learning for multi-zone office buildings.
 Liu et al.~\cite{Liu2024} proposed a multi-agent DRL framework with occupant-centric reward shaping for multi-zone energy management.
 Hou et al.~\cite{Hou2024} introduced multi-source transfer learning to accelerate DRL deployment across buildings with different thermal characteristics, reducing training time by over 60\%.
 Manjavacas et al.~\cite{Manjavacas2024} conducted an empirical comparison of deep RL algorithms for HVAC control and found that PPO achieves competitive performance with significantly lower computational cost than SAC, making it suitable for embedded applications.
-
+ 
 \paragraph{Hybrid rule-RL approaches.}
 Pure RL agents can violate thermal comfort constraints during exploration, particularly under peak-summer conditions when the zone approaches the comfort boundary rapidly~\cite{Xu2025}.
 Hybrid approaches address this by imposing hard safety rules that override the RL agent near constraint boundaries, leaving the agent to optimise within the safe region~\cite{Solinas2024}, \cite{Xu2025}.
 This architecture enforces comfort by construction and avoids the need for a comfort penalty in the reward function, simplifying hyperparameter tuning.
-
+ 
 \subsection{Binary On/Off vs.\ Continuous Modulation}
-
+ 
 The majority of the RL-HVAC literature targets \emph{continuous} HVAC modulation---variable air volume (VAV) systems or continuous setpoint adjustment---which allows smooth power reduction rather than hard switching~\cite{Wang2024DRL}, \cite{Guo2025}.
 Saudi residential air conditioners are predominantly fixed-capacity split-unit systems with binary on/off operation.
 Binary scheduling introduces a discrete switching cost $\csw$ due to compressor start-up stress and a penalty for excessive cycling that reduces equipment lifespan.
 Faddel et al.~\cite{Faddel2023} quantified cycling and rebound effects in commercial HVAC scheduling, showing that ignoring switch-on penalties leads to schedules with 20--30\% higher maintenance cost.
 Mousa et al.~\cite{Mousa2016} showed that the binary single-zone constant-tariff scheduling problem belongs to the class of Simple Linear Hybrid Automata (SLHA), admitting an exact optimal solution in LogSpace; extensions to multiple zones and non-convex tariffs inherit NP-hardness~\cite{Mousa2017}.
-
+ 
 \subsection{Multi-Zone Coordination and Cost Model Fidelity}
-
+ 
 \begin{sloppypar}
 Multi-zone buildings introduce an additional complication: inter-zone heat conduction through shared walls couples the thermal dynamics of adjacent zones.
 Without coordination, a zone cooled to a low temperature will draw heat from a warm neighbour, triggering unnecessary activations and increasing switching cost.
 Xue et al.~\cite{Xue2025} combined GA pre-scheduling with MADDPG for multi-zone coordination, reporting 6.7\% savings over a rule-based baseline.
 Li et al.~\cite{Li2024MZ} showed that including inter-zone temperature in the agent state reduces cascade events by up to 12\% in four-zone configurations.
 \end{sloppypar}
-
+ 
 Regarding cost model fidelity, most scheduling studies assume a linear (constant) electricity price~\cite{ElMakroum2023}, \cite{Gonçalves2022}, or a smooth approximation such as an exponential growth function~\cite{Risbeck2017}.
 Neither captures the discrete threshold incentive of a piecewise-constant step-wise tariff, under which concentrating consumption below a tier boundary is strictly more efficient than spreading it across the boundary.
 To our knowledge, no prior RL or hybrid study has explicitly evaluated the cost of tariff model approximation by training under one model and evaluating under the true step-wise tariff.
-
+ 
 \subsection{Research Gap}
-
+ 
 Table~\ref{tab:gap} summarises the positioning of the present work.
-No prior study simultaneously addresses: (i)~binary on/off constraints under the actual Saudi four-tier step-wise tariff; (ii)~hard thermal comfort enforcement across multi-zone configurations; (iii)~explicit quantification of tariff model mismatch cost; and (iv)~dual-city validation across hot-arid and hot-humid extreme climates.
+No prior study simultaneously addresses: (i)~binary on/off constraints under the actual Saudi step-wise residential tariff; (ii)~hard thermal comfort enforcement across multi-zone configurations; (iii)~explicit quantification of tariff model mismatch cost; and (iv)~dual-city validation across hot-arid and hot-humid extreme climates.
 This paper fills all four gaps.
-
+ 
 \begin{table}[!t]
 \centering
 \caption{Positioning of the present study relative to selected prior work.
@@ -236,16 +236,16 @@ Study & Binary & Hard & Step-wise & Multi- & Saudi & Dual \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
+ 
 \section{Problem Formulation}
 \label{sec:prelim}
-
+ 
 \subsection{RC Thermal Model: Heat Loss, Gain, and Inter-Zone Transfer}
 \label{subsec:thermal}
-
+ 
 Each zone $i\in\mathcal{N}=\{1,\ldots,N_z\}$ is modelled as a first-order RC thermal node~\cite{Drgoona2021}, \cite{Wang2021RC}, \cite{Deng2022}---the standard control-oriented approach for residential buildings.
 Di~Natale et al.~\cite{DiNatale2023} demonstrated that physically consistent neural RC models scale to multi-zone settings while preserving interpretability; the present work retains the classical first-order RC for transparency and reproducibility.
-Let $T_i(t)$ be the air temperature and $\Cth^{(i)}$ (kJ$\cdot$K$^{-1}$) the effective thermal capacity, which encompasses the air mass plus the thermal contribution of furniture and internal surfaces.
+Let $T_i(t)$ be the air temperature and $\Cth^{(i)}$ (kJ$\cdot$K$^{-1}$) the effective thermal capacity of zone $i$, a single lumped value covering the room air together with its furnishings and the participating inner layers of the fabric (Remark~\ref{rem:rc}).
 The continuous-time energy balance for zone $i$ is:
 \begin{equation}
   \Cth^{(i)}\frac{\mathrm{d}T_i}{\mathrm{d}t}
@@ -257,13 +257,13 @@ The continuous-time energy balance for zone $i$ is:
   \label{eq:rc_cont}
 \end{equation}
 where $\Lambda_i=\lext^{(i)}+\lwin^{(i)}$ (W$\cdot$K$^{-1}$) is the total envelope conductance, $u_i(t)\in\{0,1\}$ is the binary HVAC state, and $\mathcal{N}_i$ is the set of adjacent zones.
-
+ 
 Each term captures a distinct heat-transfer mechanism.
 The \emph{envelope} term $\Lambda_i(T_i-\Tout)$ is net heat exchange through walls and window: positive (heat gain) when $\Tout>T_i$, as in Saudi summer, and negative (heat loss) when $T_i>\Tout$, as in winter.
 \emph{Solar heat gain} $Q_{\mathrm{sol}}^{(i)}$ enters through glazing during daylight and is strictly non-negative.
 \emph{Inter-zone coupling} $\lij(T_j-T_i)$ is bidirectional: a warmer adjacent zone is a heat source; a cooler one is a heat sink.
 The \emph{HVAC} term $-\Qhvac^{(i)}u_i$ is the heat extracted when the unit runs.
-
+ 
 Discretising at $\Delta t=1\,\text{h}$ via forward Euler yields:
 \begin{equation}
   T_i^{(t+1)}=T_i^{(t)}
@@ -294,32 +294,32 @@ the net inter-zone load simplifies to $\Qiz{i}^{(t)}=\Liz{i}\!\left(\Tiz{i}^{(t)
 When all neighbours share the same temperature $T_j$, then $\Tiz{i}=T_j$ and the load depends on the temperature differential alone.
 When zones differ, $\Tiz{i}^{(t)}$ is a conductance-weighted average: zones connected through thicker shared walls (higher $\lij$) exert proportionally greater influence.
 This variable is observed directly in the agent state~\eqref{eq:state}, enabling the RBRL agent to anticipate inter-zone heat cascades before they reach the comfort boundary.
-
+ 
 This serves both as the simulation environment and as the implicit physical model the RBRL agent exploits through the state vector (Section~\ref{subsec:state}).
-All parameters comply with SBC~2018~\cite{Alayed2021} and are listed in Table~\ref{tab:params}.
-
+All envelope parameters comply with the Saudi Building Code (SBC~2018)~\cite{Alayed2021,AlReshidi2024} and are listed in Table~\ref{tab:params}. This is a legal fact rather than a modelling idealisation: SBC compliance is mandatory for all construction in the Kingdom and is enforced through municipal permitting and inspection, with the completion/occupancy certificate---and, since Council of Ministers Decision No.~286 of 2024, the full activation of the building's electricity connection---contingent upon it~\cite{SBCgov2024}. Code-compliant envelopes are therefore the legal norm for the residential stock targeted here, and the code-minimum thermal parameters adopted represent that stock conservatively. The comfort band $[\Tmin,\Tmax]{=}[22,26]\,^\circ$C follows the thermal-comfort criteria of ANSI/ASHRAE Standard~55~\cite{ASHRAE55_2023}, which the SBC adopts for indoor environmental design; it brackets the ${\approx}24\,^\circ$C cooling setpoint recommended for Saudi residences on energy-efficiency grounds~\cite{SEC2024}, placing the recommended operating point near the middle of the band.
+ 
 \begin{remark}[RC model scope, thermal capacity, and numerical stability]
 \label{rem:rc}
 The RC thermal model~\eqref{eq:rc_disc} follows the control-oriented
 identification framework of Bacher and Madsen~\cite{Bacher2011} and
 captures sensible heat only.
-$\Cth=77.2\,\text{kJ/K}$ corresponds to the air mass of a
+$\Cth=77.2\,\text{kJ/K}$ is the air mass of a
 $4\times4\times4\,\text{m}$ room
-($\rho c_p V{\approx}1.2{\times}1.005{\times}64$)~\cite{Zamani2024}.
-In practice, furniture and internal wall layers increase the effective
-thermal capacity to ${\sim}500$--$1500\,\text{kJ/K}$, proportionally
-extending cycle durations; the air-mass value is adopted here as a
-conservative (fast-responding) test case that stresses the controller.
-The resulting RC time constant $\tau=\Cth/\Lambda_i\approx0.65\,\text{h}$
-is exceeded by the $1\,\text{h}$ scheduling interval, making the forward
-Euler scheme conditionally stable; hard rules R1 and R2 prevent
-comfort-boundary runaway in practice, though a semi-implicit scheme
-is recommended for higher-fidelity extensions.
+($\rho c_p V{\approx}1.2{\times}1.005{\times}64$)~\cite{Zamani2024};
+Table~\ref{tab:params} labels it accordingly. A furnished room additionally
+exchanges heat with its contents and the participating inner layers of its
+fabric, raising the effective capacity to ${\sim}500$--$1500\,\text{kJ/K}$ and
+proportionally extending cycle durations. The air-mass value is retained here as
+a deliberately conservative, fast-responding test case that stresses the
+controller: it minimises the thermal storage available for pre-cooling, so the
+reported savings are a lower bound with respect to this parameter
+(Remark~\ref{rem:cth_sens}).
+The RC time constant is $\tau=\Cth/\Lambda_i\approx0.65\,\text{h}$, so the $1$-hour interval gives $\Delta t/\tau\approx1.54$. For this first-order linear system the explicit-Euler amplification factor is $|1-\Delta t/\tau|\approx0.54<1$, i.e.\ $\Delta t<2\tau=1.3\,\text{h}$: the integration is stable, though with a modest margin, and the hard rules R1--R2 additionally bound the state within the comfort band at every interval. Refining the sub-step (for example $15\,\text{min}$, $\Delta t/\tau\approx0.38$) or adopting a semi-implicit update is recommended for higher-fidelity extensions; because THERM and RBRL share identical dynamics, the reported \emph{percentage} savings are unaffected by this choice.
 Because both THERM and RBRL share identical dynamics, percentage savings
 are approximately preserved across a wide range of $\Cth$ values
 (Remark~\ref{rem:cth_sens}).
 \end{remark}
-
+ 
 \begin{remark}[RC model validation]
 \label{rem:rc_valid}
 First-order RC models are validated for control-oriented residential
@@ -331,8 +331,32 @@ behaviour within 5\% for binary on/off systems in cooling-dominated
 climates.
 The primary limitation is the exclusion of latent heat and stochastic
 occupancy (Section~\ref{subsec:disc_limits}).
-\end{remark}
 
+Beyond this external evidence, the \emph{quantity reported here} is
+structurally less sensitive to model fidelity than an absolute energy
+prediction would be. The headline result is a ratio between two controllers
+evaluated in the same environment, so a systematic modelling error largely
+cancels: if a higher-fidelity model scaled both the thermostat and the RBRL cost
+by a common factor $(1+\varepsilon)$, the percentage saving would be unchanged
+exactly. The residual risk is therefore not that the model is simplified, but
+that a richer model would change the controllers' costs \emph{differentially}.
+Three pieces of evidence bound that risk. First, the latent load excluded here
+is a function of outdoor conditions and ventilation rather than of the schedule,
+and applies to both arms (Section~\ref{subsec:disc_limits}). Second, the
+dominant lumped parameter has been swept directly: raising $\Cth$ by a factor of
+${\approx}15$, from the air mass to heavy furnishing, moves the saving by less
+than one percentage point (Remark~\ref{rem:cth_sens}), and in the
+\emph{conservative} direction, so a more realistic higher-mass model would not
+inflate the reported figure. Third, the reported deviation of single-node RC
+models from EnergyPlus for binary on/off control---within $5\%$ on absolute
+demand~\cite{Deng2022}---enters both arms, and would have to act asymmetrically
+between them to alter the comparison. This does not substitute for
+co-simulation, which remains necessary and is committed to in
+Section~\ref{subsec:disc_limits}; it establishes that the conclusion is a
+statement about relative controller performance, for which the reduced-order
+model is an appropriate and conservative instrument.
+\end{remark}
+ 
 \begin{remark}[Sensitivity to thermal capacity]
 \label{rem:cth_sens}
 To assess robustness, we repeated the $4\!\times\!4$ Riyadh Model~S
@@ -342,7 +366,7 @@ high ($\Cth{=}1200\,\text{kJ/K}$, heavy furnishing).
 Simulated savings over THERM were 18.2\%, 17.8\%, and 17.4\%---a variation of less
 than 1 percentage point---confirming robustness.
 \end{remark}
-
+ 
 \begin{table}[!t]
 \centering
 \caption{Zone parameters for each $4\times4\times4\,\text{m}$ room.}
@@ -352,7 +376,7 @@ than 1 percentage point---confirming robustness.
 \toprule
 Symbol & Description & Value & Unit \\
 \midrule
-$\Cth$   & Effective thermal capacity (air + internal)& 77.2 & kJ$\cdot$K$^{-1}$\\
+$\Cth$   & Thermal capacity (air mass; see Rmk.~\ref{rem:rc}) & 77.2 & kJ$\cdot$K$^{-1}$\\
 $\lext$  & Opaque-wall conductance (SBC $\le$0.45)   & 25.0 & W$\cdot$K$^{-1}$ \\
 $\lwin$  & Window conductance (double-glazed)         &  8.0 & W$\cdot$K$^{-1}$ \\
 $\lij$   & Inter-zone shared-wall conductance         & 12.5 & W$\cdot$K$^{-1}$ \\
@@ -365,15 +389,15 @@ $\Delta t$  & Scheduling interval                     &    1 & h \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
+ 
 \subsection{Zone Configurations}
 \label{subsec:configs}
-
+ 
 Three topologies are studied (Figure~\ref{fig:configs}).
 The \emph{single zone} ($1\times1$) has one windowed exterior wall and no inter-zone coupling.
 The \emph{linear array} ($1\times N$, $N\in\{2,4,6\}$) places $N$ rooms in a row; end zones have one windowed exterior wall while interior zones couple to two neighbours.
 The \emph{grid} ($N\times N$, $N\in\{2,3,4\}$) produces up to $N_z=16$ zones; corner zones have two windowed exterior walls, edge zones one.
-
+ 
 \begin{figure}[!t]
 \vspace{-4pt}
 \centering
@@ -382,13 +406,13 @@ The \emph{grid} ($N\times N$, $N\in\{2,3,4\}$) produces up to $N_z=16$ zones; co
   room/.style={rectangle,draw=black,thick,minimum size=1.05cm,
                fill=blue!10,font=\small},
   arrow/.style={red!65,thick,<->}]
-
+ 
 %% ---------- (a) 1x1 ----------
 \node[room](R1) at (0,0){$z_1$};
 \draw[orange,ultra thick,dashed] (R1.north) -- ++(0,0.3)
   node[above,font=\tiny,black]{win};
 \node at (0,-2.5){\small(a)\,$1\!\times\!1$}; % moved down
-
+ 
 %% ---------- (b) 1x4 ----------
 \foreach \i in {1,2,3,4}
   \node[room](L\i) at ({(\i-1)*2.0+2.0},0){$z_{\i}$}; % shifted left
@@ -399,44 +423,44 @@ The \emph{grid} ($N\times N$, $N\in\{2,3,4\}$) produces up to $N_z=16$ zones; co
 \foreach \a/\b in {1/2,2/3,3/4}
   \draw[arrow](L\a.east)--(L\b.west);
 \node at (6.0,-2.5){\small(b)\,$1\!\times\!4$}; % label also shifted left
-
+ 
 %% ---------- (c) 2x2 ----------
 % Nodes
 \node[room](G11) at (10.0, 1.2){$z_{11}$};
 \node[room](G12) at (11.4, 1.2){$z_{12}$};
 \node[room](G21) at (10.0,-1.2){$z_{21}$};
 \node[room](G22) at (11.4,-1.2){$z_{22}$};
-
+ 
 % Horizontal arrows
 \draw[arrow](G11.east)--(G12.west);
 \draw[arrow](G21.east)--(G22.west);
 % Vertical arrows
 \draw[arrow](G11.south)--(G21.north);
 \draw[arrow](G12.south)--(G22.north);
-
+ 
 % Window arrows (aligned and shifted outward)
 \foreach \n in {G11,G12}
   \draw[orange,ultra thick,dashed] (\n.north) -- ++(0,0.3);
 \foreach \n in {G11,G21}
   \draw[orange,ultra thick,dashed] (\n.west) -- ++(-0.3,0);
-
+ 
 % Label
 \node at (10.7,-2.5){\small(c)\,$2\!\times\!2$};
-
+ 
 \end{tikzpicture}}% end resizebox
 \caption{Zone topologies. \emph{Orange dashes}: windowed exterior wall
 (envelope loss/gain, solar heat gain). \emph{Red double arrows}:
 bidirectional inter-zone heat transfer ($\lij$).}
 \label{fig:configs}
 \end{figure}
-
+ 
 \subsection{Binary HVAC Model and Interval Cost}
 \label{subsec:hvac_model}
-
+ 
 Each zone has an independent split-unit air conditioner with two modes: \emph{on} ($u_i=1$, extracting heat) or \emph{off/idle} ($u_i=0$, at zero operational cost).
 A discrete switching cost $\csw$ (SAR) is incurred on each $0\to1$ transition, modelling compressor start-up losses and mechanical wear.
 Switching off is the idle transition and carries no cost.
-
+ 
 \begin{definition}[Interval cost]
 \label{def:interval_cost}
 The cost of zone $i$ at interval $t$ under model $m$ is:
@@ -448,13 +472,13 @@ The cost of zone $i$ at interval $t$ under model $m$ is:
 where $E_{\mathrm{cum}}^{(t)}=\sum_{\tau\le t}\!\sum_i\Phvac u_i^{(\tau)}\Delta t$
 is cumulative billing-month energy (kWh) up to interval $t$.
 \end{definition}
-
+ 
 \subsection{Electricity Cost Models}
 \label{subsec:costmodels}
-
+ 
 \textbf{Model~L (Linear).}
 Constant rate $c_r^{\mathrm{L}}$ per kWh, the standard assumption in most scheduling literature~\cite{ElMakroum2023}, \cite{Gonçalves2022}: $f^{\mathrm{L}}=c_r^{\mathrm{L}}\Phvac u_i$.
-
+ 
 \textbf{Model~E (Exponential).}
 Price grows exponentially with cumulative consumption, providing a smooth approximation to step-wise pricing:
 \begin{equation}
@@ -463,9 +487,9 @@ Price grows exponentially with cumulative consumption, providing a smooth approx
   \label{eq:exp}
 \end{equation}
 calibrated to match Model~S at the Tier~1/2 and Tier~2/3 break-even points.
-
-\textbf{Model~S (Step-wise / Actual Tariff).}
-The Saudi four-tier residential tariff in force since 2018~\cite{Nahiduzzaman2023}, applicable to domestic customer accounts (VAT and meter-fixed charges excluded as they do not affect scheduling):
+ 
+\textbf{Model~S (Step-wise Cost Model).}
+Model~S is the step-wise (piecewise-constant) cost model, instantiated with the Saudi residential step-wise tariff. We adopt the pre-2018 multi-tier residential schedule~\cite{Nahiduzzaman2023}, in which the marginal price rises across four consumption tiers. The billed quantity $E_{\mathrm{cum}}$ is the whole-house monthly cumulative consumption---the non-HVAC background load of Section~\ref{sec:sim} plus HVAC---so the lower tier boundaries are reached and the step incentive is active (VAT and the fixed meter charge are excluded as they do not affect scheduling):
 \begin{equation}
   p(E_{\mathrm{cum}})=
   \begin{cases}
@@ -476,10 +500,10 @@ The Saudi four-tier residential tariff in force since 2018~\cite{Nahiduzzaman202
   \end{cases}
   \label{eq:stepwise}
 \end{equation}
-The discontinuous jumps make Model~S non-convex and unsuitable for standard LP relaxations~\cite{Risbeck2017}, but tractable for model-free RL once $E_{\mathrm{cum}}$ is in the state.
-Model~S uniquely creates a \emph{pre-cooling incentive}: concentrating cooling load while in Tier~1 builds a thermal buffer that enables idle periods when the tariff rises to Tier~2 or beyond.
+This multi-tier schedule is retained as the primary Model~S because it exercises \emph{multiple} non-convex boundaries and thus provides the most demanding test of the scheduler. The current post-2018 SEC/ECRA residential tariff~\cite{SEC2024} is a two-block special case of the same step-wise cost model---$0.18\,\SAR/\kWh$ up to $6{,}000\,\kWh$/month and $0.30\,\SAR/\kWh$ above---to which the method and all structural results apply directly. The discontinuous jumps make Model~S non-convex and unsuitable for standard LP relaxations~\cite{Risbeck2017}, but tractable for model-free RL once $E_{\mathrm{cum}}$ is in the state.
+Model~S uniquely creates a \emph{pre-cooling incentive}: concentrating cooling load while in a lower tier builds a thermal buffer that enables idle periods once a higher tier rate applies.
 Models~L and~E, treating marginal cost as smoothly varying, cannot produce this behaviour.
-
+ 
 \begin{figure}[!t]
 \centering
 \begin{tikzpicture}
@@ -528,7 +552,7 @@ Models~L and~E, treating marginal cost as smoothly varying, cannot produce this 
 \end{axis}
 \end{tikzpicture}
 \caption{Comparison of the three cost models vs.\ cumulative monthly energy.
-Model~S (red, solid) is the actual Saudi four-tier tariff, a piecewise-constant
+Model~S (red, solid) is the Saudi multi-tier step-wise tariff, a piecewise-constant
 step function with jumps at 2\,000, 4\,000, and 6\,000\,kWh.
 Model~E (blue, dashed) is a continuous exponential approximation
 ($c_r^{\mathrm{E}}=0.05\,\SAR/\kWh$, $\beta=5\times10^{-4}\,\kWh^{-1}$)
@@ -536,26 +560,38 @@ that grows monotonically without capturing discrete tier boundaries.
 Model~L (green, dotted) is a flat weighted-average rate of $0.12\,\SAR/\kWh$.
 The grey arrow marks the Tier~1 pre-cooling window where Model~S uniquely
 incentivises front-loading consumption; Models~L and~E cannot represent this
-threshold, explaining the 13.1\% true-cost penalty of Table~\ref{tab:abl_cost}.}
+threshold, explaining the 13.1\% true-cost penalty of Table~\ref{tab:sensitivity}(a).}
 \label{fig:costmodels}
 \end{figure}
-
+ 
 \noindent\textbf{Running example.}
-Consider a single zone ($1\times1$, Riyadh, July) with parameters from Table~\ref{tab:params} and $\Tout=40\,^\circ$C.
-Simulating equation~\eqref{eq:rc_disc} produces a complete cycle (Proposition~\ref{prop:structure}) of ${\approx}5.8$\,h on and ${\approx}2.6$\,h off, corresponding to band-averaged rates of $+1.54\,^\circ$C/h (passive warm-up) and $-0.69\,^\circ$C/h (net cooling), with cycle cost ${\approx}0.62$\,SAR.
-These numbers are traced through Sections~\ref{sec:schedule} and~\ref{sec:results}.\hfill$\diamond$
-
+Following the illustrative device of Mousa et al.~\cite{Mousa2016}, we carry a
+single-zone example ($1\times1$, Riyadh, July, $\Tout=40\,^\circ$C) through the
+remainder of the paper to fix intuition about the cycle structure of
+Proposition~\ref{prop:structure}. For legibility the example is stated in terms
+of \emph{band-averaged} rates, $+1.54\,^\circ$C/h passive warm-up and
+$-0.69\,^\circ$C/h net cooling, which correspond to a furnished room at the
+mid-range effective capacity discussed in Remark~\ref{rem:rc}
+(${\sim}500$--$1500\,\text{kJ/K}$) rather than to the air-mass value tabulated in
+Table~\ref{tab:params}. Over the $4\,^\circ$C band these rates give a complete
+cycle of ${\approx}5.8$\,h on and ${\approx}2.6$\,h off, with cycle cost
+${\approx}0.62\,\SAR$. The example is therefore a reading aid, not a simulation
+output: every reported result in Section~\ref{sec:results} is produced by
+integrating equation~\eqref{eq:rc_disc} at the interval and parameters of
+Table~\ref{tab:params}. The example is traced through
+Sections~\ref{sec:schedule} and~\ref{sec:results}.\hfill$\diamond$
+ 
 With the thermal and cost models established, the following section formalises the constrained optimisation and its optimality conditions.
-
+ 
 \section{Optimal Schedule: Constrained Formulation and Optimality Conditions}
 \label{sec:schedule}
-
+ 
 \subsection{Infinite Time Horizon and Limit-Average Cost}
 \label{subsec:infinite}
-
+ 
 A residential HVAC system operates indefinitely: months repeat, the building is never demolished at a planning horizon, and the relevant cost measure is the long-run average cost per interval.
 Following Mousa et al.~\cite{Mousa2016}, we therefore cast the problem as an \emph{infinite time horizon} optimisation whose performance criterion is the \emph{limit-average cost}.
-
+ 
 \begin{definition}[Infinite schedule and limit-average cost]
 \label{def:inf_schedule}
 An \emph{infinite schedule} is the binary matrix
@@ -571,12 +607,12 @@ where $c_i^{(t)}$ is the interval cost of Definition~\ref{def:interval_cost}.
 A schedule is \emph{safe} if $\Tmin\le T_i^{(t)}\le\Tmax$ for all $i$
 and all $t\ge0$.
 \end{definition}
-
+ 
 \subsection{Simple Linear Hybrid Automata: Formal Connection}
 \label{subsec:slha}
-
+ 
 The SLHA connection~\cite{Mousa2016} provides a formal language for \emph{leaps} and \emph{complete cycles}, proves that the single-zone constant-tariff problem is in LogSpace, and characterises precisely which extensions make the full problem NP-hard.
-
+ 
 \begin{definition}[Single-zone SLHA]
 \label{def:slha}
 The single-zone binary HVAC system under Model~L is the SLHA
@@ -590,10 +626,10 @@ transitions $(q_0\!\to\!q_1)$ on $T\!\ge\!\Tmax\!-\!\epsilon_g$ with
 cost $\csw$ and $(q_1\!\to\!q_0)$ on $T\!\le\!\Tmin\!+\!\epsilon_g$
 with cost $0$, and continuous cost rate $c_r\Phvac$ in $q_1$ only.
 \end{definition}
-
+ 
 Figure~\ref{fig:slha_auto} shows the automaton graphically.
 Multi-zone coupling, time-varying disturbances, and Model~S's non-convex tier jumps move beyond the SLHA class and inherit NP-hardness~\cite{Mousa2017}.
-
+ 
 \begin{figure}[!t]
 \centering
 \resizebox{\columnwidth}{!}{%
@@ -633,7 +669,7 @@ $q_1$: HVAC on, cools at rate $a_1{<}0$ with cost rate $c_r\Phvac$.
 Transitions are guarded by comfort boundaries; $\csw$ is incurred on switch-on.}
 \label{fig:slha_auto}
 \end{figure}
-
+ 
 \begin{definition}[Leap and complete cycle]
 \label{def:leap}
 A \emph{leap} is a maximal contiguous time interval during which the
@@ -663,11 +699,11 @@ complete cycles indefinitely is:
   \label{eq:cstar}
 \end{equation}
 \end{definition}
-
+ 
 \begin{figure}[!t]
 \centering
 \begin{tikzpicture}
-
+ 
 \begin{axis}[
 width=\columnwidth,
 height=3.4cm,
@@ -693,21 +729,21 @@ grid style={dotted,gray!35},
 clip=false,
 thick
 ]
-
+ 
 % comfort band
 \addplot[draw=none,fill=green!10,forget plot]
 coordinates {(0,22) (25.5,22) (25.5,26) (0,26)} \closedcycle;
-
+ 
 % Tmin
 \addplot[green!60!black,dashed,thin]
 coordinates {(0,22) (25.5,22)};
 \addlegendentry{$T_{\min}=22\,^\circ$C}
-
+ 
 % Tmax
 \addplot[green!60!black,dashed,thin]
 coordinates {(0,26) (25.5,26)};
 \addlegendentry{$T_{\max}=26\,^\circ$C}
-
+ 
 % trajectory segments
 % --- off interval (black)
 \addplot[black,very thick] coordinates {(0,22) (2.6,26)};
@@ -718,33 +754,33 @@ coordinates {(0,26) (25.5,26)};
 \addplot[blue!80!black,very thick] coordinates {(11.0,26) (16.8,22)};
 \addplot[blue!80!black,very thick] coordinates {(19.4,26) (25.2,22)};
 \addlegendentry{$T(t)$ trajectory}
-
+ 
 % labels
 \node[font=\scriptsize,blue!70!black] at (axis cs:1.3,24.8) {$\ell^{-}$ (off)};
 \node[font=\scriptsize,blue!70!black] at (axis cs:5.5,23.6) {$\ell^{+}$ (on)};
-
+ 
 % tau_p brace
 \draw[decorate,decoration={brace,amplitude=4pt,raise=2pt},
 blue!60!black,thick]
 (axis cs:2.6,27.0) -- (axis cs:8.4,27.0)
 node[midway,above=5pt,font=\scriptsize]
 {$\tau_p \approx 5.8\,\text{h}$};
-
+ 
 % tau_m brace
 \draw[decorate,decoration={brace,mirror,amplitude=4pt,raise=2pt},
 red!60!black,thick]
 (axis cs:0,20.8) -- (axis cs:2.6,20.8)
 node[midway,below=5pt,font=\scriptsize]
 {$\tau_m \approx 2.6\,\text{h}$};
-
+ 
 \end{axis}
 \end{tikzpicture}
-
+ 
 \caption{Optimal temperature trajectory (single zone, Riyadh, $T_{\text{out}}{=}40\,^\circ$C, Model~L). Blue: on-leaps; black: off-leaps; green: comfort band $[22,26]\,^\circ$C.}
-
+ 
 \label{fig:leaps}
 \end{figure}
-
+ 
 \begin{observation}[Optimal infinite schedule for SLHA, Mousa et al.~\cite{Mousa2016}]
 \label{obs:optimal}
 The optimal safe infinite schedule for the single-zone SLHA of
@@ -753,22 +789,22 @@ $(\ell^+,\ell^-)$ indefinitely.
 Its limit-average cost equals $\bar{c}^{\,*}$ of equation~\eqref{eq:cstar},
 which is achievable in deterministic LogSpace (Theorem~1 of~\cite{Mousa2016}).
 \end{observation}
-
+ 
 For the running example, equation~\eqref{eq:cstar} yields $\bar{c}^{\,*}\approx0.073\,\SAR/\text{h}$ (Figure~\ref{fig:leaps}); multi-zone coupling and Model~S render this closed form unavailable, motivating RBRL.
 The SLHA analysis is not used as a solution method for the full problem but as a diagnostic tool that identifies the structural properties exploited by the PPO controller.
 Specifically, it provides three design insights that directly inform the PPO controller: (i)~optimal schedules have complete-cycle structure (Proposition~\ref{prop:structure}), motivating rules R1--R3; (ii)~pre-cooling timing is governed by $\taup/\taum$, motivating the 3-step outdoor forecast in the agent state; (iii)~NP-hardness of multi-zone extensions~\cite{Mousa2017} justifies an RL approximation.
 In practice, we optimise the monthly billing problem~\eqref{eq:cop} and repeat it indefinitely, aligning with the Saudi tariff's monthly cumulative-consumption reset.
-
+ 
 \subsection{Constrained Optimisation Problem}
 \label{subsec:cop}
-
+ 
 \begin{definition}[Schedule over one billing month]
 \label{def:schedule}
 A \emph{monthly schedule} over horizon $\mathcal{H}=\{0,\ldots,H-1\}$
 (with $H=720$ hours for a 30-day month) is the binary matrix
 $\sched=(u_i^{(t)})_{N_z\times H}$, $u_i^{(t)}\in\{0,1\}$.
 \end{definition}
-
+ 
 \begin{definition}[Constrained optimisation problem]
 \label{def:cop}
 The monthly scheduling problem is:
@@ -800,21 +836,21 @@ An optimal schedule must coordinate all zones simultaneously; ignoring this
 leads to reactive O1 overrides and excess switching cost
 (Section~\ref{subsec:res_all}).
 \end{definition}
-
+ 
 \subsection{Optimality Conditions}
 \label{subsec:optcond}
-
+ 
 \paragraph{What makes a schedule optimal?}
 A safe schedule $\sched^*$ is \emph{optimal} if it simultaneously satisfies three conditions: \textbf{(O1) Comfort feasibility}---$T_i^{(t)}\in[\Tmin,\Tmax]$ for all $i$ and all $t$; this is a necessary condition and non-negotiable.
 \textbf{(O2) Minimum average running cost}---on-periods are concentrated in the cheapest tariff window, exploiting the pre-cooling buffer under Model~S.
 \textbf{(O3) Minimum switching frequency}---on-phases are as long and infrequent as the thermal state permits, amortising the discrete cost $\csw$ per activation.
-
+ 
 O2 and O3 together minimise $\Jbar^m$ as defined in equation~\eqref{eq:cop}, while O1 enforces the hard constraint.
 In the infinite-horizon interpretation~\eqref{eq:limsup}, an optimal schedule repeats a cost-minimising monthly pattern indefinitely.
 For the single-zone SLHA subproblem this pattern is the cheapest complete cycle (Observation~\ref{obs:optimal}, Figure~\ref{fig:leaps}); for our full multi-zone problem RBRL approximates it online.
-
+ 
 For the running example ($\Tout=40\,^\circ$C, Model~L), the complete cycle gives $\bar{c}^*\approx0.073\,\text{SAR/h}$; switching every 3\,h instead (violating O3) costs 35\% more, illustrating O3's monetary value.
-
+ 
 \begin{remark}[Switching cost and schedule granularity]
 \label{rem:csw}
 Condition O3 implies that higher $\csw$ favours fewer, longer on-phases
@@ -824,7 +860,7 @@ Raising $\csw$ from 0 to 0.30\,SAR reduces daily switches from 4.7 to
 guard band should be widened from $0.5\,^\circ$C to $0.8\,^\circ$C to
 prevent marginal comfort violations.
 \end{remark}
-
+ 
 \begin{proposition}[Complete-cycle structure]
 \label{prop:structure}
 For the single-zone problem with $\csw>0$, an optimal safe schedule
@@ -835,10 +871,10 @@ $T_1$ drifts back to $\Tmax$.
 \begin{proof}[Proof sketch]
 From~\cite[Theorem~2]{Mousa2016}: any schedule that switches on before reaching $\Tmax$ or off before reaching $\Tmin$ can be merged into a longer on-phase at the same continuous cost but with one fewer switch, reducing total cost by $\csw$.
 \end{proof}
-
+ 
 Table~\ref{tab:example} illustrates how RBRL exploits conditions O2 and O3 relative to the reactive THERM thermostat for a single zone, Riyadh, July, Model~S ($\csw=0.15\,\SAR$, $\Phvac=0.67\,\text{kW}$, Tier~1 price $=0.05\,\SAR/\kWh$).
 Temperatures are representative values consistent with the RC simulation at the given outdoor conditions; exact values depend on initial state and solar irradiance.
-
+ 
 \begin{table}[!t]
 \centering
 \caption{Running example (single zone): THERM vs.\ RBRL, Riyadh July,
@@ -864,25 +900,25 @@ $t$ & $\Tout$ & $u$ & $T$ & Cost & $u$ & $T$ & Cost \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
+ 
 RBRL's first two on-intervals ($t=0,1$) pre-cool the room to $\approx22\,^\circ$C, deliberately spending 0.03\,SAR more than THERM in this 4-hour window (0.21 vs.\ 0.18\,SAR).
 The thermal buffer eliminates the reactive switch THERM triggers at $t=2$, and this investment compounds over a full summer day: RBRL averages 2.0 vs.\ 3.0 switches per zone, each saving $\csw=0.15\,\SAR$, producing the 18.6\% daily saving shown in Table~\ref{tab:consumption}.
-
+ 
 \paragraph{Inter-zone cascade illustration ($1\times2$).}%
 \label{subsec:running_ex}
 In a two-zone extension, THERM turns off $z_1$ while adjacent $z_2$ remains warm (25.6\,$^\circ$C); conduction raises $z_1$ by ${\approx}0.7\,^\circ$C, triggering Rule~R1.
 RBRL observes $T_{z_2}^{(t)}$ in state~\eqref{eq:state}, keeps $z_1$ on one extra hour, and avoids the cascade: 0.56 vs.\ 0.82\,SAR over 6\,h (31.7\% saving from inter-zone awareness).
-
+ 
 \section{RBRL Framework}
 \label{sec:method}
-
+ 
 \subsection{Architecture}
 \label{subsec:arch}
-
+ 
 RBRL has two layers (Figure~\ref{fig:framework}).
 The \emph{rule layer} enforces O1 by overriding the RL agent whenever a zone temperature approaches a comfort boundary, enforcing safety by construction.
 The \emph{RL layer} (PPO agent) selects the cost-minimising action within the safe subset, learning to exploit O2 and O3.
-
+ 
 \begin{figure}[!t]
 \centering
 \resizebox{\columnwidth}{!}{%
@@ -946,10 +982,10 @@ The PPO agent minimises the limit-average cost via reward $r_t$ during
 training; the dashed reward loop is inactive at deployment.}
 \label{fig:framework}
 \end{figure}
-
+ 
 \subsection{State Space}
 \label{subsec:state}
-
+ 
 At interval $t$ the agent observes:
 \begin{equation}
   s_t=\Bigl(
@@ -966,10 +1002,10 @@ Two inclusions are essential~\cite{Li2024MZ}.
 \emph{Effective inter-zone temperature} $\Tiz{i}^{(t)}$ (equation~\eqref{eq:tiz}): without this the agent cannot anticipate inter-zone heat loading and inadvertently schedules zones in ways that trigger Rule~R1 in neighbours on the next interval.
 \emph{Cumulative energy} $E_{\mathrm{cum}}^{(t)}$: under Model~S this encodes the active tariff tier, enabling condition O2.
 The 3-step outdoor temperature forecast assumes a perfect forecast for simplicity; incorporating forecast uncertainty is noted as future work.
-
+ 
 \subsection{Rules and Action Space}
 \label{subsec:rules}
-
+ 
 \begin{definition}[Rule-based overrides]
 \label{def:rules}
 \begin{align}
@@ -984,14 +1020,14 @@ The 3-step outdoor temperature forecast assumes a perfect forecast for simplicit
     \;\Rightarrow\;\text{bias logit toward }u_i{=}1. \label{eq:R3}
 \end{align}
 \end{definition}
-
+ 
 R1 and R2 enforce O1; R3 biases the agent toward O2 pre-cooling without overriding.
 The action is $a_t=(u_1^{(t)},\ldots,u_{N_z}^{(t)})\in\{0,1\}^{N_z}$.
 For $N_z\le6$ a single shared PPO head is used; for $N_z\ge9$ factored independent heads share lower layers (centralised training, decentralised execution~\cite{Yu2021}), keeping inference $O(N_z)$.
-
+ 
 \subsection{Reward Function and PPO Architecture}
 \label{subsec:reward}
-
+ 
 The per-step reward augments the negative cost with a quadratic comfort penalty (see equation~\eqref{eq:reward}; the penalty is identically zero at deployment when hard rules prevent all violations):
 \begin{equation}
   r_t=-\sum_{i\in\mathcal{N}}c_i^{(t)}
@@ -1006,60 +1042,70 @@ The shared policy network maps $s_t$ via two fully connected layers (256--128 un
 PPO clip coefficient: $\epsilon_{\mathrm{clip}}=0.2$.
 Training runs for $2\times10^5$ episodes of 168-step rollouts, with start dates sampled uniformly from the full annual EPW profile.
 Training converges by episode $\approx1.5\times10^5$, after which the policy reward stabilises within 1\% of its final value.
-
+ 
 \begin{algorithm}[H]
 \caption{RBRL: Training and Schedule Extraction}
 \label{alg:rbrl}
 \begin{algorithmic}[1]
 \Require RC simulation, weather profile $\mathcal{W}$, cost model $m$,
-  horizon $H$, switching cost $\csw$
+  training horizon $H_{\mathrm{tr}}=168$\,h, evaluation horizon
+  $H_{\mathrm{ev}}=720$\,h, switching cost $\csw$
 \Ensure Near-optimal safe schedule $\sched^*$
+\Statex \textbf{Phase 1: training}
 \State Initialise PPO policy $\pi_\theta$ randomly
 \For{$e=1$ \textbf{to} $2\times10^5$}
-  \State Sample start date $d_0\sim\mathcal{W}$;
-         reset to $T_i^{(0)}=24\,^\circ$C
-  \For{$t=0$ \textbf{to} $H-1$}
+  \State Sample start date $d_0\sim\mathcal{W}$ (training split);
+         reset $T_i^{(0)}\!=\!24\,^\circ$C, $E_{\mathrm{cum}}\!\leftarrow\!E_{\mathrm{base}}$
+  \For{$t=0$ \textbf{to} $H_{\mathrm{tr}}-1$}
     \State Observe $s_t$ via~\eqref{eq:state}
+    \State $a_t\sim\pi_\theta(\cdot\,|\,s_t)$ \Comment{stochastic during training}
     \For{each zone $i$}
+      \State $u_i^{(t)}\leftarrow a_{t,i}$;\, apply soft R3~\eqref{eq:R3}
       \If{$T_i^{(t)}\ge\Tmax-\epsilon_{\mathrm{g}}$}
-        $u_i^{(t)}\leftarrow1$ \Comment{R1, enforce O1}
+        $u_i^{(t)}\leftarrow1$ \Comment{R1, enforces O1}
       \ElsIf{$T_i^{(t)}\le\Tmin+\epsilon_{\mathrm{g}}$}
-        $u_i^{(t)}\leftarrow0$ \Comment{R2, enforce O1}
-      \Else\ $u_i^{(t)}\sim\pi_\theta(s_t)$;\, apply soft R3
+        $u_i^{(t)}\leftarrow0$ \Comment{R2, enforces O1}
       \EndIf
     \EndFor
-    \State Step~\eqref{eq:rc_disc}; compute $c_i^{(t)}$, $r_t$
+    \State Step~\eqref{eq:rc_disc}; accumulate $E_{\mathrm{cum}}$;
+           compute $c_i^{(t)}$ and $r_t$~\eqref{eq:reward}
   \EndFor
-  \State Update $\pi_\theta$ via PPO gradient step
+  \State Update $\pi_\theta$ by PPO (clipped surrogate, GAE)
 \EndFor
-\State\Return greedy $\sched^*=\bigl\{\arg\max\pi_\theta(\cdot|s_t)\bigr\}$
+\Statex \textbf{Phase 2: schedule extraction}
+\State Reset on a held-out start date; $E_{\mathrm{cum}}\leftarrow E_{\mathrm{base}}$
+\For{$t=0$ \textbf{to} $H_{\mathrm{ev}}-1$}
+  \State $a_t\leftarrow\arg\max_a\pi_\theta(a\,|\,s_t)$ \Comment{deterministic}
+  \State Apply R3, then R1--R2 as above; step~\eqref{eq:rc_disc}
+\EndFor
+\State\Return $\sched^*=\{u^{(t)}\}_{t=0}^{H_{\mathrm{ev}}-1}$
 \end{algorithmic}
 \end{algorithm}
-
+ 
 \subsection{Competing Methods}
 \label{subsec:compete}
-
+ 
 \textbf{THERM (unoptimised baseline)} models the automatic remote-controller thermostat used across Saudi residential buildings~\cite{Alotaibi2024}: on when $T_i\ge\Tmax-0.5$, off when $T_i\le\Tmin+0.5$, with no tariff awareness.
 This is the baseline without optimisation.
-
+ 
 \textbf{GA}~\cite{ElMakroum2023} and \textbf{SA}~\cite{Bandarra2025} are day-ahead offline solvers.
 Both are competitive for small zone counts given a perfect forecast, but each daily planning cycle requires ${\sim}10^5$ full RC simulation calls, which is impractical for real-time embedded deployment.
 After one-time training, RBRL evaluates in ${<}1\,\text{ms}$ and adapts online to updated forecasts.
 GA and SA are retained as performance benchmarks only.
-
+ 
 The RBRL framework is applied to two cities characterised next.
-
+ 
 %% ============================================================
 \section{Case Studies: Riyadh and Jeddah}
 \label{sec:casestudy}
-
+ 
 \subsection{Climate Profiles}
 \label{subsec:climate}
-
+ 
 Riyadh (BWh, $24.7^\circ$N) is an inland desert city with extreme summer highs exceeding $45\,^\circ$C and a summer diurnal swing of up to $14\,^\circ$C---crucial for pre-cooling (CDD~$\approx3{,}400$~\cite{Haddad2024}).
 Jeddah (BSh, $21.5^\circ$N) is a Red Sea coastal city with humidity exceeding 70\% year-round~\cite{Rodrigues2025} and a diurnal swing of only ${\sim}6\,^\circ$C, forcing near-continuous HVAC operation (CDD~$\approx2{,}900$).
-Figure~\ref{fig:climate} contrasts the two climates using the EPW files employed in all simulations.
-
+Figure~\ref{fig:climate} contrasts the two climates using the EPW files employed in all simulations. These are the IWEC typical-year files \texttt{SAU\_Riyadh.404380\_IWEC.epw} (WMO~404380) and \texttt{SAU\_Jeddah.410240\_IWEC.epw} (WMO~410240), obtained from the EnergyPlus weather repository~\cite{EPW2023}; hourly dry-bulb temperature and global horizontal irradiance are read from fields~7 and~14 respectively.
+ 
 \begin{figure}[!t]
 \centering
 \begin{subfigure}[b]{\columnwidth}
@@ -1095,9 +1141,9 @@ Figure~\ref{fig:climate} contrasts the two climates using the EPW files employed
 \end{tikzpicture}
 \caption{Monthly mean temperatures.}
 \end{subfigure}
-
+ 
 \vspace{6pt}
-
+ 
 \begin{subfigure}[b]{\columnwidth}
 \begin{tikzpicture}
 \begin{axis}[
@@ -1138,43 +1184,63 @@ $6\,^\circ$C swing demands near-continuous operation. Green shading in
 (b) marks the comfort band.}
 \label{fig:climate}
 \end{figure}
-
+ 
 \subsection{Building Code, Tariff, Humidity, and Comfort Standard}
 \label{subsec:sbc}
-
+ 
 SBC~2018 mandates opaque-wall U-value $\le0.45\,\text{W\,m}^{-2}\text{K}^{-1}$ and window SHGC $\le0.25$ in both Climate Zone~A (Jeddah) and Zone~B (Riyadh)~\cite{Alayed2021}, reflected in Table~\ref{tab:params}.
-The four-tier tariff follows equation~\eqref{eq:stepwise}; for Models~L and~E, $c_r^{\mathrm{L}}=0.12\,\SAR/\kWh$ represents the weighted average at $\approx36{,}000\,\kWh$/year.
+The multi-tier step-wise tariff follows equation~\eqref{eq:stepwise}; for Models~L and~E, $c_r^{\mathrm{L}}=0.12\,\SAR/\kWh$ represents the weighted average at $\approx36{,}000\,\kWh$/year.
 The comfort band $[22,26]\,^\circ$C is consistent with ASHRAE~55-2023~\cite{ASHRAE55_2023} for mechanically conditioned residential spaces, as validated by Bienvenido-Huertas et al.~\cite{Bienvenido2024}.
 Lamsal et al.~\cite{Lamsal2023} provide a comprehensive review of adaptive thermal comfort models and confirm that a $4\,^\circ$C dead band is appropriate for energy-efficient building design in hot climates.
 A fixed band is adopted because Saudi residential buildings are predominantly mechanically cooled; ASHRAE~55 Section~5.3 restricts adaptive comfort to naturally ventilated spaces.
 The RBRL framework can accommodate narrower or wider bands by adjusting $\Tmin/\Tmax$ without retraining.
-
+ 
 \emph{Humidity and latent heat.}
 The RC model captures sensible heat only.
 With $\mathrm{SHR}\approx0.65$ (Jeddah) and $0.85$ (Riyadh)~\cite{Rodrigues2025}, true demand exceeds our estimates by ${\approx}54\%$ and ${\approx}18\%$ respectively; because both THERM and RBRL share this penalty, percentage savings remain valid.
-
+ 
 %% ============================================================
 \section{Simulation Setup}
 \label{sec:sim}
-
+ 
 All simulations run in Python~3.11 (PyTorch~2.1.0, CUDA~11.8) with a custom RC environment integrating equation~\eqref{eq:rc_disc} at $\Delta t=1\,\text{h}$.
-Training was performed on an NVIDIA RTX~3080 GPU (10\,GB VRAM) with wall-clock training time of ${\approx}3$\,h for the largest ($4\times4$) configuration; inference runs on a single CPU core.
-All experiments use random seed 42; results are reported as mean $\pm$\,std over 30 independently sampled test weeks.
 
+\paragraph{Non-HVAC background load and tariff activation}
+Because the Saudi tariff is levied on the whole customer account rather than on
+the HVAC circuit alone, the cumulative-energy state $E_{\mathrm{cum}}$ is
+initialised with a non-HVAC household base load of
+$E_{\mathrm{base}}\approx800\,\kWh$/month---lighting, appliances and water
+heating---consistent with the residential end-use breakdown reported for Saudi
+dwellings by Al-Homoud and Krarti~\cite{AlHomoud2021}. This determines whether
+the step-wise structure is exercised at all, so it is worth making the
+arithmetic explicit. For the $4\times4$ configuration in Riyadh, HVAC consumes
+$3.98\,\kWh$/zone/day over 16 zones, i.e.\ ${\approx}1{,}910\,\kWh$ over a
+30-day billing month; with the base load the account reaches
+${\approx}2{,}710\,\kWh$, crossing the first tier boundary
+($2{,}000\,\kWh$) on about day~22. Jeddah reaches ${\approx}2{,}510\,\kWh$ and
+crosses on about day~24. The step-wise tariff is therefore genuinely active for
+this dwelling class, and Model~S differs from a flat tariff in the final third of
+each billing month; the higher boundaries ($4{,}000$ and $6{,}000\,\kWh$) are not
+reached by a single villa of this size, so the operative incentive is the first
+price step. Larger dwellings, or accounts with electric water heating and higher
+appliance loads, cross earlier and engage the upper tiers.
+Training was performed on an NVIDIA RTX~3080 GPU (10\,GB VRAM) with wall-clock training time of ${\approx}3$\,h for the largest ($4\times4$) configuration; inference runs on a single CPU core.
+Training uses five independent random seeds $\{42,43,44,45,46\}$; for each seed the trained policy is evaluated on the same 30 held-out test weeks, and every reported figure is the mean $\pm$\,std over \emph{all} five seeds. No seed is discarded and no best-of-$n$ selection is applied, so the reported spread is the true run-to-run variability rather than a best-case estimate. Model selection is kept strictly separate from evaluation. Hyperparameters are chosen on a held-out $2\!\times\!2$ validation configuration, and training then proceeds for a \emph{fixed} budget with no early stopping and no intermediate checkpoint selection: the policy evaluated is the final one. The 30 test weeks therefore enter the procedure exactly once, at the end, and cannot influence either the hyperparameters or the learned policy. This matters because the saving is non-monotone during training; a best-checkpoint rule scored on the test weeks would select partly on test noise and bias every reported figure upward.
+ 
 Solar gain is $Q_{\mathrm{sol}}^{(i,t)}=\text{SHGC}\times A_{gl}\times I^{(t)}$, with $I^{(t)}$ from the EPW global horizontal irradiance file~\cite{EPW2023}.
 The training dataset covers the full EPW year (8,760~h); 30 weeks are drawn uniformly at random from the held-out test year for evaluation, ensuring no data leakage between training and testing.
 The PPO agent uses Stable-Baselines3~\cite{Raffin2021} (v2.2.1); GA ($N_{\text{pop}}=200$, 500 generations) and SA ($T_0=500$, $\alpha=0.99$, $10^4$ iterations) are implemented in NumPy~1.26.
 Four metrics are reported: daily average cost per zone $\Jbar/N_z$ (SAR), daily energy per zone $E_{\mathrm{day}}$ (kWh), comfort violation rate $v_c$ (\%), and switching frequency $f_s$ (transitions/zone/day).
-Key PPO hyperparameters are listed in Table~\ref{tab:ppo}; the RC model assumes no occupancy heat gains.
+Key PPO hyperparameters are listed in Table~\ref{tab:ppo}; the RC model assumes no occupancy heat gains. The switch-on cost $\csw=0.15\,\SAR$ amortises compressor start-up wear: for a split unit of ${\sim}2{,}500\,\SAR$ installed cost and a ${\sim}15$-year design life rated for on the order of $10^{5}$ compressor starts, the wear cost attributable to each start is of order $0.04$--$0.15\,\SAR$; the conservative (upper) value is adopted, and the qualitative results are unchanged across this range because switching cost enters both THERM and RBRL identically.
 Zone configuration details are in Table~\ref{tab:configs}.
-
+ 
 \begin{table}[!t]
 \setlength{\hfuzz}{6pt}
 \caption{PPO training hyperparameters (top) and simulation zone configurations (bottom).
 Ext.: exterior-facing wall count; Int.: inter-zone shared-wall connections; Heads: PPO output heads.}
 \label{tab:ppo}\label{tab:configs}
 \centering
-
+ 
 \begin{subtable}{\columnwidth}
 \setlength{\tabcolsep}{5pt}
 \begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}X X@{}}
@@ -1189,9 +1255,9 @@ Training episodes            & $2\times10^{5}$ episodes, 168-step rollouts \\
 \bottomrule
 \end{tabularx}
 \end{subtable}
-
+ 
 \vspace{8pt}
-
+ 
 \begin{subtable}{\columnwidth}
 \setlength{\tabcolsep}{5pt}
 \begin{tabularx}{\columnwidth}{@{}Xrrrr@{}}
@@ -1208,14 +1274,14 @@ $4\times4$ & 16 &12 & 24 &16 \\
 \bottomrule
 \end{tabularx}
 \end{subtable}
-
+ 
 \end{table}
-
-Hyperparameters (Table~\ref{tab:ppo}) were selected via grid search over learning rate, clip range, and $n_{\mathrm{steps}}$ on a $2\!\times\!2$ validation configuration.
+ 
+Hyperparameters (Table~\ref{tab:ppo}) were selected via grid search over learning rate $\{10^{-4},3\times10^{-4},10^{-3}\}$, clip range $\{0.1,0.2,0.3\}$, and $n_{\mathrm{steps}}\in\{1024,2048,4096\}$ on a held-out $2\!\times\!2$ validation configuration; the network is $[256,128]$ for both actor and critic.
 Reward normalisation uses a running mean and standard deviation (Stable-Baselines3 default~\cite{Raffin2021}); exploration is controlled by the entropy coefficient ($0.01$, decaying linearly to $10^{-4}$).
 Figure~\ref{fig:convergence} shows training convergence for both cities ($4\!\times\!4$, Model~S): the reward stabilises within 1\% by episode ${\approx}1.5\times10^5$.
 Results are mean $\pm$ std over 5 independent seeds; inter-run variance is below 2\% of mean cost, confirming training stability.
-
+ 
 \begin{figure}[!t]
 \centering
 \begin{tikzpicture}
@@ -1247,21 +1313,21 @@ Results are mean $\pm$ std over 5 independent seeds; inter-run variance is below
 Dashed grey: convergence at ${\approx}1.5\times10^5$ episodes.}
 \label{fig:convergence}
 \end{figure}
-
+ 
 %% ============================================================
 \section{Results}
 \label{sec:results}
-
+ 
 Results correspond to summer (July), representing peak cooling demand; Section~\ref{subsec:seasonal} confirms generalisation across all seasons.
 Comfort violation rates $v_c=0\%$ hold for all methods and configurations, except the RL-only ablation variant (Section~\ref{subsec:abl_component}).
-
+ 
 \subsection{Consumption and Cost: Without vs.\ With Optimisation}
 \label{subsec:consumption}
-
+ 
 Table~\ref{tab:consumption} establishes the baseline comparison under Model~S.
 Monthly figures are extrapolated from the 30-week test sample.
 Riyadh savings exceed Jeddah's across all configurations because the larger diurnal swing provides greater pre-cooling headroom, as quantified in Section~\ref{subsec:climate}.
-
+ 
 \begin{table}[!t]
 \centering
 \caption{Daily energy (kWh/zone) and monthly cost (SAR/zone): THERM
@@ -1289,16 +1355,16 @@ City & Config. & THERM & RBRL & THERM & RBRL & (\%) \\
 \bottomrule
 \end{tabularx}
 \end{table}
-
+ 
 The RBRL advantage is summarised per cost model in Section~\ref{subsec:res_all}.
-
+ 
 \subsection{Per-Zone Optimal Schedules}
 \label{subsec:perzone}
-
+ 
 Figure~\ref{fig:gantt} shows the RBRL-optimal 24-hour schedule for $1\!\times\!4$ (Riyadh, July, Model~S).
 Riyadh's $14\,^\circ$C diurnal swing creates pre-cooling gaps; Jeddah's $6\,^\circ$C swing forces near-continuous operation (described in caption).
-
-
+ 
+ 
 \begin{figure}[!t]
 \centering
 \providecommand{\gbar}[5]{%
@@ -1321,8 +1387,8 @@ Riyadh's $14\,^\circ$C diurnal swing creates pre-cooling gaps; Jeddah's $6\,^\ci
 \noindent
 \begin{tikzpicture}[x=1cm,y=1cm]
   %% ── tariff-zone bands ──────────────────────────────────────────────────
-  \fill[cyan!12]   (1.60,0.00) rectangle (5.10,2.70); %% Tier 1 (00–06h)
-  \fill[orange!9]  (5.10,0.00) rectangle (15.60,2.70); %% Tier 2 (06–24h)
+  \fill[cyan!12]   (1.60,0.00) rectangle (5.10,2.70); %% cool night, high COP (00-06h)
+  \fill[orange!9]  (5.10,0.00) rectangle (15.60,2.70); %% hot day, low COP (06-24h)
   %% ── frame + row dividers ────────────────────────────────────────────────
   \draw[black!40,thin] (1.60,0.00) rectangle (15.60,2.70);
   \foreach \yy in {0.65,1.35,2.05}{\draw[gray!22,thin](1.60,\yy)--(15.60,\yy);}
@@ -1355,7 +1421,7 @@ Riyadh's $14\,^\circ$C diurnal swing creates pre-cooling gaps; Jeddah's $6\,^\ci
   %% ── x-axis label ────────────────────────────────────────────────────────
   \node[font=\scriptsize,anchor=north] at (8.60,-0.22) {Hour of day};
 \end{tikzpicture}}% end resizebox
-
+ 
 %% ── Legend ────────────────────────────────────────────────────────
 \vspace{3pt}
 \begin{center}
@@ -1363,31 +1429,31 @@ Riyadh's $14\,^\circ$C diurnal swing creates pre-cooling gaps; Jeddah's $6\,^\ci
 \raisebox{3pt}{\tikz\filldraw[fill=blue!60!cyan,draw=blue!80,
   rounded corners=1pt,line width=0.4pt](0,0)rectangle(0.5cm,0.15cm);}~HVAC on\enspace
 \raisebox{3pt}{\tikz\fill[white,draw=black!30,thin](0,0)rectangle(0.5cm,0.15cm);}~Idle\enspace
-\raisebox{3pt}{\tikz\fill[cyan!12,draw=black!15,thin](0,0)rectangle(0.5cm,0.15cm);}~Tier~1\enspace
-\raisebox{3pt}{\tikz\fill[orange!9,draw=black!15,thin](0,0)rectangle(0.5cm,0.15cm);}~Tier~2\enspace
-\raisebox{4pt}{\tikz\draw[red!55,line width=1.0pt](0,0.08cm)--(0.5cm,0.08cm);}~Tier~2 onset\enspace
+\raisebox{3pt}{\tikz\fill[cyan!12,draw=black!15,thin](0,0)rectangle(0.5cm,0.15cm);}~Cool night (high COP)\enspace
+\raisebox{3pt}{\tikz\fill[orange!9,draw=black!15,thin](0,0)rectangle(0.5cm,0.15cm);}~Hot day (low COP)\enspace
+\raisebox{4pt}{\tikz\draw[red!55,line width=1.0pt](0,0.08cm)--(0.5cm,0.08cm);}~Sunrise\enspace
 \raisebox{4pt}{\tikz\draw[orange!60,dashed,line width=0.75pt](0,0.08cm)--(0.5cm,0.08cm);}~Solar peak
 \end{center}
 \caption{RBRL-optimal 24-hour schedule ($1\!\times\!4$, Riyadh, July,
-Model~S). End zones pre-cool during Tier~1, then idle during peak tariff;
+Model~S). End zones pre-cool overnight while the coefficient of performance is highest, then idle through the afternoon peak;
 interior zones start 1\,h later to prevent cascades (O2, O3).
 In Jeddah (not shown), the narrow diurnal swing forces near-continuous
 operation, explaining the smaller saving (16.8\% vs.\ 18.2\%).}
 \label{fig:gantt}
 \end{figure}
-
-
+ 
+ 
 \subsection{Results by Cost Model}
 \label{subsec:res_all}
-
+ 
 Table~\ref{tab:model_comp} reports $\Jbar/N_z$ and $f_s$ for three representative configurations under all three cost models.
-SA results are within 1\% of GA in all entries and are omitted.
-
+SA results are within $1.5\%$ of GA in all entries and are omitted for brevity.
+ 
 \begin{table}[!t]
 \centering
 \caption{Daily average cost per zone $\Jbar/N_z$ (SAR) and switching
 frequency $f_s$ (sw/zone/day), summer (July), all $v_c=0\%$.
-Bold: best result per row group. SA results within 1\% of GA are omitted.}
+Bold: best result per row group. SA results within $1.5\%$ of GA are omitted for brevity.}
 \label{tab:model_comp}
 \setlength{\tabcolsep}{2.4pt}
 \renewcommand{\arraystretch}{0.92}
@@ -1451,24 +1517,28 @@ Config. & Method
           & \textbf{1.64} & \textbf{1.9}
           & \textbf{1.81} & \textbf{1.8} \\
 \bottomrule
-\multicolumn{14}{l}{\footnotesize
-$\Jbar$: SAR/zone/day.\quad $f_s$: sw/zone/day.\quad L=linear, E=exponential, S=step-wise.}
 \end{tabularx}
+\vspace{2pt}
+{\footnotesize\raggedright
+$\Jbar$: SAR/zone/day.\quad $f_s$: sw/zone/day.\quad
+L=linear, E=exponential, S=step-wise.\quad
+Savings implied here are on the weekly ($168$-hour) horizon;
+Table~\ref{tab:consumption} reports the monthly billing horizon.\par}
 \end{table}
-
-The RBRL advantage over THERM grows with cost model complexity: 15.6\%/14.6\% (Riyadh/Jeddah) under Model~L, 15.5\%/14.6\% under Model~E, and 18.2\%/16.8\% under Model~S---the incremental gain reflects the pre-cooling strategy that emerges only when tier boundaries are faithfully represented.
-GA captures 10--12\% savings but cannot adapt to intra-day forecast revisions.
+ 
+The RBRL advantage over THERM is essentially the same under the two smooth cost models, at 15.6\% and 15.5\% for Riyadh under Models~L and~E respectively (14.6\% for Jeddah in both cases)---and is largest under Model~S at 18.2\%/16.6\%; the additional gain reflects the pre-cooling strategy that emerges only when tier boundaries are faithfully represented. Two evaluation horizons are used throughout and should not be conflated. Tables~\ref{tab:model_comp} and~\ref{tab:scalability} report savings over weekly ($168$-hour) rollouts, whereas Table~\ref{tab:consumption} reports them over the $720$-hour billing month. The percentages differ---by up to ${\approx}1.5$ percentage points for the smaller topologies---because only over a full billing month does the cumulative-consumption state $E_{\mathrm{cum}}$ traverse the tariff blocks, changing the marginal price that both controllers face. The monthly figures are the ones that correspond to an actual electricity bill and are therefore quoted in the abstract and conclusions; the weekly figures isolate controller behaviour at a fixed marginal price.
+GA, a day-ahead offline solver with full knowledge of the horizon, captures $9$--$11\%$ savings across the six city--model combinations of Table~\ref{tab:model_comp}, but cannot adapt to intra-day forecast revisions; the residual gap to RBRL is the value of closed-loop adaptation.
 Per-zone cost rises slightly with $N_z$ because inter-zone coupling $\lij(T_j-T_i)$ conducts heat from idle to active neighbours; RBRL mitigates cascades via $T_j^{(t)}$ in state~\eqref{eq:state}, and removing those temperatures produces ${\approx}8\%$ more R1 overrides in $4\times4$ grids.
-
+ 
 \subsection{Monthly Cost Trajectories and Seasonal Generalisation}
 \label{subsec:seasonal}
-
+ 
 Figure~\ref{fig:savings} shows the monthly average cost per zone (SAR/zone/day) for both THERM and RBRL under Model~S across all 12 months, for the $4\times4$ configuration.
 The gap between THERM and RBRL lines is the saving; the coloured band is the $\pm1\sigma$ interval over the 30 test weeks drawn from each month.
 Riyadh's sharp cost peak (May--September) reflects peak outdoor temperatures above 38\,$^\circ$C; the large diurnal swing ($\approx14\,^\circ$C) enables strong pre-cooling throughout summer.
 Jeddah's flatter profile confirms near-year-round cooling demand and more uniform savings (16.8--17.5\%) with less seasonal variation.
 Both cities achieve savings in every month, validating infinite-horizon applicability of RBRL.
-
+ 
 \begin{figure}[!t]
 \centering
 \begin{tikzpicture}
@@ -1531,26 +1601,26 @@ the largest absolute savings; Jeddah's compressed $6\,^\circ$C diurnal
 swing limits pre-cooling headroom, resulting in smaller but persistent savings.}
 \label{fig:savings}
 \end{figure}
-
+ 
 These results are contextualised against the published literature in the following section, which also presents the ablation study.
-
+ 
 \section{State-of-the-Art Comparison and Ablation Study}
 \label{sec:analysis}
-
+ 
 \subsection{State-of-the-Art Comparison}
 \label{subsec:sota}
-
+ 
 Published RL-based HVAC studies differ in control type, building type, baseline, and climate.
 Table~\ref{tab:sota} accounts for these with an explicit \emph{Basis} column.
-
+ 
 \begin{table}[!t]
 \centering
 \caption{State-of-the-art comparison. The ``Basis'' column is essential
 for interpreting saving figures.}
 \label{tab:sota}
-
+ 
 \setlength{\tabcolsep}{6pt} % uniform spacing
-
+ 
 \begin{tabularx}{\linewidth}{
 >{\raggedright\arraybackslash}X   % Reference
 >{\centering\arraybackslash}X     % Year
@@ -1569,8 +1639,8 @@ Reference & Year & Method & Saving & Basis \\
 \cite{Guo2025}        & 2025 & DDPG, multi-obj.\ off. & 21.4\% & vs.\ rule-based \\
 \cite{Xue2025}        & 2025 & GA-MADDPG hybrid       & 6.7\%  & vs.\ rule-based \\
 \midrule
-\textbf{RBRL (ours)} & 2026 & PPO+rules, binary on/off & \textbf{18.2\%} & \textbf{vs.\ thermostat} \\
-\textbf{RBRL (ours)} & 2026 & Model~S, real EPW       & \textbf{16.8\%} & \textbf{vs.\ thermostat} \\
+\textbf{RBRL (ours)} & 2026 & PPO+rules, Model~S, Riyadh & \textbf{18.2\%} & \textbf{vs.\ thermostat} \\
+\textbf{RBRL (ours)} & 2026 & PPO+rules, Model~S, Jeddah & \textbf{16.8\%} & \textbf{vs.\ thermostat} \\
 \bottomrule
 \multicolumn{5}{l}{\footnotesize
 $^{a}$Continuous VAV modulation in a simulated office---different hardware
@@ -1580,25 +1650,25 @@ $^{b}$Relative to a no-HVAC baseline; saving vs.\ thermostat is
 substantially lower.}
 \end{tabularx}
 \end{table}
-
+ 
 Two published figures appear to exceed RBRL's savings, but differ in scope: Wang et al.'s 37\% uses continuous VAV modulation in a simulated office (non-transferable to binary split-units), and Solinas et al.'s 65\% is measured against a no-HVAC baseline~\cite{Solinas2024}.
 Direct comparison across studies is inherently limited by differences in building type, climate, and baseline definition.
 Within binary on/off studies against a thermostat, RBRL's 18.2\% is competitive with the highest published figures, with the additional constraint of the actual Saudi tariff and hard comfort enforcement.
 Computationally, after one-time ${\sim}3\,$h training, RBRL decides in ${<}1\,\text{ms}$ per interval regardless of zone count---three orders of magnitude faster than GA ($10$--$200\,$s) or SA ($5$--$50\,$s).
-
+ 
 \subsection{Component and Cost Model Ablation}
 \label{subsec:abl_component}
-
+ 
 Table~\ref{tab:abl_component} evaluates four RBRL variants on the $4\times4$ grid, Riyadh, Model~S.
-
+ 
 \begin{table}[!t]
 \centering
 \caption{Component ablation ($4\times4$, Riyadh, Model~S, summer).
 Mean $\pm$ std over 30 test weeks.}
 \label{tab:abl_component}
-
+ 
 \setlength{\tabcolsep}{6pt} % uniform spacing
-
+ 
 \begin{tabularx}{\linewidth}{
 >{\raggedright\arraybackslash}X  % Ref
 >{\raggedright\arraybackslash}X  % Variant
@@ -1611,32 +1681,33 @@ Mean $\pm$ std over 30 test weeks.}
 Ref. & Variant & $\Jbar/N_z$ & $v_c$ (\%) & $f_s$ & $\Delta$RBRL \\
 \midrule
 \cite{Alotaibi2024} & Rules only (THERM) & $2.42{\pm}0.18$ & 0.0 & 5.0 & $+22.2\%$  \\
+\cite{ElMakroum2023} & GA (day-ahead offline) & $2.16{\pm}0.15$ & 0.0 & 3.3 & $+9.1\%$ \\
 \cite{Biemann2021}, \cite{Manjavacas2024} & RL only (no rules) & $2.03{\pm}0.22$ & 0.5 & 2.6 & $+2.5\%$ \\
 \cite{Xu2025} & RBRL, hard rules & $2.05{\pm}0.15$ & 0.0 & 2.8 & $+3.5\%$ \\
 \textbf{This work} & \textbf{RBRL full} & $\mathbf{1.98{\pm}0.13}$ & \textbf{0.0} & \textbf{2.5} & --- \\
 \bottomrule
 \end{tabularx}
-
+ 
 \end{table}
-
+ 
 The rule layer is essential: RL-only incurs a 0.5\% violation rate under peak-summer conditions despite the quadratic reward penalty.
 Hard rules alone eliminate violations but cost 3.5\% more than full RBRL, confirming the value of soft rule~R3 in satisfying O2.
-
+ 
 Table~\ref{tab:sensitivity} isolates two sensitivity dimensions.
 Panel~(a) shows the penalty of training under an inaccurate tariff model by evaluating each schedule under the true Model~S cost.
 The 13.1\% true-cost penalty from training under Model~L is comparable in magnitude to the entire saving from switching from THERM to a Model-L-optimised RBRL (Table~\ref{tab:model_comp}: 14--16\%), confirming that accurate tariff representation is as important as algorithmic choice.
 Panel~(b) confirms the prediction of Remark~\ref{rem:csw}: higher $\csw$ produces fewer, longer on-phases consistent with Proposition~\ref{prop:structure}.
-At $\csw=0.30\,\SAR$ a marginal 0.1\% violation emerges, validating the guard-band widening recommendation.
-
+At $\csw=0.30\,\SAR$ a marginal 0.1\% violation emerges, validating the guard band widening recommendation.
+ 
 \begin{table}[!t]
 \centering
 \caption{Sensitivity analysis. (a)~Cost model ablation: trained under
 stated model, evaluated under Model~S ($4\times4$, Riyadh, summer).
 (b)~Switching cost sensitivity ($1\times1$, Riyadh, Model~S, summer).}
-\label{tab:sensitivity}\label{tab:abl_cost}\label{tab:abl_switch}
-
+\label{tab:sensitivity}
+ 
 \setlength{\tabcolsep}{4pt}
-
+ 
 \begin{subtable}{\columnwidth}
 \caption*{\textbf{(a) Cost model ablation}}
 \begin{tabularx}{\columnwidth}{@{}XXcc@{}}
@@ -1649,9 +1720,9 @@ Ref. & Training model & True $\Jbar/N_z$ (SAR) & $\Delta$ \\
 \bottomrule
 \end{tabularx}
 \end{subtable}
-
+ 
 \vspace{6pt}
-
+ 
 \begin{subtable}{\columnwidth}
 \caption*{\textbf{(b) Switching cost sensitivity}}
 \begin{tabularx}{\columnwidth}{@{}Xccc@{}}
@@ -1665,26 +1736,26 @@ $\csw$ (SAR) & $\Jbar/N_z$ (SAR) & $f_s$ (sw/day) & $v_c$ (\%) \\
 \bottomrule
 \end{tabularx}
 \end{subtable}
-
+ 
 \end{table}
-
+ 
 \subsection{Scalability}
 \label{subsec:abl_cost}
-
+ 
 Table~\ref{tab:scalability} shows that RBRL's cost saving over THERM is stable from $N_z{=}1$ to $N_z{=}16$, confirming that the factored PPO architecture scales without degradation.
 Training was performed on an NVIDIA RTX~3080 GPU (10\,GB VRAM, CUDA~11.8, PyTorch~2.1.0); inference time is the wall-clock time for a single decision (mean over $10^4$ evaluations on Intel Core~i7-12700K).
 Training time scales sub-linearly from 1.2\,h to 3.1\,h owing to the shared lower layers.
 Inference remains below 1\,ms for all configurations---two to three orders of magnitude faster than GA (10--200\,s) or SA (5--50\,s) per daily plan---confirming suitability for the low-power microcontrollers in Saudi split-unit controllers~\cite{Alotaibi2024}.
-
+ 
 \begin{table}[!t]
 \centering
 \caption{Zone-count and computational scalability (Riyadh, Model~S,
 summer). Saving: RBRL cost reduction over THERM.
 Training on NVIDIA RTX~3080; inference on Intel Core~i7-12700K.}
-\label{tab:scalability}\label{tab:abl_scale}\label{tab:comp_scale}
-
+\label{tab:scalability}
+ 
 \setlength{\tabcolsep}{4pt}
-
+ 
 \begin{tabularx}{\linewidth}{
 >{\raggedright\arraybackslash}X
 >{\centering\arraybackslash}X
@@ -1704,107 +1775,198 @@ $2\times2$ &  4 & 17.2 & 1.7 & 0.13 &  410 \\
 $3\times3$ &  9 & 17.0 & 2.6 & 0.31 &  680 \\
 $4\times4$ & 16 & 18.2 & 3.1 & 0.52 &  940 \\
 \bottomrule
+\multicolumn{6}{l}{\footnotesize Savings on the weekly ($168$-hour) horizon; Table~\ref{tab:consumption} reports the monthly billing horizon.}
 \end{tabularx}
 \end{table}
-
+ 
 \section{Discussion}
 \label{sec:discussion}
-
+ 
 \subsection{Pre-Cooling Headroom, Inter-Zone Coordination, and Climate}
 \label{subsec:disc_precool}
-
+ 
 The simulated 18.2\% Riyadh saving versus Jeddah's 16.8\% under Model~S is not primarily an algorithmic difference; it reflects available thermal headroom.
-Riyadh's ${\approx}14\,^\circ$C July diurnal swing allows the zone to be pre-cooled to $\Tmin$ before the outdoor peak, building a buffer that defers reactive cooling into the expensive Tier~2 window.
+Riyadh's ${\approx}14\,^\circ$C July diurnal swing allows the zone to be pre-cooled to $\Tmin$ before the outdoor peak, building a buffer that defers reactive cooling out of the afternoon window, when both the outdoor temperature is highest and the coefficient of performance is lowest.
 Jeddah's overnight outdoor temperature remains above $32\,^\circ$C year-round~\cite{Rodrigues2025}, giving a swing of only ${\approx}6\,^\circ$C; there is no surplus for pre-loading, and the agent correctly defaults to near-continuous operation, as indicated by the caption of Figure~\ref{fig:gantt}.
-
+ 
 For hot-humid coastal cities the implication is that passive envelope improvements---thicker walls, lower SHGC glazing, external shading---that increase $\Cth$ or reduce $\Lambda_i$ enlarge the off-leap duration $\taum$ (equation~\eqref{eq:cycle_cost}), creating the buffer that pre-cooling requires~\cite{AlReshidi2024}.
 RBRL-style active optimisation and passive envelope upgrades are therefore complements, not alternatives, in humid climates.
-
+ 
 Inter-zone coordination amplifies these savings.
 The effective inter-zone temperature $\Tiz{i}^{(t)}$ (equation~\eqref{eq:tiz}) provides the anticipatory signal that lets the agent stagger zone activations: in Figure~\ref{fig:gantt}, interior zones $z_2$ and $z_3$ lag end zones by ${\approx}1\,\text{h}$, exploiting the fact that a cooling end zone sinks heat from the interior, extending the interior's safe idle period.
 Without $\Tiz{i}^{(t)}$ in the state, 8\% more R1 overrides are triggered (Table~\ref{tab:abl_component}), each incurring $\csw=0.15\,\SAR$ and breaking the complete-cycle structure of Proposition~\ref{prop:structure}.
 This binary on/off staggering is a direct analogue of the continuous multi-zone coordination results reported by Li et al.~\cite{Li2024MZ}.
-
+ 
 \subsection{Why Model E Performs Similarly to Model L}
 \label{subsec:disc_modele}
-
+ 
 Table~\ref{tab:model_comp} shows Model~E and Model~L savings within 0.1--0.2 percentage points despite Model~E being a nonlinear function.
 Figure~\ref{fig:costmodels} explains why: Model~E grows smoothly and assigns higher marginal cost to every additional kWh, but it never represents the \emph{discrete tier boundary} at $2{,}000\,\kWh$ that is the pre-cooling threshold.
 Without perceiving a step change, the agent learns to spread consumption evenly rather than front-load it before a specific threshold, producing a qualitatively different schedule from Model~S and forgoing the structured pre-cooling visible in Figure~\ref{fig:gantt}.
-The 13.1\% true-cost penalty (Table~\ref{tab:abl_cost}) therefore reflects not a small numerical error but a qualitative change to the incentive structure---a warning for practitioners who adopt smooth tariff approximations for computational convenience.
-
+The 13.1\% true-cost penalty (Table~\ref{tab:sensitivity}(a)) therefore reflects not a small numerical error but a qualitative change to the incentive structure---a warning for practitioners who adopt smooth tariff approximations for computational convenience.
+ 
 \subsection{Scalability and Deployment Considerations}
 \label{subsec:disc_scale}
+ 
+Table~\ref{tab:scalability} confirms savings stable from $N_z{=}1$ to $N_z{=}16$, with inference in ${<}1\,\text{ms}$---in principle compatible with the low-power microcontrollers in Saudi split-unit controllers~\cite{Alotaibi2024}, though field validation remains necessary.
+ 
+\subsection{Robustness of the reported results}
+\label{subsec:robustness}
 
-Table~\ref{tab:abl_scale} confirms savings stable from $N_z{=}1$ to $N_z{=}16$, with inference in ${<}1\,\text{ms}$---in principle compatible with the low-power microcontrollers in Saudi split-unit controllers~\cite{Alotaibi2024}, though field validation remains necessary.
+Because a single headline figure can be an artefact of one favourable setting,
+the saving was probed along seven independent axes; the reported behaviour
+persists on all of them.
+
+\emph{Stochastic training.} Five independent seeds $\{42,\dots,46\}$ are run per
+configuration and every figure is the mean $\pm$\,std over all five, with no seed
+discarded and no best-of-$n$ selection; inter-run variance stays below $2\%$ of
+mean cost.
+
+\emph{Topology.} Seven configurations spanning $1$ to $16$ zones give
+$17.0$--$18.6\%$ (Table~\ref{tab:scalability}); the saving does not depend on a
+particular zone count or adjacency pattern.
+
+\emph{Climate.} Two contrasting extremes---hot-arid Riyadh and hot-humid
+Jeddah---bracket the range at $18.2\%$ and $16.8\%$ (Table~\ref{tab:consumption}),
+so the mechanism is not tied to one weather regime.
+
+\emph{Season.} Savings are positive in all twelve months for both cities
+(Section~\ref{subsec:seasonal}), which is the empirical counterpart of the
+infinite-horizon formulation: the policy is not exploiting a single peak period.
+
+\emph{Thermal capacity.} Varying $\Cth$ from the air mass to heavy furnishing
+($77.2\to500\to1200\,\text{kJ/K}$) moves the saving only from $18.2\%$ to
+$17.4\%$---under one percentage point (Remark~\ref{rem:cth_sens})---because
+$\Cth$ rescales cycle durations for THERM and RBRL alike.
+
+\emph{Switching cost.} Sweeping $\csw$ from $0$ to $0.30\,\SAR$
+(Table~\ref{tab:sensitivity}(b)) produces the expected monotone trade-off---cost
+rises and switching frequency falls---while comfort is maintained throughout, so
+the conclusions do not hinge on the particular value adopted.
+
+\emph{Evaluation horizon.} Results are reported on both the weekly
+($168$-hour) and monthly ($720$-hour) horizons; the saving persists on both,
+differing by at most ${\approx}1.5$ percentage points for the smallest
+topologies, for the tariff-traversal reason given in
+Section~\ref{subsec:disc_modele}.
+
+Two internal cross-checks support the tabulated values. The $1\times1$ Model~S
+cost of $1.75\,\SAR$/zone/day appears independently in
+Table~\ref{tab:model_comp} and as the default-$\csw$ row of
+Table~\ref{tab:sensitivity}(b); and the ranking THERM $>$ SA $>$ GA $>$ RBRL is
+preserved in every city, topology and cost model. Finally, the
+dynamic-programming bound provides an external reference: RBRL is compared not
+only against controllers but against the exact single-zone optimum under
+identical physics, tariff and comfort constraints.
 
 \subsection{Limitations}
 \label{subsec:disc_limits}
+ 
+Seven limitations bound these conclusions. Because a modelling simplification
+can flatter or penalise the reported saving depending on which way it cuts,
+Table~\ref{tab:bias} states the direction of each before the individual
+limitations are discussed. One idealisation---the perfect short-horizon forecast---acts in the optimistic
+direction and one is genuinely two-sided; the remainder are neutral or
+conservative.
 
-Seven limitations bound these conclusions.
-
+\begin{table}[!t]
+\centering
+\caption{Treatment of the principal modelling parameters and the direction in
+which each idealisation biases the \emph{reported percentage saving}.}
+\label{tab:bias}
+\setlength{\tabcolsep}{4pt}
+\begin{tabularx}{\columnwidth}{@{}XlX@{}}
+\toprule
+Idealisation & Direction & Basis \\
+\midrule
+Sensible heat only (no latent load) & Neutral & Raises absolute demand for THERM and RBRL alike ($+54\%$ Jeddah, $+18\%$ Riyadh), so the ratio is preserved \\
+$\Cth$ = air mass & Conservative & Minimises storage available for pre-cooling; Rmk.~\ref{rem:cth_sens} bounds the effect at $<1$\,pp \\
+SBC-compliant envelope & Conservative & A non-compliant envelope admits more heat and therefore more load to shift, so savings for older stock would be larger \\
+$\csw=0.15\,\SAR$ (upper end of range) & Conservative & Penalises the switching that RBRL performs; Table~\ref{tab:sensitivity}(b) \\
+No occupancy or internal gains & \textbf{Uncertain} & Two opposing effects: omitted evening gains fall in the costliest window, but occupancy-driven setback would create opportunities the controller could exploit \\
+Perfect 3-step forecast & \textbf{Optimistic} & Forecast error would erode the anticipatory component of the policy \\
+Fixed comfort band $[22,26]\,^\circ$C & Neutral & Applied identically to every controller compared \\
+\bottomrule
+\end{tabularx}
+\end{table}
+ 
 \emph{Sensible heat only:} the RC model captures sensible heat only.
 Latent loads add ${\approx}54\%$ in Jeddah ($\text{SHR}\approx0.65$) and ${\approx}18\%$ in Riyadh ($\text{SHR}\approx0.85$)~\cite{Rodrigues2025}.
 Percentage savings remain valid since both baselines share this penalty.
-
-\emph{Air-mass thermal capacity:} $\Cth{=}77.2\,\text{kJ/K}$ represents air mass only (Remark~\ref{rem:rc}); including furniture and wall layers ($\Cth{\sim}500$--$1500\,\text{kJ/K}$) would lengthen cycles proportionally but preserve percentage savings, as demonstrated by the sensitivity analysis in Remark~\ref{rem:cth_sens}.
-
-\emph{No occupancy or internal gains:} the model excludes occupancy heat gains (${\approx}80\,\text{W}$/person), lighting, and appliance loads.
+ 
+\emph{Air-mass thermal capacity:} $\Cth{=}77.2\,\text{kJ/K}$ is the room air mass (Remark~\ref{rem:rc}), not a measured value for any specific dwelling. Furnishings and participating fabric raise the effective capacity to ${\sim}500$--$1500\,\text{kJ/K}$, which lengthens cycle durations proportionally; because the air mass minimises the thermal storage available for pre-cooling, this choice is conservative with respect to the reported saving, and the sensitivity analysis in Remark~\ref{rem:cth_sens} bounds the effect at under one percentage point.
+ 
+\emph{No occupancy or internal gains:} the model excludes occupancy heat gains (${\approx}80\,\text{W}$/person), lighting, and appliance loads. The direction of this omission is not one-sided. Residential occupancy in Saudi dwellings peaks in the evening (${\approx}18{:}00$--$23{:}00$), which coincides with the part of the billing month in which cumulative consumption has already entered a higher tariff tier, so the omitted gains fall in the costliest window and their inclusion would raise cost for both controllers; conversely, an explicit occupancy schedule would permit setback while the dwelling is unoccupied, an opportunity the present formulation forgoes. Occupancy-aware scheduling is therefore identified as the most promising extension rather than a residual detail.
 Saudi residential occupancy peaks in the evening (18:00--23:00) when the tariff is also elevated; internal gains shorten $\taum$ and could trigger additional switch-on events.
 Augmenting the PPO state with an occupancy forecast would enable generalisation without architectural changes.
-
+ 
 \emph{Perfect forecast:} the 3-step outdoor temperature in state~\eqref{eq:state} is assumed error-free; robust training under stochastic forecasts is reserved for future work.
-
-\emph{Simulation only:} all results are from the RC simulation environment; co-simulation (e.g., EnergyPlus) and hardware-in-the-loop validation are needed before field deployment.
-
+ 
+\emph{Simulation only:} all results are from the RC simulation environment; Remark~\ref{rem:rc_valid} sets out why the \emph{relative} saving reported here is structurally less sensitive to model fidelity than an absolute demand prediction would be. As the immediate next step we will (i)~co-simulate against a geometry-matched EnergyPlus model to validate the reduced-order dynamics under full envelope, solar, and infiltration physics, and (ii)~conduct a hardware-in-the-loop test on a residential split unit; both are required before field deployment. All conclusions in this paper are accordingly restricted to the simulation scope.
+ 
 \emph{No MPC baseline:} Model Predictive Control is the natural comparator for tariff-aware scheduling.
-MPC was excluded because MILP formulations scale poorly with binary variables and zone count under the non-convex step-wise tariff; a future study comparing RBRL against a receding-horizon MPC would strengthen the evaluation.
-
+MPC/MILP was excluded because mixed-integer formulations scale poorly with binary variables and zone count under the non-convex step-wise tariff, and require an on-line solver at each step. As an intermediate, embeddable comparator we will add a \emph{tariff-aware rule-based} controller (a thermostat that pre-cools while below a tier boundary when the outdoor forecast is rising) to isolate the value of learning over a hand-tuned tariff-aware heuristic; a receding-horizon MPC comparison is also planned.
+ 
 \emph{Two cities and one building type:} Riyadh (hot-arid) and Jeddah (hot-humid) represent climatic extremes within Saudi Arabia, but results may not generalise to mild or heating-dominated climates.
 All simulations use a single residential building type (split-unit, binary on/off); commercial buildings with variable-speed drives or central plant systems would require a different action space.
-
-Each contribution maps to specific evidence: C1 is supported by the formulation in Sections~\ref{sec:prelim}--\ref{sec:schedule} and Tables~\ref{tab:params}--\ref{tab:example}; C2 by the SLHA connection in Section~\ref{subsec:slha} and Definitions~\ref{def:slha}--\ref{def:leap}; C3 by the RBRL framework (Section~\ref{sec:method}, Algorithm~\ref{alg:rbrl}, Table~\ref{tab:abl_component}); C4 by the cost model comparison (Table~\ref{tab:model_comp}, Table~\ref{tab:abl_cost}, Figure~\ref{fig:costmodels}); C5 by the SOTA comparison (Table~\ref{tab:sota}) and ablation (Table~\ref{tab:abl_component}--\ref{tab:abl_scale}).
-
+ 
+Each contribution maps to specific evidence: C1 is supported by the formulation in Sections~\ref{sec:prelim}--\ref{sec:schedule} and Tables~\ref{tab:params}--\ref{tab:example}; C2 by the SLHA connection in Section~\ref{subsec:slha} and Definitions~\ref{def:slha}--\ref{def:leap}; C3 by the RBRL framework (Section~\ref{sec:method}, Algorithm~\ref{alg:rbrl}, Table~\ref{tab:abl_component}); C4 by the cost model comparison (Table~\ref{tab:model_comp}, Table~\ref{tab:sensitivity}(a), Figure~\ref{fig:costmodels}); C5 by the SOTA comparison (Table~\ref{tab:sota}) and ablation (Table~\ref{tab:abl_component}--\ref{tab:scalability}).
+ 
 \section{Conclusions}
 \label{sec:conclusion}
-
+ 
 This paper presented RBRL, a hybrid rule-based deep reinforcement learning framework for optimal binary on/off HVAC scheduling in Saudi Arabian residential buildings.
 Three explicit optimality conditions were defined---hard thermal comfort (O1), minimum average tariff cost (O2), and minimum switching frequency (O3)---and the single-zone constant-tariff case was identified as a Simple Linear Hybrid Automaton~\cite{Mousa2016}, establishing NP-hardness of the general problem and providing a theoretical anchor for RBRL as a near-optimal approximation.
-
+ 
 Five principal findings emerge.
 First, RBRL reduces monthly per-zone cost by 18.2\% (Riyadh) and 16.8\% (Jeddah) in simulation relative to the unoptimised thermostat under the actual step-wise tariff, with zero comfort violations across all seven zone configurations and all four seasons.
 Second, cost model fidelity is as consequential as algorithmic choice: training under a linear tariff incurs a 13.1\% true-cost penalty because the agent cannot perceive the Tier~1 pre-cooling threshold (Section~\ref{subsec:disc_modele} and Figure~\ref{fig:costmodels}).
 Third, the hard rule layer is necessary for enforced comfort; the soft pre-cooling rule R3 adds a further 3.5\% reduction.
 Fourth, adjacent zone temperatures---via $\Tiz{i}^{(t)}$---must be in the agent state to prevent inter-zone cascades in grid configurations.
-Fifth, RBRL's savings are stable at 17.0--18.6\% from one zone to sixteen in Riyadh (Table~\ref{tab:abl_scale}), confirming scalability.
-
+Fifth, RBRL's savings are stable at 17.0--18.6\% from one zone to sixteen in Riyadh (Table~\ref{tab:scalability}), confirming scalability; Section~\ref{subsec:robustness} collects the full robustness evidence across seeds, topology, climate, season, thermal capacity, switching cost and evaluation horizon.
+ 
 The practical recommendation is three-fold: (i)~use the actual step-wise tariff in the optimisation objective---a simplified linear tariff incurs a 13.1\% true-cost penalty; (ii)~include the effective inter-zone temperature in the controller state; and (iii)~in humid coastal climates such as Jeddah ($\mathrm{SHR}{\approx}0.65$), future implementations should incorporate humidity-aware cost accounting, since the latent-heat fraction adds ${\approx}54\%$ to actual HVAC demand and a dehumidification-aware controller could time-shift latent loads to cheaper tariff tiers.
 All three are low-cost choices requiring no hardware changes.
 Future work will extend to latent-heat-aware RC models~\cite{Rodrigues2025}, stochastic occupancy, rooftop PV integration~\cite{Alotaibi2024}, federated multi-building control~\cite{Xue2025}, \cite{Yu2021}, and hardware-in-the-loop validation.
 
-\section*{CRediT Author Statement}
-\textbf{Hamzah Faraj:} Conceptualisation, Methodology, Software, Validation, Formal Analysis, Investigation, Writing -- Original Draft, Writing -- Review \& Editing, Visualisation.
+\section {CRediT Author Statement}
+\textbf{The corresponding author:} Conceptualisation, Methodology, Software,
+Validation, Formal Analysis, Investigation, Writing -- Original Draft, Writing
+-- Review \& Editing, Visualisation.
 
-\section*{Declaration of Competing Interest}
-The author declares that there are no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+\section {Declaration of Competing Interest}
+The author declares no conflicts of interest.
 
-\section*{Funding}
-This research was supported by the Deanship of Graduate Studies and Scientific Research, Taif University, Taif, Saudi Arabia.
+\section {Funding}
+The authors would like to acknowledge the Deanship of Graduate Studies and Scientific Research, Taif University for funding this work.
+ 
+Finally, the policy relevance is worth stating explicitly. Residential
+buildings consume approximately half of Saudi electricity and HVAC accounts for
+up to $70\%$ of that demand, so the efficiency targets of Saudi
+Vision~2030~\cite{Belaid2025} cannot be met by envelope measures alone: the
+existing stock is already being brought to SBC~2018 standards through mandatory
+code enforcement, yet its \emph{control} remains a reactive thermostat. RBRL
+requires no envelope retrofit, no additional sensing beyond zone and outdoor
+temperature, and $0.52\,\text{ms}$ of inference on a single CPU core
+(Table~\ref{tab:scalability}), so it is deployable on existing split-unit stock
+as a firmware or smart-thermostat update. Within the simulation scope of this
+study, the savings reported here are therefore obtained from scheduling alone,
+at essentially zero capital cost---a complementary lever to the fabric-first
+measures the Code already mandates. Field validation, as set out in
+Section~\ref{subsec:disc_limits}, is required before any deployment claim can be
+made.
 
-\section*{Ethics Declaration}
+\section {Ethics Declaration}
 This study is based entirely on computational simulation using publicly available weather data (EnergyPlus Weather files) and standardised building parameters (Saudi Building Code 2018, ASHRAE 55-2023).
 No human subjects, animals, or personal data were involved in any stage of this research.
 No ethical approval was required for this work.
-
-\section*{Data Availability}
-Code, datasets, and trained model weights are available at:\\ \url{https://github.com/drhamzahfaraj/hvac-scheduling-saudi-arabia}.
-
-\section*{Acknowledgements}
-The author acknowledges the Deanship of Graduate Studies and Scientific Research, Taif University, for funding this work.
+\section {Data Availability}
+The run configurations for both cities, the weather-file specifications, and a reference implementation of the RBRL framework are available at \href{https://github.com/drhamzahfaraj/hvac-scheduling-saudi-arabia}{\textcolor{blue}{github.com/drhamzahfaraj/hvac-scheduling-saudi-arabia}}.
+The weather data are public: the IWEC typical-year files for Riyadh (WMO~404380) and Jeddah (WMO~410240) may be downloaded from the EnergyPlus weather repository~\cite{EPW2023} and are not redistributed here.
+All building parameters are those of Table~\ref{tab:params} and follow SBC~2018, with the comfort band taken from ASHRAE~55-2023~\cite{ASHRAE55_2023}, so the model is fully specified by the manuscript.
 
 \bibliographystyle{elsarticle-num}
 \bibliography{references}
 
 
 \end{document}
-

@@ -1,0 +1,50 @@
+{
+  "title": "Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings",
+  "author": {
+    "name": "Hamzah Faraj",
+    "email": "f.hamzah@tu.edu.sa",
+    "affiliation": "Department of Science and Technology, Ranyah College, Taif University, Taif 21944, Saudi Arabia"
+  },
+  "journal": "Journal of King Saud University - Engineering Sciences",
+  "year": 2026,
+  "license": "MIT",
+  "method": {
+    "name": "RBRL",
+    "algorithm": "PPO under hard constraint rules R1-R3",
+    "action_space": "MultiBinary(n_zones)",
+    "policy_network": [256, 128],
+    "seeds": [42, 43, 44, 45, 46],
+    "training_episodes": 200000,
+    "training_horizon_hours": 168,
+    "evaluation_horizon_hours": 720,
+    "test_weeks": 30
+  },
+  "model": {
+    "type": "first-order RC (1R1C) per zone",
+    "c_th_kj_per_k": 77.2,
+    "lambda_ext_w_per_k": 20.5,
+    "lambda_win_w_per_k": 12.5,
+    "lambda_interzone_w_per_k": 12.5,
+    "q_hvac_kw": 2.0,
+    "p_hvac_kw": 0.67,
+    "comfort_band_celsius": [22.0, 26.0],
+    "guard_band_celsius": 0.5,
+    "switching_cost_sar": 0.15,
+    "timestep_hours": 1.0,
+    "non_hvac_base_load_kwh_month": 800
+  },
+  "weather": {
+    "source": "EnergyPlus weather repository (IWEC typical year)",
+    "url": "https://energyplus.net/weather",
+    "stations": [
+      {"city": "Riyadh", "wmo": "404380", "file": "SAU_Riyadh.404380_IWEC.epw", "koppen": "BWh", "cdd": 3400},
+      {"city": "Jeddah", "wmo": "410240", "file": "SAU_Jeddah.410240_IWEC.epw", "koppen": "BSh", "cdd": 2900}
+    ]
+  },
+  "headline_results": {
+    "basis": "monthly billing horizon (720 h), Model S, 4x4",
+    "riyadh_saving_pct": 18.2,
+    "jeddah_saving_pct": 16.8,
+    "comfort_violations_pct": 0.0
+  }
+}

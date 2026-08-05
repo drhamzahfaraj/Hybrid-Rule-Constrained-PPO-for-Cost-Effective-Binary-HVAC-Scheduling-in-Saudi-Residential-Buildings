@@ -1,18 +1,32 @@
+# Python
 __pycache__/
 *.py[cod]
-*.egg-info/
+.venv/
 venv/
+
+# Training artefacts
 checkpoints/
+models/
+runs/
+tensorboard/
 *.zip
-*.pt
+*.pkl
+
+# Results produced locally
+results/*.json
+results/*.csv
+tables/
+
+# LaTeX build products
 *.aux
 *.bbl
 *.blg
 *.log
 *.out
-*.toc
 *.synctex.gz
-data/*.epw
+*.fls
+*.fdb_latexmk
+
+# OS
 .DS_Store
-.idea/
-.vscode/
+Thumbs.db
