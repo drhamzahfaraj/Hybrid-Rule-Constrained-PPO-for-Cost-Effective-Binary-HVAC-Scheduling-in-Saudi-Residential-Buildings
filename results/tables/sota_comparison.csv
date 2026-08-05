@@ -1,0 +1,6 @@
+method,year,reported_saving_pct,baseline,notes
+Drgona (MPC),2020,10-30,rule-based,building MPC survey range
+Du (DDPG),2021,15,baseline controller,continuous action space
+Wang (SAC),2024,37,thermostat,continuous action space
+RBRL (this work) Riyadh,2026,18.2,unoptimised thermostat,binary on/off with hard rules
+RBRL (this work) Jeddah,2026,16.8,unoptimised thermostat,binary on/off with hard rules

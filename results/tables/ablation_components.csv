@@ -1,0 +1,7 @@
+variant,j_bar_sar_zone_day,j_bar_std,vc_pct,switches_zone_day,delta_vs_rbrl_pct
+THERM (rules only),2.42,0.18,0.0,5.0,22.2
+GA (day-ahead offline),2.16,0.15,0.0,3.3,9.1
+SA (simulated annealing),2.19,0.16,0.0,,10.6
+RL only (no rules),2.03,0.22,0.5,2.6,2.5
+RBRL hard rules only,2.05,0.15,0.0,2.8,3.5
+RBRL full,1.98,0.13,0.0,2.5,0.0

@@ -1,0 +1,4 @@
+training_cost_model,true_cost_under_S_sar_zone_day,std,penalty_pct
+Linear (L),2.24,0.14,13.1
+Exponential (E),2.11,0.13,6.6
+Step-wise (S),1.98,0.13,0.0

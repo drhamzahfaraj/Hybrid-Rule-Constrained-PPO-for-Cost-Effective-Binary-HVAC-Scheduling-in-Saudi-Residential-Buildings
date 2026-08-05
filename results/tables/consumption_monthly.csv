@@ -1,0 +1,9 @@
+city,config,n_zones,therm_kwh_zone_day,rbrl_kwh_zone_day,therm_sar_zone_month,rbrl_sar_zone_month,saving_pct,vc_pct
+riyadh,1x1,1,3.52,2.87,64.6,52.7,18.4,0.0
+riyadh,1x4,4,3.73,3.05,68.5,55.7,18.7,0.0
+riyadh,2x2,4,3.65,2.97,67.0,54.5,18.7,0.0
+riyadh,4x4,16,3.98,3.25,73.0,59.7,18.2,0.0
+jeddah,1x1,1,3.21,2.70,58.9,49.5,16.0,0.0
+jeddah,1x4,4,3.35,2.79,61.5,51.2,16.7,0.0
+jeddah,2x2,4,3.28,2.74,60.2,50.2,16.6,0.0
+jeddah,4x4,16,3.57,2.97,65.5,54.5,16.8,0.0
