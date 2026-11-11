@@ -1,0 +1,22 @@
+{
+  "cpu": "Intel(R) Xeon(R) Processor @ 2.10GHz",
+  "logical_cores": 2,
+  "physical_cores": 2,
+  "threads_used": "unset (NumPy default)",
+  "omp": "unset",
+  "mkl": "unset",
+  "openblas": "1",
+  "ram_gb": 7.8,
+  "os": "Linux-6.18.44-fc-v378-x86_64-with-glibc2.39",
+  "kernel": "6.18.44-fc-v378",
+  "python": "3.13.18",
+  "blas": "scipy-openblas",
+  "gpu": "none used",
+  "timer": "time.perf_counter",
+  "v_numpy": "2.5.3",
+  "v_scipy": "1.18.1",
+  "v_torch": "2.15.0+cpu",
+  "v_stable_baselines3": "2.9.2",
+  "v_gymnasium": "1.4.0",
+  "peak_rss_mib": 280.0
+}
