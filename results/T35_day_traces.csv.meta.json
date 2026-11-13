@@ -1,0 +1,18 @@
+{
+ "code_sha": "5e8bc69a807c",
+ "code_sha_at_write": "5e8bc69a807c",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "fig_day_traces.py",
+ "argv": "fig_day_traces.py",
+ "env": {},
+ "inputs": {
+  "results/tuned_params_v2.json": "018af48fb56ba521",
+  "results/T21v3_riyadh.csv": "34c1820d28c0174b"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 892,
+ "utc": "2026-11-13T14:25:35Z"
+}

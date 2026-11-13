@@ -28,7 +28,7 @@ printed precision, equals the printed string.
 **Rounding rule.** Every cell is the unrounded file value rounded once (Python `format`, i.e.
 nearest, ties to even on the stored binary value) to the printed number of decimals: savings and on-command
 changes to one decimal (points or %), temperature offsets to 0.001 K, p-values to 0.001.
-Differences between two arms (Δs in `tab:stats`, the MPC margin over TUNED, F4) are computed
+Differences between two arms (Δs in Supplementary Table S8, formerly `tab:stats`, the MPC margin over TUNED, F4) are computed
 from the **unrounded** values and then rounded to one decimal, so a printed difference can
 differ by 0.1 from the difference of two printed cells (e.g. Riyadh F2: 18.2638 − 12.5260 =
 5.74 → 5.7, while 18.3 − 12.5 = 5.8). Bounds B\*, B_a and the ruled bound are rounded
@@ -81,11 +81,12 @@ Money (SAR per room per season) is rounded to whole riyals.
 
 | File in `paper/` | Generator (in `code/`) | Command | Reads |
 |---|---|---|---|
-| `tables/tab_stats.tex` | `gen_tables_v3.py` | `RBRL_TEX_TABLES=../paper/tables python3 gen_tables_v3.py --only stats` | `results/T20v3_paired_stats.csv` (written by `python3 stats_v3.py`) |
+| `tables/tab_stats.tex` (no longer `\input`; its rows are inlined, unchanged, as Supplementary Table S8 `tab:s-stats`) | `gen_tables_v3.py` | `RBRL_TEX_TABLES=../paper/tables python3 gen_tables_v3.py --only stats` | `results/T20v3_paired_stats.csv` (written by `python3 stats_v3.py`) |
 | body of `tab:main` (inlined in `main.tex`) | `gen_tables_v3.py` | `… --only main` → `tab_main.tex` | `T1v3_*`, `T21v3_*`, `T16v3_*`, `rbrl_ppo5_v3_*`, `T_D1_*`, `T17v3_*` |
 | body of `tab:sensitivity` (inlined) | `gen_tables_v3.py` | `… --only sensitivity` | `T1v3_heldout*`, `T5v3_*`, `T7v3_*`, `T4v3_bound`, `T21v3_*` |
 | body of `tab:s-mz` (inlined in `supplement.tex`) | `gen_tables_v3.py` | `… --only smz` | `T31_mz_*` |
 | `tab:timestep`, Table S1 | `timestep_table.py` | `python3 timestep_table.py` → `results/T2v3_timestep.csv`, then typed from it | tagged `_dt5`, `_dt30`, `_cth7200` runs |
+| `fig_traces.tex` (Fig. 3), `fig_timestep.tex` (Fig. 4) | `paper/make_result_figs.py` (standard library only) | `cd paper && python3 make_result_figs.py` (reads `../results/T35_day_traces.csv`, `../results/T2v3_timestep.csv`; every caption number is read from them) | `T35_day_traces` (`code/fig_day_traces.py`), `T2v3_timestep` |
 | `fig_leap.tex` | `gen_figs.py` (`fig_leap`) | `python3 gen_figs.py` (writes to its `OUT`, `/home/claude/v4` in the code of record; copy into `paper/`) | closed-form scalar solution at the simulator constants |
 | `repository-figures/fig_tariff.tex` (not printed; `main.tex` has its `\input` commented out) | `gen_figs.py` (`fig_tariff`) | as above | `results/T4_tariff.csv` (round-3 file, frozen in the manifest) |
 

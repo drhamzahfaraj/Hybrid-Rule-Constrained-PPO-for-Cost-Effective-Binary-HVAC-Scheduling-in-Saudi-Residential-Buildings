@@ -78,7 +78,7 @@ saving is \emph{not} independent of the interval. A finer interval lets the
 tuned thermostat widen its deadband (to $1.78$--$1.79\,^\circ$C at $5\,$min,
 against $0.94$--$0.99\,^\circ$C at $30\,$min) while THERM keeps its fixed one
 (Table~S1(a)). TUNED saves about $25\%$ at $5\,$min and $-1.2$ to $-1.5\%$ at
-$30\,$min (main text, Section~9.3 and Table~8), where THERM's deadband fails
+$30\,$min (main text, Section~9.3 and Table~7), where THERM's deadband fails
 the upper limit of (8) narrowly ($0.99\,^\circ$C) and THERM leaks. Comparisons
 with studies at a different interval must take that into account.
 
@@ -389,16 +389,16 @@ reported saving, with the evidence in this study.}
 \toprule
 Idealisation & Direction & Evidence \\
 \midrule
-Comparator deadband assumed $1\,^\circ$C & overstates if wider & $5.7\%$ against $1.25\,^\circ$C (main Table~7(c)) \\
-Charge $0.15\,\SAR$ per on-command & overstates & $3.8$--$11.0\%$ at $0.025$--$0.114\,\SAR$ (Table~7(b)) \\
+Comparator deadband assumed $1\,^\circ$C & overstates if wider & $5.7\%$ against $1.25\,^\circ$C (main Table~6(c)) \\
+Charge $0.15\,\SAR$ per on-command & overstates & $3.8$--$11.0\%$ at $0.025$--$0.114\,\SAR$ (Table~6(b)) \\
 Switch points on a $0.01\,^\circ$C grid & overstates & $5.7$--$8.4\%$ on a $0.1\,^\circ$C grid (Table~S2) \\
-Reference capacity ($24\,$h ISO value) & probably overstates & $-2.8\%$ at $2{,}400\,\text{kJ/K}$ (Table~7(d)) \\
-Actuation step $15\,$min & either way & about $25\%$ at $5\,$min, $-1.2$ to $-1.5\%$ at $30\,$min (Table~8) \\
+Reference capacity ($24\,$h ISO value) & probably overstates & $-2.8\%$ at $2{,}400\,\text{kJ/K}$ (Table~6(d)) \\
+Actuation step $15\,$min & either way & about $25\%$ at $5\,$min, $-1.2$ to $-1.5\%$ at $30\,$min (Table~7) \\
 Admission tolerance pooled $0.03\,$K & either way & $9.7$, $12.2$, $4.0\%$ under a per-window criterion (Table~S2) \\
 Rule~C cheapest crossing & understates & THERM self-scores $-0.8$, $-0.1$, $0.0\%$ (Table~S2) \\
 No start-up energy & understates energy saving & $0.33$--$0.90\%$ for $10$--$25\,$Wh per start (main Section~10.4) \\
 Noise-free sensing & favours fine thresholds & not quantified \\
-Perfect model and forecast & favours MPC & persistence margin not resolved (main Table~5, F3) \\
+Perfect model and forecast & favours MPC & persistence margin not resolved (Table~\ref{tab:s-stats}, F3) \\
 Single node; constant capacity and COP; no internal gains; sensible only & not established & not swept \\
 One typical year & --- & actual years: $10.5$--$13.4\%$ transfer, $11.5$--$14.8\%$ re-tuned (S5) \\
 \bottomrule
@@ -425,6 +425,40 @@ MPC $24\,$h inside the guard's fitted rules & $6.7$ / $4.4^{b}$ / $10.5$ \\
 MPC $24\,$h inside the training rules & $11.6^{b}$ / $14.1$ / $10.0^{b}$ \\
 TUNED (no rules, no model) & $12.5$ / $13.6$ / $12.4$ \\
 E2 (comfort term and forecast; Riyadh, 3 seeds) & not comfort-matched; not tabulated \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+%% ------------------------------------------------------------------
+\section{Paired comparisons}
+%% Moved from the main text (formerly main Table 5) per RULING_round4 §36;
+%% values unchanged from tables/tab_stats.tex (gen_tables_v3.py, T20v3_paired_stats.csv).
+The four pre-declared families of the main text, Section~7, with each contrast's
+Hodges--Lehmann estimate, exact tests, Holm-adjusted $p$ and comfort offset.
+The main text quotes the estimates of families F1, F2 and F4 and the
+resolution of F3.
+
+\begin{table}[!ht]
+\centering
+\caption{Pre-declared paired comparisons (main text, Section~7): per-window difference of the equalised savings, $n=7$ held-out windows per city. Hodges--Lehmann estimate with its exact $95.3\%$ interval, exact two-sided Wilcoxon signed-rank and sign tests; Holm within each three-city family (F1--F4). At $n=7$ the smallest exact two-sided $p$ is $0.016$ and the smallest Holm-adjusted $p$ in a three-member family is $0.047$. Pooled differences below $3$ points are not resolved (n.r.), whatever the test; res.\ = resolved. Pooled $\Delta s$ is computed before rounding. $\Delta\tilde T_a-\Delta\tilde T_b$: difference of the two arms' pooled clipped-mean offsets (K). $^{b}$first arm fitted at the pooled $0.10\,$K fallback.}
+\label{tab:s-stats}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}Xlrrrrrlr@{}}
+\toprule
+Family & Contrast & City & HL [95.3\% CI] (pts) & $+/-$ & $p_W$ & $p_{\mathrm{sign}}$ & $p_{\mathrm{adj}}$ & Pooled $\Delta s$ & $\Delta\tilde T_a-\Delta\tilde T_b$ \\
+\midrule
+F1 & TUNED vs THERM & Riyadh & $+12.6$ [$+11.4$, $+13.8$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+12.5$ (res.) & $+0.011$ \\
+ &  & Jeddah & $+13.7$ [$+12.3$, $+15.3$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+13.6$ (res.) & $+0.029$ \\
+ &  & Taif & $+11.8$ [$+10.6$, $+14.4$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+12.4$ (res.) & $+0.005$ \\
+F2 & MPC-24 (perfect) vs TUNED & Riyadh & $+6.0$ [$+3.8$, $+7.5$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+5.7$ (res.) & $+0.004$ \\
+ &  & Jeddah & $+4.2$ [$+3.8$, $+5.3$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+4.4$ (res.) & $-0.040$ \\
+ &  & Taif & $+4.6$ [$+2.0$, $+8.0$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+4.5$ (res.) & $-0.017$ \\
+F3 & MPC-24 (persistence) vs TUNED & Riyadh$^{b}$ & $-0.1$ [$-2.9$, $+2.7$] & 3/4 & $0.812$ & $1.000$ & $0.812$ & $+0.2$ (n.r.) & $-0.087$ \\
+ &  & Jeddah & $+0.9$ [$-0.0$, $+1.9$] & 4/3 & $0.219$ & $1.000$ & $0.438$ & $+1.0$ (n.r.) & $-0.066$ \\
+ &  & Taif$^{b}$ & $-1.9$ [$-5.8$, $+1.3$] & 1/6 & $0.109$ & $0.125$ & $0.328$ & $-1.6$ (n.r.) & $-0.092$ \\
+F4 & guard vs TUNED & Riyadh & $-6.6$ [$-7.7$, $-5.6$] & 0/7 & $0.016$ & $0.016$ & $0.047$ & $-6.8$ (res.) & $+0.025$ \\
+ &  & Jeddah & $-6.0$ [$-6.8$, $-5.2$] & 0/7 & $0.016$ & $0.016$ & $0.047$ & $-6.0$ (res.) & $+0.006$ \\
+ &  & Taif & $+0.0$ [$-3.0$, $+0.1$] & 5/2 & $0.938$ & $0.453$ & $0.938$ & $-1.4$ (n.r.) & $+0.051$ \\
 \bottomrule
 \end{tabularx}
 \end{table}

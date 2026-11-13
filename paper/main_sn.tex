@@ -1593,7 +1593,8 @@ differences of less than $3$ points between arms are treated as not resolved,
 whatever a test says, because the occupied-mean staircase and the tuning noise
 are of that order; the threshold does not absorb comfort offsets between arms
 (Section~\ref{subsec:limits}). The held-out weeks come from
-one TMYx year, so the tests describe those weeks.
+one TMYx year, so the tests describe those weeks. Estimates, intervals,
+$p$-values and comfort offsets for every family are in Supplementary Table~S8.
 
 \emph{Switching charge.} For a split unit of ${\sim}2{,}500\,\SAR$ installed
 cost, a start life of order $10^{5}$ gives $0.025\,\SAR$ per start, and a
@@ -1856,7 +1857,7 @@ MPC-SB (setback) & $42.3$ & $+0.6$ & $9$--$37$ (49) & $39.7$ & $+2.1$ & $8$--$33
 on-commands avoided against the comfort-equalised thermostat, which needs no
 price: $22.8$, $24.2$ and $21.7\%$ for TUNED, $29.8$--$33.3\%$ for the $24\,$h
 controller with a perfect forecast, and $29.2$--$42.3\%$ with occupancy
-setback. Beside it, electricity is about unchanged: within $\pm1.2\%$ for
+setback; Fig.~\ref{fig:traces} shows where they come from. Beside it, electricity is about unchanged: within $\pm1.2\%$ for
 every arm without setback and up to $+3.3\%$ for the setback planner, which
 cools the empty house before arrival. At equal mean temperature every arm uses
 the same terminal-priced energy (the identity holds to within $4\times10^{-5}$
@@ -1871,10 +1872,13 @@ electricity bill. The
 pooled cost saving $s$ remains the protocol's ranking metric
 (Table~\ref{tab:main}).
 
+\input{fig_traces}
+
 \emph{The tuned thermostat.} Commissioning the two switch points avoids
 $22.8$, $24.2$ and $21.7\%$ of on-commands and saves $12.5$, $13.6$ and
 $12.4\%$ of cost in Riyadh, Jeddah and Taif, in every held-out
-window of every city (Table~\ref{tab:stats}, family F1), with no model, no
+window of every city (family F1: Hodges--Lehmann $+12.6$, $+13.7$ and
+$+11.8$ points, Holm-adjusted $p=0.047$ in each city), with no model, no
 forecast and no state beyond the zone temperature. The mechanism is a wider
 deadband: the fitted switch points (Section~\ref{subsec:rules}) widen THERM's
 $1\,^\circ$C deadband to $1.35$, $1.36$ and $1.32\,^\circ$C, close to the
@@ -1935,7 +1939,6 @@ MPC-SB avoids $42.3$, $39.7$ and $39.3\%$ with energy $+0.6$, $+2.1$ and
 $+3.3\%$ (vacation weeks: Supplementary Section~S8). MPC-SB plans on the timetable it is given, and the model has no
 internal gains and a constant capacity, both of which flatter the recovery.
 
-\input{tables/tab_stats}
 
 \subsection{Where the Receding-Horizon Margin Comes From}
 \label{subsec:ladder}
@@ -1953,7 +1956,7 @@ controller avoids $33.3$, $32.0$ and $29.8\%$ of on-commands against TUNED's
 $22.8$, $24.2$ and $21.7\%$, and its cost saving exceeds TUNED's in every
 held-out window of every city, by
 Hodges--Lehmann estimates of $+6.0$, $+4.2$ and $+4.6$ points (family F2,
-Table~\ref{tab:stats}). With a persistence forecast the difference is $-0.1$,
+$95.3\%$ intervals $[+3.8,+7.5]$, $[+3.8,+5.3]$ and $[+2.0,+8.0]$). With a persistence forecast the difference is $-0.1$,
 $+0.9$ and $-1.9$ points, with intervals that include zero and pooled
 differences under $3$ points: not resolved (F3). With the one imperfect
 forecast tested, the margin over the tuned thermostat is therefore not
@@ -2250,7 +2253,7 @@ is the field test most likely to confirm or overturn these results.
 \label{subsec:timestep}
 
 Every figure above is tied to the $15$-min actuation step.
-Table~\ref{tab:timestep} repeats TUNED, the $24\,$h controller and the bound
+Table~\ref{tab:timestep} and Fig.~\ref{fig:timestep} repeat TUNED, the $24\,$h controller and the bound
 at $5$ and $30\,$min, each arm refitted by Rule~A. At $5\,$min the tuned
 thermostat avoids $43.1$, $41.9$ and $43.0\%$ of on-commands, against $22.8$,
 $24.2$ and $21.7\%$ at $15\,$min, with electricity within $1\%$ of the
@@ -2269,6 +2272,8 @@ the per-step excursion allows. The step also changes the sampling of the
 comparator, a $1\,^\circ$C hysteresis evaluated every $\Delta t$. The headline
 numbers therefore describe a $15$-min supervisory step; they are not
 transferable to other control steps.
+
+\input{fig_timestep}
 
 \begin{table}[t]
 \centering

@@ -202,3 +202,4 @@ T32_setpoint_sens.csv
 T4_tariff.csv frozen round-3 output read only by fig_tariff.tex, which main.tex does not \input (commented out)
 T33_ppo_hold_gap.csv
 T34_greenriyadh_sens.csv
+T35_day_traces.csv
