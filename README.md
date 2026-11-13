@@ -1,6 +1,4 @@
-# Tuned Thermostats, Rule-Constrained PPO and Receding-Horizon Control for Binary HVAC Scheduling in Saudi Residences
-
-*Switching-Cost Savings and a Clairvoyant Optimality Bracket*
+# Optimising Binary HVAC Switching in Saudi Residential Buildings with Model Predictive Control and Rule-Constrained PPO
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-green.svg)](https://www.python.org/)
@@ -8,6 +6,9 @@
 **Author:** Hamzah Faraj, Taif University, Saudi Arabia.
 
 **Journal:** Journal of King Saud University – Engineering Sciences (JKSU-ES), revision round 4.
+
+**Keywords:** binary HVAC switching; model predictive control; constrained reinforcement learning;
+Saudi Vision 2030; Green Riyadh; CO2 reduction.
 
 **Archived release (Zenodo DOI):** [to be added on release]
 

@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software or the accompanying paper, please cite it as below."
 type: software
-title: "Tuned Thermostats, Rule-Constrained PPO and Receding-Horizon Control for Binary HVAC Scheduling in Saudi Residences: Switching-Cost Savings and a Clairvoyant Optimality Bracket"
+title: "Optimising Binary HVAC Switching in Saudi Residential Buildings with Model Predictive Control and Rule-Constrained PPO"
 version: "round4"
 date-released: "2026-11-13"
 authors:
@@ -11,17 +11,15 @@ authors:
 license: MIT
 repository-code: "https://github.com/drhamzahfaraj/hybrid-rule-constrained-ppo-for-cost-effective-binary-hvac-scheduling-in-saudi-residential-buildings"
 keywords:
-  - HVAC scheduling
-  - binary control
-  - thermostat
+  - Binary HVAC switching
   - model predictive control
-  - reinforcement learning
-  - proximal policy optimisation
-  - Lagrangian bound
-  - Saudi Arabia
+  - constrained reinforcement learning
+  - Saudi Vision 2030
+  - Green Riyadh
+  - CO2 reduction
 preferred-citation:
   type: article
-  title: "Tuned Thermostats, Rule-Constrained PPO and Receding-Horizon Control for Binary HVAC Scheduling in Saudi Residences: Switching-Cost Savings and a Clairvoyant Optimality Bracket"
+  title: "Optimising Binary HVAC Switching in Saudi Residential Buildings with Model Predictive Control and Rule-Constrained PPO"
   authors:
     - family-names: Faraj
       given-names: Hamzah
