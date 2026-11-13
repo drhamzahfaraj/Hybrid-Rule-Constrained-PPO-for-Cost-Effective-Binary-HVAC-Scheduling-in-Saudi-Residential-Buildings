@@ -16,7 +16,6 @@
 \newcommand{\csw}{c_{\mathrm{sw}}}
 \newcommand{\SAR}{\text{SAR}}
 \newcommand{\lij}{\lambda_{ij}}
-\newcommand{\pend}[1]{\textbf{[PENDING:#1]}}% must not survive the final build
 
 \renewcommand{\thetable}{S\arabic{table}}
 \renewcommand{\thesection}{S\arabic{section}}
@@ -24,7 +23,6 @@
 
 \title{Supplementary Material for: Optimising Binary HVAC Switching in Saudi
 Residential Buildings with Model Predictive Control and Rule-Constrained PPO}
-%% Main text's title per RULING_round4 §34 (author's choice, 13 Nov); keep identical to main.tex \title.
 \author{Hamzah Faraj}
 \date{}
 
@@ -40,18 +38,11 @@ code version recorded in each file.
 \section{Thermal model: validation, capacity and actuation interval}
 \label{sec:s-model}
 
-\paragraph{Validation literature.} Bacher and Madsen (Energy and Buildings
-43, 2011, 1511--1522) identified grey-box RC models of a measured building by
-forward selection with likelihood-ratio tests; they rejected the single-state
-model, whose residuals were not white, and selected a four-state model. The
-single node used here follows their control-oriented framework but not their
-selected order. Shi et al.\ (2022) used an
-RC network for multi-zone pre-cooling optimisation, and Wang et al.\ (2021)
-validated a second-order thermal network for residential buildings (both in the
-main text's reference list). The main text's
-results are therefore reported with the capacity sweeps of Table~S1(b) and of
-the main text's sensitivity table, not on the strength of a validated single
-node.
+\paragraph{Validation literature.} The validation literature for the RC form
+and the model's calibration status are discussed in the main text,
+Section~10.1. The main text's results are reported with the capacity sweeps of
+Table~S1(b) and of the main text's sensitivity table, not on the strength of a
+validated single node.
 
 \paragraph{Capacity.} At an hourly interval, capacities of $77.2$ (air mass),
 $500$ and $1{,}200\,\text{kJ/K}$ give per-interval excursions of $93.3$, $14.4$
@@ -78,7 +69,7 @@ saving is \emph{not} independent of the interval. A finer interval lets the
 tuned thermostat widen its deadband (to $1.78$--$1.79\,^\circ$C at $5\,$min,
 against $0.94$--$0.99\,^\circ$C at $30\,$min) while THERM keeps its fixed one
 (Table~S1(a)). TUNED saves about $25\%$ at $5\,$min and $-1.2$ to $-1.5\%$ at
-$30\,$min (main text, Section~9.3 and Table~7), where THERM's deadband fails
+$30\,$min (main text, Section~9.3 and Table~8), where THERM's deadband fails
 the upper limit of (8) narrowly ($0.99\,^\circ$C) and THERM leaks. Comparisons
 with studies at a different interval must take that into account.
 
@@ -133,7 +124,7 @@ $\sum_t p(E_{\mathrm{cum}}^{(t)})\Delta E^{(t)}$, which equals the integral of
 the main text's path proposition only when no tier boundary falls strictly
 inside an interval's increment; where one does, the discrete bill is
 path-dependent at the order of one interval's consumption ($0.17\,$kWh here,
-against tier widths of $2{,}000\,$kWh). For the account modelled no boundary is
+against the single block boundary at $6{,}000\,$kWh). For the account modelled no boundary is
 approached, so the discrete and continuous statements coincide.
 
 %% ------------------------------------------------------------------
@@ -168,8 +159,7 @@ simulated trajectory, never on the midpoint formula.
 \begin{table}[h]
 \centering
 \caption{Protocol and device sensitivity, pooled equalised saving per city.
-$^{b}$fitted at the pooled $0.10\,$K fallback. The receding-horizon
-controllers were not refitted under the per-window criterion.}
+$^{b}$fitted at the pooled $0.10\,$K fallback. MPC was not refitted under the per-window criterion.}
 \label{tab:s-protocol}
 \small
 \begin{tabularx}{\textwidth}{@{}lX@{}}
@@ -243,11 +233,11 @@ behind TMYx, and some of these years fall within the TMYx period of record, so
 the spread mixes year-to-year variation with dataset differences): \emph{transfer} applies the TMYx-tuned parameters unchanged, as a
 thermostat commissioned once would experience, and \emph{re-tuned} repeats
 Rule~A inside the year. TUNED saves (transfer / re-tuned, \%; years in the
-order mildest, median, hottest):
+order mildest, median, hottest by cooling degree-days, not by date):
 Riyadh 2013 $12.4/14.4$, 2019 $12.0/13.8$, 2021 $12.8/11.5$; Jeddah 2011
 $13.2/14.5$, 2015 $13.4/12.3$, 2023 $13.4/14.8$; Taif 2013 $10.5/14.3$, 2018
 $12.0/13.7$, 2017 $11.9/14.4$, all at pooled $0.03\,$K and with zero
-over-temperature. In Taif's mild years 2013 and 2018 the zone free-floats below
+over-temperature. In Taif's mildest (2013) and median (2018) years the zone free-floats below
 the band for $6.7$--$6.9$ and $2.6$--$3.0\,^\circ$C$\cdot$h. The TMYx figures remain the
 reported ones.
 
@@ -270,8 +260,8 @@ balance would be needed before any latent comparison.
 
 Riyadh, independent per-room units, the protocol of the main text applied to
 the dwelling's mean occupied temperature, $\lij=12.5\,$W/K with $35\,$W/K as a
-sensitivity. MPC-MZ is a non-cooperative distributed receding-horizon
-controller with one-step-delayed plan exchange: each room solves its own
+sensitivity. MPC-MZ is a non-cooperative distributed MPC with one-step-delayed plan
+exchange: each room solves its own
 single-zone programme against its neighbours' previously announced plans and
 minimises its own cost. It has no optimality guarantee, and no bound exists for
 these layouts.
@@ -282,7 +272,7 @@ these layouts.
 \caption{Multi-zone results, Riyadh, independent per-room units: pooled
 equalised saving on the dwelling mean (\%). THERM is scored against its own
 comfort-equalised curve (the conservatism of Rule~C). MPC-MZ: $24\,$h
-look-ahead, perfect forecast, $1601$ nodes, one comfort weight shared by the
+lookahead, perfect forecast, $1{,}601$ nodes, one comfort weight shared by the
 rooms. $^{a}$pooled $0.03\,$K; $^{b}$pooled $0.10\,$K (fallback).
 TUNED's mean spread of room temperatures is $0.03$--$0.08\,$K in every layout.}
 \label{tab:s-mz}
@@ -304,16 +294,16 @@ $1\times4$, $\lij=35$ & S, S, N, N & $-0.3$ / $13.3^{a}$ / $6.9^{a}$ / $16.1^{a}
 \addtocounter{table}{-1}}
 
 %% ------------------------------------------------------------------
-\section{Comfort records and the bound at each arm's own mean}
+\section{Comfort records, vacation weeks and the bound at each arm's own mean}
 \label{sec:s-comfort}
 
 The cold rule is a hard constraint for the optimisers (dynamic programme,
-receding-horizon controllers, clairvoyant schedule and bound). The rule-layer
+MPC, clairvoyant schedule and bound). The rule-layer
 arms and the D1 shield are designed to meet it from the nominal plant
 parameters, and the threshold arms meet it on the tuning windows by Rule~A.
 Table~S4 lists every non-zero commanded under-temperature on the held-out
 windows; every other arm and configuration records zero, and every fitted arm
-records zero occupied over-temperature except the multi-zone controller in the
+records zero occupied over-temperature except the multi-zone MPC in the
 $1\times4$ row at $\lij=35\,$W/K ($0.0001\,^\circ$C$\cdot$h), whose rooms
 plan against their neighbours' plans of the previous step. Counting the vacation weeks as fully
 occupied lowers the setback savings to $16.1$, $17.4$ and $14.3\%$ for TUNED-SB
@@ -358,7 +348,7 @@ each arm's own pooled clipped mean (\%), held-out windows, headline
 configuration. End-of-window temperatures ($^\circ$C, pooled): CLV $22.33$,
 $22.40$, $22.35$; THERM $22.92$, $22.77$, $23.03$; TUNED $22.83$, $23.05$,
 $22.69$; MPC $24\,$h (perfect) $22.87$, $23.18$, $23.12$ in Riyadh, Jeddah and
-Taif.}
+Taif. $B_a$ is rounded to the nearest $0.1$, not up as $B^\ast$ is.}
 \label{tab:s-ba}
 \small
 \begin{tabularx}{\textwidth}{@{}lX@{}}
@@ -376,7 +366,7 @@ CLV (Rule~C) & $18.3/19.6$; $18.5/19.4$; $16.5/20.2$ \\
 \end{table}
 
 %% ------------------------------------------------------------------
-\section{Direction of bias of each idealisation, and the ablation}
+\section{Direction of bias of each idealisation}
 \label{sec:s-bias}
 
 \begin{table}[h]
@@ -389,11 +379,11 @@ reported saving, with the evidence in this study.}
 \toprule
 Idealisation & Direction & Evidence \\
 \midrule
-Comparator deadband assumed $1\,^\circ$C & overstates if wider & $5.7\%$ against $1.25\,^\circ$C (main Table~6(c)) \\
-Charge $0.15\,\SAR$ per on-command & overstates & $3.8$--$11.0\%$ at $0.025$--$0.114\,\SAR$ (Table~6(b)) \\
+Comparator deadband assumed $1\,^\circ$C & overstates if wider & $5.7\%$ against $1.25\,^\circ$C (main Table~7(c)) \\
+Charge $0.15\,\SAR$ per on-command & overstates & $3.8$--$11.0\%$ at $0.025$--$0.114\,\SAR$ (Table~7(b)) \\
 Switch points on a $0.01\,^\circ$C grid & overstates & $5.7$--$8.4\%$ on a $0.1\,^\circ$C grid (Table~S2) \\
-Reference capacity ($24\,$h ISO value) & probably overstates & $-2.8\%$ at $2{,}400\,\text{kJ/K}$ (Table~6(d)) \\
-Actuation step $15\,$min & either way & about $25\%$ at $5\,$min, $-1.2$ to $-1.5\%$ at $30\,$min (Table~7) \\
+Reference capacity ($24\,$h ISO value) & probably overstates & $-2.8\%$ at $2{,}400\,\text{kJ/K}$ (Table~7(d)); MPC-$24\,$h also falls, to $12.2\%$ \\
+Actuation step $15\,$min & either way & about $25\%$ at $5\,$min, $-1.2$ to $-1.5\%$ at $30\,$min (Table~8) \\
 Admission tolerance pooled $0.03\,$K & either way & $9.7$, $12.2$, $4.0\%$ under a per-window criterion (Table~S2) \\
 Rule~C cheapest crossing & understates & THERM self-scores $-0.8$, $-0.1$, $0.0\%$ (Table~S2) \\
 No start-up energy & understates energy saving & $0.33$--$0.90\%$ for $10$--$25\,$Wh per start (main Section~10.4) \\
@@ -405,34 +395,8 @@ One typical year & --- & actual years: $10.5$--$13.4\%$ transfer, $11.5$--$14.8\
 \end{tabularx}
 \end{table}
 
-\begin{table}[h]
-\centering
-\caption{Ablation of the rule layer, the learner, the one-step model and the
-horizon (pooled equalised saving, \%, from the main text's Table~3 and
-Section~9.2). $^{b}$fitted at the pooled $0.10\,$K fallback.}
-\label{tab:s-ablation}
-\small
-\begin{tabularx}{\textwidth}{@{}lX@{}}
-\toprule
-Configuration & Riyadh / Jeddah / Taif \\
-\midrule
-PPO without rules (admissible seeds) & $-3.5$ (1 of 5) / none of 5 / none of 5 \\
-PPO inside the training rules (5 seeds) & $5.7$ / $7.6$ / $8.6$--$11.0$ \\
-Guard hysteresis (rules, no learner) & $5.7$ / $7.6$ / $11.0$ \\
-D1 shield on latch (one-step model, no rules) & $14.0$ / $13.5$ / $12.4$ \\
-D1 shield on the trained policies (5 seeds) & $12.8$--$14.1$ / $11.2$--$13.5$ / $8.0$--$12.0$ \\
-MPC $24\,$h inside the guard's fitted rules & $6.7$ / $4.4^{b}$ / $10.5$ \\
-MPC $24\,$h inside the training rules & $11.6^{b}$ / $14.1$ / $10.0^{b}$ \\
-TUNED (no rules, no model) & $12.5$ / $13.6$ / $12.4$ \\
-E2 (comfort term and forecast; Riyadh, 3 seeds) & not comfort-matched; not tabulated \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
 %% ------------------------------------------------------------------
 \section{Paired comparisons}
-%% Moved from the main text (formerly main Table 5) per RULING_round4 §36;
-%% values unchanged from tables/tab_stats.tex (gen_tables_v3.py, T20v3_paired_stats.csv).
 The four pre-declared families of the main text, Section~7, with each contrast's
 Hodges--Lehmann estimate, exact tests, Holm-adjusted $p$ and comfort offset.
 The main text quotes the estimates of families F1, F2 and F4 and the
@@ -440,7 +404,7 @@ resolution of F3.
 
 \begin{table}[!ht]
 \centering
-\caption{Pre-declared paired comparisons (main text, Section~7): per-window difference of the equalised savings, $n=7$ held-out windows per city. Hodges--Lehmann estimate with its exact $95.3\%$ interval, exact two-sided Wilcoxon signed-rank and sign tests; Holm within each three-city family (F1--F4). At $n=7$ the smallest exact two-sided $p$ is $0.016$ and the smallest Holm-adjusted $p$ in a three-member family is $0.047$. Pooled differences below $3$ points are not resolved (n.r.), whatever the test; res.\ = resolved. Pooled $\Delta s$ is computed before rounding. $\Delta\tilde T_a-\Delta\tilde T_b$: difference of the two arms' pooled clipped-mean offsets (K). $^{b}$first arm fitted at the pooled $0.10\,$K fallback.}
+\caption{Pre-declared paired comparisons (main text, Section~7): per-window difference of the equalised savings, $n=7$ held-out windows per city. Hodges--Lehmann estimate with its exact $95.3\%$ interval, exact two-sided Wilcoxon signed-rank and sign tests; Holm within each three-city family (F1--F4). At $n=7$ the smallest exact two-sided $p$ is $0.016$ and the smallest Holm-adjusted $p$ in a three-member family is $0.047$. Pooled differences below $3$ points are not resolved (n.r.), regardless of the test result; res.\ = resolved. Pooled $\Delta s$ is computed before rounding. $\Delta\tilde T_a-\Delta\tilde T_b$: difference of the two arms' pooled clipped-mean offsets (K). $^{b}$first arm fitted at the pooled $0.10\,$K fallback.}
 \label{tab:s-stats}
 \footnotesize\setlength{\tabcolsep}{3pt}
 \begin{tabularx}{\textwidth}{@{}l>{\raggedright\arraybackslash}Xlrrrrrlr@{}}
@@ -454,7 +418,7 @@ F2 & MPC-24 (perfect) vs TUNED & Riyadh & $+6.0$ [$+3.8$, $+7.5$] & 7/0 & $0.016
  &  & Jeddah & $+4.2$ [$+3.8$, $+5.3$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+4.4$ (res.) & $-0.040$ \\
  &  & Taif & $+4.6$ [$+2.0$, $+8.0$] & 7/0 & $0.016$ & $0.016$ & $0.047$ & $+4.5$ (res.) & $-0.017$ \\
 F3 & MPC-24 (persistence) vs TUNED & Riyadh$^{b}$ & $-0.1$ [$-2.9$, $+2.7$] & 3/4 & $0.812$ & $1.000$ & $0.812$ & $+0.2$ (n.r.) & $-0.087$ \\
- &  & Jeddah & $+0.9$ [$-0.0$, $+1.9$] & 4/3 & $0.219$ & $1.000$ & $0.438$ & $+1.0$ (n.r.) & $-0.066$ \\
+ &  & Jeddah & $+0.9$ [$-0.04$, $+1.9$] & 4/3 & $0.219$ & $1.000$ & $0.438$ & $+1.0$ (n.r.) & $-0.066$ \\
  &  & Taif$^{b}$ & $-1.9$ [$-5.8$, $+1.3$] & 1/6 & $0.109$ & $0.125$ & $0.328$ & $-1.6$ (n.r.) & $-0.092$ \\
 F4 & guard vs TUNED & Riyadh & $-6.6$ [$-7.7$, $-5.6$] & 0/7 & $0.016$ & $0.016$ & $0.047$ & $-6.8$ (res.) & $+0.025$ \\
  &  & Jeddah & $-6.0$ [$-6.8$, $-5.2$] & 0/7 & $0.016$ & $0.016$ & $0.047$ & $-6.0$ (res.) & $+0.006$ \\

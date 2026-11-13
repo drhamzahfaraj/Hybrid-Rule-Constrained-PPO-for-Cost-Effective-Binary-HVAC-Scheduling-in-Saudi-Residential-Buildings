@@ -26,6 +26,6 @@
 \node[font=\scriptsize,anchor=north east,inner sep=1pt,blue!75!black] at (axis cs:12.5,14.1) {TUNED};
 \end{axis}
 \end{tikzpicture}
-\caption{Pooled equalised saving against actuation step, as in Table~\ref{tab:timestep}. Lines: Riyadh TUNED, $24\,$h receding-horizon controller (perfect forecast; at $5\,$min $801$ nodes, $0.10\,$K fallback) and bound $B^\ast$; markers: Jeddah and Taif TUNED, offset horizontally. The gap between the tuned thermostat and the controller closes as the step shortens; at $30\,$min TUNED saves $-1.2$ to $-1.5\%$.}
+\caption{Pooled equalised saving against actuation step, as in Table~\ref{tab:timestep}. Lines: Riyadh TUNED, $24\,$h MPC (perfect forecast; at $5\,$min $801$ nodes, $0.10\,$K fallback) and bound $B^\ast$; markers: Jeddah and Taif TUNED, offset horizontally. The gap between TUNED and MPC closes as the step shortens; at $30\,$min TUNED saves $-1.2$ to $-1.5\%$.}
 \label{fig:timestep}
 \end{figure}

@@ -3,6 +3,9 @@
 
   fig_traces.tex   (Fig. fig:traces)   <- results/T35_day_traces.csv
   fig_timestep.tex (Fig. fig:timestep) <- results/T2v3_timestep.csv
+  fig_ladder.tex   (Fig. fig:ladder)   <- results/T1v3_heldout.csv, rbrl_ppo5_v3_<c>.csv,
+                                          T21v3_<c>.csv, T21v3_pers_<c>.csv, T17v3_<c>.csv
+                                          (checked cell by cell against tab:main in main.tex)
 
 Standard library only (csv).  Every number printed in the two captions is read
 from the CSVs here; nothing is typed by hand.  Run:
@@ -88,7 +91,7 @@ def traces():
            "\\begin{figure*}[t]\n\\centering\n\\begin{tikzpicture}\n"]
     out.append(
         "\\begin{axis}[\n"
-        "  width=\\textwidth, height=3.3cm,\n"
+        "  width=0.92\\textwidth, height=3.3cm,\n"
         f"  xmin=0, xmax={hend:g}, ymin={lo - 0.25:g}, ymax={hi + 0.25:g},\n"
         "  xtick={0,6,...,48}, xticklabels={,,,,,,,,},\n"
         f"  ytick={{{lo:g},22.5,23,23.5,{hi:g}}},\n"
@@ -110,7 +113,7 @@ def traces():
     # outdoor temperature on a secondary axis (light, behind)
     out.append(
         "\\begin{axis}[\n"
-        "  width=\\textwidth, height=3.3cm, at={(main.south west)}, anchor=south west,\n"
+        "  width=0.92\\textwidth, height=3.3cm, at={(main.south west)}, anchor=south west,\n"
         f"  xmin=0, xmax={hend:g}, ymin=28, ymax=46,\n"
         "  axis y line*=right, axis x line=none,\n"
         "  ytick={30,35,40,45}, ylabel={Outdoor ($^\\circ$C)},\n"
@@ -122,7 +125,7 @@ def traces():
     out.append(
         "\\begin{axis}[\n"
         "  at={(main.south west)}, anchor=north west, yshift=-2mm,\n"
-        f"  width=\\textwidth, height=2.3cm, xmin=0, xmax={hend:g}, ymin=0, ymax=3,\n"
+        f"  width=0.92\\textwidth, height=2.7cm, xmin=0, xmax={hend:g}, ymin=0, ymax=3,\n"
         "  xtick={0,6,...,48}, xlabel={Hour from the start of day 1},\n"
         "  ytick={0.5,1.5,2.5}, yticklabels={MPC $24\\,$h,TUNED,THERM},\n"
         "  y tick style={draw=none}, axis y line*=left,\n"
@@ -143,18 +146,30 @@ def traces():
             else:
                 i += 1
     out.append("\\end{axis}\n\\end{tikzpicture}\n")
+    # the selected week's per-window savings (TUNED; 24 h MPC, perfect forecast)
+    pw = [r for r in csv.DictReader(open(os.path.join(RES, "T1v3_perwindow.csv")))
+          if r["tariff"] == "inforce" and r["arm"] == "TUNED" and r["city"] == "riyadh"]
+    sw_t = {int(r["window"]): float(r["s_w"]) for r in pw}
+    assert len(sw_t) == 7 and start in sw_t
+    assert sw_t[start] == min(sw_t.values()), "selected week is TUNED's lowest"
+    pm = [r for r in csv.DictReader(open(os.path.join(RES, "T21v3_riyadh_perwindow.csv")))
+          if float(r["horizon_h"]) == 24.0 and r["forecast"] == "perfect"]
+    sw_m = {int(r["window"]): float(r["s_w"]) for r in pm}
+    marg = {w: sw_m[w] - sw_t[w] for w in sw_t}
     cap = (
-        f"\\caption{{A two-day operating trace: the hottest held-out {city} week, "
-        "days~1--2, fixed before the traces were drawn (day~0 is warm-up and is not "
-        "shown). Upper: room temperature at the end of each $15$-min step under THERM, "
-        "TUNED and the $24\\,$h receding-horizon controller (perfect forecast), with the "
-        f"occupied band $[{lo:g},{hi:g}]\\,^\\circ$C shaded and the outdoor temperature "
-        f"({fmt(tmin_out)}--{fmt(tmax_out)}$\\,^\\circ$C) on the right axis. Lower: "
-        "cooling command (filled: on). THERM, TUNED and MPC issue "
+        f"\\caption{{A two-day operating trace: the held-out {city} week with the "
+        "highest mean outdoor temperature, days~1--2, fixed before the traces were "
+        "drawn (day~0 is not shown). It is the held-out week in which TUNED's saving is "
+        f"lowest (${fmt(sw_t[start])}\\%$); the MPC margin over it there is "
+        f"${fmt(marg[start])}$ points. Upper: room temperature at the end of each "
+        "$15$-min step under THERM (unshifted), TUNED and the $24\\,$h MPC (perfect "
+        f"forecast), with the occupied band $[{lo:g},{hi:g}]\\,^\\circ$C shaded and "
+        f"the outdoor temperature ({fmt(tmin_out)}--{fmt(tmax_out)}$\\,^\\circ$C) on "
+        "the right axis. Lower: cooling command (filled: on). THERM, TUNED and MPC issue "
         f"{on2['therm']}, {on2['tuned']} and {on2['mpc']} on-commands over the two days and "
         f"{week['therm']}, {week['tuned']} and {week['mpc']} over the week. TUNED's switch "
         f"points ({t_on}/{t_off}$\\,^\\circ$C) widen THERM's $1\\,^\\circ$C deadband, so "
-        "it cycles less; the controller uses the full band "
+        "it cycles less; MPC uses the full band "
         f"({fmt(min(T['mpc']),2)}--{fmt(max(T['mpc']),2)}$\\,^\\circ$C).}}\n")
     out.append(cap)
     out.append("\\label{fig:traces}\n\\end{figure*}\n")
@@ -210,17 +225,178 @@ def timestep():
     out.append(
         "\\caption{Pooled equalised saving against actuation step, as in "
         "Table~\\ref{tab:timestep}. Lines: Riyadh TUNED, "
-        "$24\\,$h receding-horizon controller (perfect forecast; at $5\\,$min $801$ "
+        "$24\\,$h MPC (perfect forecast; at $5\\,$min $801$ "
         "nodes, $0.10\\,$K fallback) and bound $B^\\ast$; markers: Jeddah and Taif TUNED, "
-        "offset horizontally. The gap between the tuned thermostat and the "
-        "controller closes as the step shortens; at $30\\,$min TUNED saves "
+        "offset horizontally. The gap between TUNED and MPC "
+        "closes as the step shortens; at $30\\,$min TUNED saves "
         f"${fmt(max(tuned30))}$ to ${fmt(min(tuned30))}\\%$.}}\n")
     out.append("\\label{fig:timestep}\n\\end{figure}\n")
     open(os.path.join(HERE, "fig_timestep.tex"), "w").write("".join(out))
     return rt, rm, rb, jt, tt
 
 
+# ---------------------------------------------------------------- Figure C
+LADDER_HEADER = ("%% GENERATED by make_result_figs.py from results/T1v3_heldout.csv, "
+                 "rbrl_ppo5_v3_<c>.csv, T21v3_<c>.csv, T21v3_pers_<c>.csv, T17v3_<c>.csv; "
+                 "do not edit\n")
+
+
+def _printed_main():
+    """Read the s cells of the rows of Table tab:main that Fig. fig:ladder draws,
+    as printed in main.tex, so that the figure can be checked against them."""
+    import re
+    tex = open(os.path.join(HERE, "main.tex")).read()
+    i = tex.index("\\label{tab:main}")
+    body = tex[i:tex.index("\\end{tabular*}", i)]
+    def cells(prefix):
+        line = [l for l in body.splitlines() if l.startswith(prefix)]
+        assert len(line) == 1, prefix
+        return [c.strip() for c in line[0].rstrip("\\ ").split("&")[1:]]
+    def num(c):  # "$12.5^{a}$" -> "12.5"; "$8.6$--$11.0^{a}$" -> ("8.6","11.0")
+        c = re.sub(r"\^\{[^}]*\}", "", c).replace("$", "").replace("\\le", "")
+        parts = [x.strip() for x in c.split("--")]
+        return tuple(parts) if len(parts) > 1 else parts[0]
+    out = {}
+    for key, prefix in [("guard", "Guard hysteresis &"), ("ppo", "RBRL, 5 seeds &"),
+                        ("tuned", "TUNED &"), ("mpc_s", "MPC $24\\,$h, s &"),
+                        ("mpc_p", "MPC $24\\,$h, p &"), ("clv", "CLV, raw")]:
+        c = cells(prefix)
+        out[key] = [num(c[0]), num(c[3]), num(c[6])]
+    c = cells("$B^{\\ast}$, energy-only / $V_N$ &")
+    out["bstar"] = [num(re.search(r"\{c\}\{(.*)\}", x).group(1).split("/")[1]) for x in c]
+    return out
+
+
+def ladder():
+    cities = ["riyadh", "jeddah", "taif"]
+    t1 = list(csv.DictReader(open(os.path.join(RES, "T1v3_heldout.csv"))))
+    def t1row(c, arm):
+        r = [x for x in t1 if x["city"] == c and x["tariff"] == "inforce" and x["arm"] == arm]
+        assert len(r) == 1, (c, arm)
+        return r[0]
+    def mpc24(f, c):
+        r = [x for x in csv.DictReader(open(os.path.join(RES, f % c)))
+             if float(x["horizon_h"]) == 24.0]
+        assert len(r) == 1, (f, c)
+        return r[0]
+    D = {}
+    for c in cities:
+        g, t = t1row(c, "guard"), t1row(c, "TUNED")
+        ppo = [float(x["s_pooled_eq"]) for x in
+               csv.DictReader(open(os.path.join(RES, f"rbrl_ppo5_v3_{c}.csv")))]
+        assert len(ppo) == 5, (c, len(ppo))
+        mp, ms = mpc24("T21v3_%s.csv", c), mpc24("T21v3_pers_%s.csv", c)
+        assert mp["forecast"] == "perfect" and ms["forecast"] == "persistence"
+        assert mp["ruled"] == "False" and ms["ruled"] == "False"
+        b = list(csv.DictReader(open(os.path.join(RES, f"T17v3_{c}.csv"))))
+        assert len(b) == 1
+        D[c] = {
+            "guard": (float(g["s_pooled_eq"]), g["fit_status"]),
+            "ppo": (min(ppo), max(ppo)),
+            "tuned": (float(t["s_pooled_eq"]), t["fit_status"]),
+            "mpc_s": (float(ms["s_pooled_eq"]), ms["fit_status"]),
+            "mpc_p": (float(mp["s_pooled_eq"]), mp["fit_status"]),
+            "clv": float(b[0]["clv_s_raw"]),
+            "bstar": float(b[0]["bound_reported"]),  # already rounded up to 0.1
+        }
+    # ---- check against Table tab:main as printed (one decimal, nearest)
+    P = _printed_main()
+    f1 = lambda x: f"{x:.1f}"
+    for k, c in enumerate(cities):
+        d = D[c]
+        for key in ("guard", "tuned", "mpc_s", "mpc_p"):
+            assert f1(d[key][0]) == P[key][k], (c, key, d[key][0], P[key][k])
+        lo, hi = d["ppo"]
+        pp = P["ppo"][k]
+        if isinstance(pp, tuple):
+            assert (f1(lo), f1(hi)) == pp, (c, lo, hi, pp)
+        else:
+            assert f1(lo) == f1(hi) == pp, (c, lo, hi, pp)
+        assert f1(d["clv"]) == P["clv"][k], (c, d["clv"], P["clv"][k])
+        assert f1(d["bstar"]) == P["bstar"][k], (c, d["bstar"], P["bstar"][k])
+        for key in ("guard", "tuned", "mpc_s", "mpc_p"):
+            assert d[key][1] in ("pooled_0.03", "pooled_0.10"), d[key]
+    # ---- the bracket as printed in Section 8.1 of the text
+    tex = open(os.path.join(HERE, "main.tex")).read()
+    br = (f"Here the bracket is $[{f1(D['riyadh']['clv'])},\\,{f1(D['riyadh']['bstar'])}]\\%$ in Riyadh, "
+          f"$[{f1(D['jeddah']['clv'])},\\,{f1(D['jeddah']['bstar'])}]\\%$ in\nJeddah and "
+          f"$[{f1(D['taif']['clv'])},\\,{f1(D['taif']['bstar'])}]\\%$ in Taif")
+    assert br in tex, "bracket in text differs from T17v3"
+
+    # ---- drawing: three stacked panels, one per city, five rungs each
+    rungs = [("guard", "Guard hyst."), ("ppo", "RBRL (PPO)"), ("tuned", "TUNED"),
+             ("mpc_s", "MPC $24\\,$h, persist."), ("mpc_p", "MPC $24\\,$h, perfect")]
+    fillc = {"guard": "black!25", "ppo": "black!25", "tuned": "black!55",
+             "mpc_s": "black!40", "mpc_p": "black!75"}
+    lab = lambda v, st: f1(v) + ("$^{b}$" if st == "pooled_0.10" else "")
+    xmax = 24
+    out = [LADDER_HEADER, "\\begin{figure}[t]\n\\centering\n\\begin{tikzpicture}\n"]
+    for k, c in enumerate(cities):
+        d = D[c]
+        pos = "" if k == 0 else f"  at={{(p{k - 1}.below south west)}}, anchor=above north west, yshift=-1mm,\n"
+        last = k == len(cities) - 1
+        out.append(
+            "\\begin{axis}[\n" + pos +
+            f"  name=p{k}, width=0.80\\columnwidth, height=3.5cm, scale only axis=false,\n"
+            f"  xmin=0, xmax={xmax}, ymin=0.4, ymax=5.6, y dir=reverse,\n"
+            "  ytick={1,2,3,4,5}, yticklabels={" + ",".join("{" + n + "}" for _, n in rungs) + "},\n"
+            "  y tick style={draw=none}, xtick={0,5,10,15,20},\n"
+            + ("  xlabel={Pooled equalised saving $s$ (\\%)},\n" if last else "  xticklabels={},\n") +
+            "  xmajorgrids, grid style={dotted,gray!50},\n"
+            "  tick label style={font=\\scriptsize}, label style={font=\\small},\n"
+            f"  title={{{CITY[c]}: bracket $[{f1(d['clv'])},\\,{f1(d['bstar'])}]$}},\n"
+            "  title style={font=\\scriptsize, yshift=-0.6ex},\n"
+            "]\n")
+        out.append(f"\\fill[black!10] (axis cs:{d['clv']:.4f},0.4) rectangle (axis cs:{d['bstar']:.1f},5.6);\n")
+        out.append(f"\\draw[black!45, densely dashed] (axis cs:{d['clv']:.4f},0.4) -- (axis cs:{d['clv']:.4f},5.6);\n")
+        out.append(f"\\draw[black!45, densely dashed] (axis cs:{d['bstar']:.1f},0.4) -- (axis cs:{d['bstar']:.1f},5.6);\n")
+        for y, (key, _) in enumerate(rungs, start=1):
+            if key == "ppo":
+                lo, hi = d["ppo"]
+                out.append(f"\\fill[{fillc[key]}, draw=black, thin] (axis cs:0,{y - 0.32}) rectangle (axis cs:{lo:.4f},{y + 0.32});\n")
+                if f1(lo) != f1(hi):
+                    out.append(f"\\draw[black, thick, |-|] (axis cs:{lo:.4f},{y}) -- (axis cs:{hi:.4f},{y});\n")
+                    txt = f"{f1(lo)}--{f1(hi)}"
+                else:
+                    txt = f1(lo)
+                xe = hi
+            else:
+                v, st = d[key]
+                out.append(f"\\fill[{fillc[key]}, draw=black, thin] (axis cs:0,{y - 0.32}) rectangle (axis cs:{v:.4f},{y + 0.32});\n")
+                txt, xe = lab(v, st), v
+            out.append(f"\\node[font=\\scriptsize, anchor=west, inner sep=0.6pt, fill=white] at (axis cs:{max(xe, 0):.4f},{y}) {{{txt}}};\n")
+        out.append("\\end{axis}\n")
+    out.append("\\end{tikzpicture}\n")
+    # ---- caption numbers, all from the data (differences from unrounded values)
+    share = [100 * D[c]["tuned"][0] / D[c]["clv"] for c in cities]
+    mp = [D[c]["mpc_p"][0] - D[c]["tuned"][0] for c in cities]
+    ms = [D[c]["mpc_s"][0] - D[c]["tuned"][0] for c in cities]
+    taif_lo = D["taif"]["ppo"][0]
+    for c in ("riyadh", "jeddah"):  # PPO equals the guard where the figure says so
+        assert f1(D[c]["ppo"][0]) == f1(D[c]["ppo"][1]) == f1(D[c]["guard"][0])
+    assert f1(D["taif"]["ppo"][1]) == f1(D["taif"]["guard"][0])
+    rng = lambda xs, nd=1: f"${fmt(min(xs), nd)}$ to ${fmt(max(xs), nd)}$"
+    cap = (
+        "\\caption{Savings ladder: pooled equalised saving $s$ of five arms in each city, "
+        "with the clairvoyant bracket $[\\mathrm{CLV\\ raw},\\,B^\\ast]$ shaded and its "
+        "ends dashed (values of Table~\\ref{tab:main}; $B^\\ast$ under $V_N$, "
+        "Section~\\ref{subsec:bound}). Guard hyst.: the guard hysteresis; RBRL: "
+        "rule-constrained PPO, the five seeds' range drawn as an interval where it "
+        "exceeds the rounding. $^{b}$fitted at the pooled $0.10\\,$K fallback. The "
+        "$24\\,$h MPC's pooled margin over TUNED, "
+        f"{rng(mp)} points with a perfect forecast, becomes {rng(ms)} with a persistence "
+        "forecast (not resolved); RBRL stays at the guard hysteresis' level in Riyadh and "
+        f"Jeddah, and in Taif its seeds reach down to ${f1(taif_lo)}\\%$ against the "
+        f"guard's ${f1(D['taif']['guard'][0])}\\%$, a difference under $3$ points "
+        "that is not resolved.}\n")
+    out.append(cap)
+    out.append("\\label{fig:ladder}\n\\end{figure}\n")
+    open(os.path.join(HERE, "fig_ladder.tex"), "w").write("".join(out))
+    return D, share, mp, ms
+
+
 if __name__ == "__main__":
     on2, week = traces()
     print("traces: two-day on-commands", on2, "week", week)
     print("timestep:", *timestep(), sep="\n  ")
+    print("ladder:", *ladder(), sep="\n  ")

@@ -9,8 +9,9 @@ name: CI
 #
 # This workflow runs the one check that needs only the committed results and the manuscript:
 # docs/provenance_check.py recomputes every mapped manuscript value from results/ and compares it
-# with the value printed in the manuscript (recorded in the script and in docs/PROVENANCE.md;
-# Python standard library only; it never writes to results/).
+# with the value printed in the manuscript (recorded in the script and in docs/PROVENANCE.md),
+# and checks that the printed string still occurs in paper/*.tex where it is attributed
+# (Python standard library only; it never writes to results/).
 
 on:
   push:

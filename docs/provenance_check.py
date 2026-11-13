@@ -253,7 +253,7 @@ for arm, cells in LAYERS.items():
               lambda arm=arm, c=c, cs=cs: sar(pw_of(arm, c), cs))
 
 # ================================================================== Table S8 (formerly main tab:stats)
-L = "S8 tab:s-stats (formerly main Table 5, tab:stats; source file paper/tables/tab_stats.tex, no longer \\input)"
+L = "S7 tab:s-stats (formerly main Table 5, tab:stats; source file paper/tables/tab_stats.tex, no longer \\input)"
 STATS = {("F1", "riyadh"): ("+12.6", "+11.4", "+13.8", "7/0", "0.016", "0.016", "0.047", "+12.5", "res.", "+0.011"),
          ("F1", "jeddah"): ("+13.7", "+12.3", "+15.3", "7/0", "0.016", "0.016", "0.047", "+13.6", "res.", "+0.029"),
          ("F1", "taif"): ("+11.8", "+10.6", "+14.4", "7/0", "0.016", "0.016", "0.047", "+12.4", "res.", "+0.005"),
@@ -261,7 +261,7 @@ STATS = {("F1", "riyadh"): ("+12.6", "+11.4", "+13.8", "7/0", "0.016", "0.016", 
          ("F2", "jeddah"): ("+4.2", "+3.8", "+5.3", "7/0", "0.016", "0.016", "0.047", "+4.4", "res.", "-0.040"),
          ("F2", "taif"): ("+4.6", "+2.0", "+8.0", "7/0", "0.016", "0.016", "0.047", "+4.5", "res.", "-0.017"),
          ("F3", "riyadh"): ("-0.1", "-2.9", "+2.7", "3/4", "0.812", "1.000", "0.812", "+0.2", "n.r.", "-0.087"),
-         ("F3", "jeddah"): ("+0.9", "-0.0", "+1.9", "4/3", "0.219", "1.000", "0.438", "+1.0", "n.r.", "-0.066"),
+         ("F3", "jeddah"): ("+0.9", "-0.04", "+1.9", "4/3", "0.219", "1.000", "0.438", "+1.0", "n.r.", "-0.066"),
          ("F3", "taif"): ("-1.9", "-5.8", "+1.3", "1/6", "0.109", "0.125", "0.328", "-1.6", "n.r.", "-0.092"),
          ("F4", "riyadh"): ("-6.6", "-7.7", "-5.6", "0/7", "0.016", "0.016", "0.047", "-6.8", "res.", "+0.025"),
          ("F4", "jeddah"): ("-6.0", "-6.8", "-5.2", "0/7", "0.016", "0.016", "0.047", "-6.0", "res.", "+0.006"),
@@ -292,18 +292,18 @@ L = "tab:sota"
 E(L, "This work: TUNED Riyadh", "12.5", "T1v3_heldout [riyadh, TUNED, inforce] s_pooled_eq", S_HOW, lambda: one("T1v3_heldout", "s_pooled_eq", city="riyadh", arm="TUNED", tariff="inforce"))
 E(L, "This work: MPC-24 h Riyadh", "18.3", "T21v3_riyadh [24 h, perfect] s_pooled_eq", S_HOW, lambda: one("T21v3_riyadh", "s_pooled_eq", horizon_h=24.0, forecast="perfect"))
 E(L, "This work: bracket low (CLV raw)", "18.0", "T17v3_riyadh clv_s_raw", "clairvoyant schedule vs unshifted THERM", lambda: one("T17v3_riyadh", "clv_s_raw"))
-E(L, "This work: bracket high (B*)", "<=20.0", "T17v3_riyadh bound_reported", "relaxed dual bound, V_N, rounded up", lambda: one("T17v3_riyadh", "bound_reported"))
+E(L, "This work: bracket high (B*, printed as the end of 18.0--20.0)", "20.0", "T17v3_riyadh bound_reported", "relaxed dual bound, V_N, rounded up", lambda: one("T17v3_riyadh", "bound_reported"))
 
 # ================================================================== tab:sensitivity (Riyadh)
 L = "tab:sensitivity"
 share = lambda stem, csw, **f: 100 * csw * one(stem, "fs_therm0_mean", **f) / one(stem, "J_therm0_mean", **f)
 SHARE_HOW = "THERM on-command share of cost = 100 c_sw f_s / J (THERM, unshifted, held-out mean)"
-for tar, pr, sh, s in (("historical", 0.05, "81.5", "18.6"), ("inforce", 0.18, "55.0", "12.5"), ("y2027", 0.21, "51.2", "11.6")):
+for tar, pr, sh, s in (("inforce", 0.18, "55.0", "12.5"), ("y2027", 0.21, "51.2", "11.6")):
     E(L, f"(a) tariff {pr}: THERM share", sh, f"T1v3_heldout [riyadh, TUNED, tariff={tar}] fs_therm0_mean, J_therm0_mean", SHARE_HOW,
       lambda tar=tar: share("T1v3_heldout", 0.15, city="riyadh", arm="TUNED", tariff=tar))
     E(L, f"(a) tariff {pr}: TUNED", s, f"T1v3_heldout [riyadh, TUNED, tariff={tar}] s_pooled_eq", S_HOW,
       lambda tar=tar: one("T1v3_heldout", "s_pooled_eq", city="riyadh", arm="TUNED", tariff=tar))
-for pr, b in ((0.05, "<=29.6"), (0.21, "<=18.6")):
+for pr, b in ((0.21, "<=18.6"),):
     E(L, f"(a) tariff {pr}: B*", b, f"T4v3_bound [riyadh, price={pr}] bound_reported", "relaxed dual bound, V_N, rounded up", lambda pr=pr: one("T4v3_bound", "bound_reported", city="riyadh", price=pr))
 for csw, sh, s in ((0.0, "0.0", "0.0"), (0.025, "16.9", "3.8"), (0.05, "29.0", "6.6"), (0.1, "44.9", "10.2"), (0.114, "48.2", "11.0"),
                    (0.15, "55.0", "12.5"), (0.2, "62.0", "14.1"), (0.3, "71.0", "16.2"), (0.6, "83.0", "18.9")):
@@ -343,7 +343,7 @@ for (rw, c), vals in TS.items():
           "timestep_table.py collects s_pooled_eq of TUNED / MPC-24 and bound_reported of B* from the tagged runs", lambda rw=rw, c=c, arm=arm: one("T2v3_timestep", "s", row=rw, city=c, arm=arm))
 E(L, "note b: MPC-24 5 min dT~", "-0.078", "T2v3_timestep [dt5, riyadh, MPC-24] dT", DT_HOW, lambda: one("T2v3_timestep", "dT", row="dt5", city="riyadh", arm="MPC-24"))
 E(L, "note c: lam/lam* at 30 min", "6.27", "T2v3_timestep [dt30, riyadh, MPC-24] lam_over_lam_star", "fitted lam divided by lam* = Lambda 168 h p / COP", lambda: one("T2v3_timestep", "lam_over_lam_star", row="dt30", city="riyadh", arm="MPC-24"))
-for c, v in zip(CITIES, ("+0.033", "+0.040", "+0.121")):
+for c, v in zip(CITIES, ("0.033", "0.040", "0.121")):
     E(L, f"caption: TUNED at 7200 kJ/K dT~ {CN[c]}", v, f"T1v3_heldout_cth7200 [{c}, TUNED] dT_pooled", DT_HOW, lambda c=c: one("T1v3_heldout_cth7200", "dT_pooled", city=c, arm="TUNED", tariff="inforce"))
 
 # ================================================================== supplement
@@ -486,7 +486,7 @@ for key, (lab, vals) in BA.items():
             return rs[0]
         E(L, f"{lab}, {CN[c]}: s_a", sa, f"T17v3_Ba [city={c}, arm='{key}'] s_a", "saving rescored onto the V_N terminal, comparator at the arm's mean (Rule C)", lambda f=ba_row: float(f()["s_a"]))
         E(L, f"{lab}, {CN[c]}: B_a", ba, f"T17v3_Ba [city={c}, arm='{key}'] B_a", "B_a = 1 - L*(T~_a) / mean_w J_THERM(delta_w^a): bound at the arm's own pooled mean", lambda f=ba_row: float(f()["B_a"]))
-E(L, "rows with s_a <= B_a", "89", "T17v3_Ba s_le_B", "count of rows (all must be True)", lambda: float(sum(r['s_le_B'] == 'True' for r in rows('T17v3_Ba'))) if all(r['s_le_B'] == 'True' for r in rows('T17v3_Ba')) else -1.0)
+E("S5 text (and main §7, §10.1)", "rows with s_a <= B_a", "89", "T17v3_Ba s_le_B", "count of rows (all must be True)", lambda: float(sum(r['s_le_B'] == 'True' for r in rows('T17v3_Ba'))) if all(r['s_le_B'] == 'True' for r in rows('T17v3_Ba')) else -1.0)
 for arm, lab, vals in (("CLV", "CLV", ("22.33", "22.40", "22.35")), ("TUNED", "TUNED", ("22.83", "23.05", "22.69"))):
     for c, v in zip(CITIES, vals):
         if arm == "CLV":
@@ -506,12 +506,51 @@ E(L, "start-up energy effect", ("0.33", "0.90"), "T25v3_cycling_energy [TUNED, w
            max(float(r["energy_saving_pct"]) for r in rows("T25v3_cycling_energy") if r["arm"] == "TUNED" and float(r["wh_per_start"]) in (10.0, 25.0))))
 E(L, "other cells", "(cross-references)", "values of tab:sensitivity, tab:timestep, S2, tab:stats F3", "see those rows", None)
 
-L = "S7 tab:s-ablation"
+L = "tab:ablation (main text; formerly Supplementary Table S7)"
 E(L, "PPO without rules, Riyadh (1 of 5 admissible)", "-3.5", "rbrl_norules5_v3 [riyadh] s_pooled_eq (only admissible seed is written)", S_HOW + "; cap fixed (fit_status fixed)", lambda: one("rbrl_norules5_v3", "s_pooled_eq", city="riyadh"))
-E(L, "other rows", "(repeat tab:main)", "see tab:main rows RBRL, guard, D1, MPC in rules, TUNED", "", None)
+E(L, "s columns of the other rows", "(repeat tab:main)", "same values and files as the tab:main rows TUNED, guard, RBRL, D1, MPC 24 h", "", None)
+TU = lambda c: one("T1v3_heldout", "s_pooled_eq", city=c, arm="TUNED", tariff="inforce")
+D_HOW = "difference from TUNED's pooled saving in the same city, from unrounded values"
+ABL = {"guard": (lambda c: one("T1v3_heldout", "s_pooled_eq", city=c, arm="guard", tariff="inforce"), "T1v3_heldout [guard]", ("-6.8", "-6.0", "-1.4")),
+       "D1 shield on latch": (lambda c: one(f"T_D1_latch_{c}", "s_pooled_eq", sigma=0.0), "T_D1_latch_<c> [sigma=0]", ("+1.4", "-0.1", "0.0")),
+       "MPC 24 h, guard rules": (lambda c: one(f"T16v3_r{GUARD[c]}_{c}", "s_pooled_eq", horizon_h=24.0), "T16v3_r<guard>_<c> [24 h]", ("-5.8", "-9.3", "-1.9")),
+       "MPC 24 h, training rules": (lambda c: one(f"T16v3_r23.8-22.4_{c}", "s_pooled_eq", horizon_h=24.0), "T16v3_r23.8-22.4_<c> [24 h]", ("-0.9", "+0.4", "-2.4")),
+       "MPC 24 h, persistence": (lambda c: one(f"T21v3_pers_{c}", "s_pooled_eq", horizon_h=24.0), "T21v3_pers_<c> [24 h]", ("+0.2", "+1.0", "-1.6")),
+       "MPC 24 h, perfect": (lambda c: one(f"T21v3_{c}", "s_pooled_eq", horizon_h=24.0, forecast="perfect"), "T21v3_<c> [24 h, perfect]", ("+5.7", "+4.4", "+4.5"))}
+for arm, (fn, src, vals) in ABL.items():
+    for c, v in zip(CITIES, vals):
+        E(L, f"{arm}: delta vs TUNED, {CN[c]}", v, f"{src} s_pooled_eq - T1v3_heldout [TUNED] s_pooled_eq", D_HOW, lambda fn=fn, c=c: fn(c) - TU(c))
+E(L, "PPO without rules: delta vs TUNED, Riyadh", "-16.1", "rbrl_norules5_v3 [riyadh] - T1v3_heldout [TUNED]", D_HOW, lambda: one("rbrl_norules5_v3", "s_pooled_eq", city="riyadh") - TU("riyadh"))
+E(L, "RBRL 5 seeds: delta vs TUNED, Taif (range)", ("-3.8", "-1.4"), "rbrl_ppo5_v3_taif [5 seeds] - T1v3_heldout [TUNED]", D_HOW + "; min..max over seeds",
+  lambda: (min(float(r["s_pooled_eq"]) for r in rows("rbrl_ppo5_v3_taif")) - TU("taif"), max(float(r["s_pooled_eq"]) for r in rows("rbrl_ppo5_v3_taif")) - TU("taif")))
+for c, v in zip(CITIES[:2], ("-6.8", "-6.0")):
+    E(L, f"RBRL 5 seeds: delta vs TUNED, {CN[c]} (every seed)", (v, v), f"rbrl_ppo5_v3_{c} [5 seeds] - T1v3_heldout [TUNED]", D_HOW + "; every seed rounds to the printed value",
+      lambda c=c: (min(float(r["s_pooled_eq"]) for r in rows(f"rbrl_ppo5_v3_{c}")) - TU(c), max(float(r["s_pooled_eq"]) for r in rows(f"rbrl_ppo5_v3_{c}")) - TU(c)))
+for c, pr in zip(CITIES, (("+0.2", "+1.6"), ("-2.4", "-0.1"), ("-4.4", "-0.4"))):
+    E(L, f"D1 on PPO, 5 seeds: delta vs TUNED, {CN[c]} (range)", pr, f"T_D1_ppo_{c} [sigma=0] - T1v3_heldout [TUNED]", D_HOW + "; min..max over the 5 models",
+      lambda c=c: (min(float(r["s_pooled_eq"]) for r in sel(f"T_D1_ppo_{c}", sigma=0.0)) - TU(c), max(float(r["s_pooled_eq"]) for r in sel(f"T_D1_ppo_{c}", sigma=0.0)) - TU(c)))
+L = "main §10.1–10.3 (validity, generalisability, what governs the saving)"
+E(L, "TUNED saves 12.5, 13.6, 12.4", "12.5", "T1v3_heldout [TUNED, inforce] s_pooled_eq", S_HOW, lambda: TU("riyadh"))
+E(L, "Taif MPC with persistence saves 10.8", "10.8", "T21v3_pers_taif [24 h] s_pooled_eq", S_HOW, lambda: one("T21v3_pers_taif", "s_pooled_eq", horizon_h=24.0))
+E(L, "actual years: transfer range", ("10.5", "13.4"), "T23v3_amy_spread [kind=TRANSFER] s_pooled_eq", "min..max over 9 city-years", lambda: (min(float(r["s_pooled_eq"]) for r in sel("T23v3_amy_spread", kind="TRANSFER")), max(float(r["s_pooled_eq"]) for r in sel("T23v3_amy_spread", kind="TRANSFER"))))
+E(L, "actual years: re-tuned range", ("11.5", "14.8"), "T23v3_amy_spread [kind=RETUNED, years != TMYx] s_pooled_eq", "min..max", lambda: (min(float(r["s_pooled_eq"]) for r in sel("T23v3_amy_spread", kind="RETUNED") if r["year"] != "TMYx"), max(float(r["s_pooled_eq"]) for r in sel("T23v3_amy_spread", kind="RETUNED") if r["year"] != "TMYx")))
+E(L, "Taif's two milder years: free-float below the band (degC h, typical-year thresholds)", ("2.6", "6.9"), "T23v3_amy_spread [taif, TRANSFER, 2013 and 2018] deg_h_ff_under", "occupied free-float degree-hours below T_min, 7 windows",
+  lambda: (min(float(r["deg_h_ff_under"]) for r in sel("T23v3_amy_spread", city="taif", kind="TRANSFER") if r["year"] in ("2013", "2018")), max(float(r["deg_h_ff_under"]) for r in sel("T23v3_amy_spread", city="taif", kind="TRANSFER") if r["year"] in ("2013", "2018"))))
+E(L, "facade turned to each cardinal direction", ("12.2", "13.3"), "T24v3_orientation [riyadh] s_pooled_eq", "min..max over N, E, S, W", lambda: (min(float(r["s_pooled_eq"]) for r in rows("T24v3_orientation")), max(float(r["s_pooled_eq"]) for r in rows("T24v3_orientation"))))
+E(L, "TUNED across 2,400--9,600 kJ/K (Riyadh)", ("-2.8", "16.0"), "T1v3_heldout_cth{2400,7200,9600} and T1v3_heldout [riyadh, TUNED] s_pooled_eq", "min..max over capacities",
+  lambda: (min(one(f"T1v3_heldout{t}", "s_pooled_eq", city="riyadh", arm="TUNED", tariff="inforce") for t in ("_cth2400", "", "_cth7200", "_cth9600")), max(one(f"T1v3_heldout{t}", "s_pooled_eq", city="riyadh", arm="TUNED", tariff="inforce") for t in ("_cth2400", "", "_cth7200", "_cth9600"))))
+E(L, "TUNED at the 2027 rates", ("11.6", "12.7"), "T1v3_heldout [TUNED, tariff=y2027] s_pooled_eq", "min..max over cities", lambda: (min(float(r["s_pooled_eq"]) for r in sel("T1v3_heldout", arm="TUNED", tariff="y2027")), max(float(r["s_pooled_eq"]) for r in sel("T1v3_heldout", arm="TUNED", tariff="y2027"))))
+E(L, "comparator deadband moves the saving by (points)", "35", "T7v3_deadband [riyadh, 0.5 and 1.25] s_pooled_eq", "difference across the admissible range, unrounded", lambda: one("T7v3_deadband", "s_pooled_eq", city="riyadh", deadband=0.5) - one("T7v3_deadband", "s_pooled_eq", city="riyadh", deadband=1.25))
+E(L, "controller class moves it by (points; guard to MPC-24)", "13", "T21v3_riyadh [24 h] - T1v3_heldout [guard] s_pooled_eq", "difference, unrounded (12.52, printed as 13)", lambda: one("T21v3_riyadh", "s_pooled_eq", horizon_h=24.0, forecast="perfect") - one("T1v3_heldout", "s_pooled_eq", city="riyadh", arm="guard", tariff="inforce"))
+E(L, "charge per on-command moves it by (points; 0.025 to 0.114)", "7", "T5v3_switchcost_tuned [riyadh, c_sw 0.114 and 0.025] s_pooled_eq", "difference, unrounded", lambda: one("T5v3_switchcost_tuned", "s_pooled_eq", city="riyadh", c_sw=0.114) - one("T5v3_switchcost_tuned", "s_pooled_eq", city="riyadh", c_sw=0.025))
+E(L, "2027 repricing moves it by (points)", "0.9", "T1v3_heldout [riyadh, TUNED, inforce - y2027] s_pooled_eq", "difference, unrounded", lambda: TU("riyadh") - one("T1v3_heldout", "s_pooled_eq", city="riyadh", arm="TUNED", tariff="y2027"))
+for item, v in (("Riyadh cooling-season diurnal swing (K)", "12.7"), ("Jeddah diurnal swing (K)", "8.4")):
+    E(L, item, v, "not in a v3 file: computed from the TMYx weather file in the case-study section (Section 6), not from a results file", "weather statistic", None)
 
 # ================================================================== abstract / conclusions
 L = "abstract + conclusions"
+E(L, "abstract: best attainable saving about 17--21 % (min CLV raw .. max B*)", ("17", "21"), "T17v3_<c> clv_s_raw, bound_reported", "min over cities of the clairvoyant saving and max of B*, rounded to integers",
+  lambda: (min(one(f"T17v3_{c}", "clv_s_raw") for c in CITIES), max(one(f"T17v3_{c}", "bound_reported") for c in CITIES)))
 E(L, "fitted deadband R1 - R2 (min..max over cities)", ("1.32", "1.36"), "T1v3_heldout [TUNED, inforce] params.on - params.off", "TUNED switch points R1 - R2 (degC)",
   lambda: (min(json.loads(r["params"])["on"] - json.loads(r["params"])["off"] for r in sel("T1v3_heldout", arm="TUNED", tariff="inforce")),
            max(json.loads(r["params"])["on"] - json.loads(r["params"])["off"] for r in sel("T1v3_heldout", arm="TUNED", tariff="inforce"))))
@@ -530,12 +569,12 @@ E(L, "TUNED at half / twice capacity (Riyadh)", ("-2.8", "15.8"), "T1v3_heldout_
   lambda: (one("T1v3_heldout_cth2400", "s_pooled_eq", city="riyadh", arm="TUNED", tariff="inforce"), one("T1v3_heldout_cth9600", "s_pooled_eq", city="riyadh", arm="TUNED", tariff="inforce")))
 E(L, "MPC margin over TUNED at half / twice capacity (Riyadh)", ("15.0", "0.4"), "T21v3_riyadh_cth2400/9600 minus T1v3_heldout_cth2400/9600 s_pooled_eq", "difference of unrounded savings",
   lambda: tuple(one(f"T21v3_riyadh_cth{x}", "s_pooled_eq", horizon_h=24.0, forecast="perfect") - one(f"T1v3_heldout_cth{x}", "s_pooled_eq", city="riyadh", arm="TUNED", tariff="inforce") for x in ("2400", "9600")))
-E(L, "TUNED at 30 min (-1.2 to -1.5)", ("-1.2", "-1.5"), "T2v3_timestep [dt30, TUNED] s", "max..min over cities",
+E("main §9 actuation-step text", "TUNED at 30 min (-1.2 to -1.5)", ("-1.2", "-1.5"), "T2v3_timestep [dt30, TUNED] s", "max..min over cities",
   lambda: (max(one("T2v3_timestep", "s", row="dt30", city=c, arm="TUNED") for c in CITIES), min(one("T2v3_timestep", "s", row="dt30", city=c, arm="TUNED") for c in CITIES)))
-E(L, "MPC at 30 min (6.6--11.4)", ("6.6", "11.4"), "T2v3_timestep [dt30, MPC-24] s", "min..max over cities",
+E("main §9 actuation-step text", "MPC at 30 min (6.6--11.4)", ("6.6", "11.4"), "T2v3_timestep [dt30, MPC-24] s", "min..max over cities",
   lambda: (min(one("T2v3_timestep", "s", row="dt30", city=c, arm="MPC-24") for c in CITIES), max(one("T2v3_timestep", "s", row="dt30", city=c, arm="MPC-24") for c in CITIES)))
 for c, lo, hi in (("riyadh", "18.0", "20.0"), ("jeddah", "18.4", "19.9"), ("taif", "16.7", "21.0")):
-    E(L, f"bracket {CN[c]} (CLV raw -- B*)", (lo, hi), f"T17v3_{c} clv_s_raw, bound_reported", "clairvoyant schedule (raw) and relaxed dual bound (V_N)",
+    E("main Results text (bracket)", f"bracket {CN[c]} (CLV raw -- B*)", (lo, hi), f"T17v3_{c} clv_s_raw, bound_reported", "clairvoyant schedule (raw) and relaxed dual bound (V_N)",
       lambda c=c: (one(f"T17v3_{c}", "clv_s_raw"), one(f"T17v3_{c}", "bound_reported")))
 E(L, "multi-zone TUNED 11.7--13.6 (2 and 4 rooms)", ("11.7", "13.6"), "T31_mz_rules_riyadh_{1x2,2x2,1x4}_lij{12.5,35} [TUNED] s_pooled_eq", "min..max over the six multi-room layouts",
   lambda: (min(one(f"T31_mz_rules_riyadh_{t}_lij{l}", "s_pooled_eq", arm="TUNED") for t in ("1x2", "2x2", "1x4") for l in ("12.5", "35")),
@@ -550,7 +589,7 @@ E(L, "conclusions: MPC-24 adds 4--6 points (F2 pooled delta)", ("4", "6"), "T20v
   lambda: (min(float(r["d_pooled"]) for r in sel("T20v3_paired_stats", family="F2")), max(float(r["d_pooled"]) for r in sel("T20v3_paired_stats", family="F2"))))
 E(L, "conclusions: guard costs 6.8 and 6.0 points (Riyadh, Jeddah)", ("6.8", "6.0"), "T20v3_paired_stats [F4] -d_pooled", "TUNED - guard, pooled",
   lambda: tuple(-float(sel("T20v3_paired_stats", family="F4", city=c)[0]["d_pooled"]) for c in ("riyadh", "jeddah")))
-E(L, "conclusions: MPC-24 in training rules over guard (about 6)", ("5.9", "6.4"), "T16v3_r23.8-22.4_<c> [24 h] - T1v3_heldout [guard]", "difference of pooled savings, Riyadh and Jeddah",
+E(L, "conclusions: MPC-24 in training rules over guard (about 6, Riyadh and Jeddah)", ("6", "6"), "T16v3_r23.8-22.4_<c> [24 h] - T1v3_heldout [guard]", "difference of pooled savings, Riyadh and Jeddah",
   lambda: tuple(one(f"T16v3_r23.8-22.4_{c}", "s_pooled_eq", horizon_h=24.0) - one("T1v3_heldout", "s_pooled_eq", city=c, arm="guard", tariff="inforce") for c in ("riyadh", "jeddah")))
 E(L, "conclusions: setback raises on-commands avoided to 29--35 %", ("29", "35"), "T28v3_setback_rule [TUNED-SB] start_sav_eq", "min..max over cities",
   lambda: (min(float(r["start_sav_eq"]) for r in sel("T28v3_setback_rule", arm="TUNED-SB")), max(float(r["start_sav_eq"]) for r in sel("T28v3_setback_rule", arm="TUNED-SB"))))
@@ -594,6 +633,9 @@ for arm, v in (("therm", "10"), ("tuned", "8"), ("mpc", "7")):
     E(L, f"{arm} on-commands over days 1-2", v, f"{T35} u_{arm}", "0->1 transitions of the command over the 192 steps (first step off for every arm)", lambda arm=arm: on_cmds(arm))
 for arm, v in (("therm", "34"), ("tuned", "27"), ("mpc", "23")):
     E(L, f"{arm} on-commands over the week", v, f"{T35} week_on_{arm}", "on-commands over the whole held-out window (start_day 233)", lambda arm=arm: float(rows(T35)[0]["week_on_" + arm]))
+E(L, "TUNED saving in this week (lowest held-out week)", "11.1", "T1v3_perwindow [riyadh, TUNED, inforce, window=233] s_w", "per-window equalised saving", lambda: one("T1v3_perwindow", "s_w", city="riyadh", arm="TUNED", tariff="inforce", window=233.0))
+E(L, "MPC margin over TUNED in this week (points)", "6.3", "T21v3_riyadh_perwindow [24 h, window=233] s_w - T1v3_perwindow [TUNED, window=233] s_w", "difference of per-window savings",
+  lambda: one("T21v3_riyadh_perwindow", "s_w", horizon_h=24.0, window=233.0) - one("T1v3_perwindow", "s_w", city="riyadh", arm="TUNED", tariff="inforce", window=233.0))
 E(L, "TUNED switch points", "23.71/22.36", f"{T35} tuned_on, tuned_off", "fitted R1/R2 of TUNED (= T1v3_heldout params)", lambda: f"{float(rows(T35)[0]['tuned_on']):.2f}/{float(rows(T35)[0]['tuned_off']):.2f}")
 E(L, "MPC room-temperature range", ("22.00", "23.99"), f"{T35} T_mpc", "min..max of the end-of-step room temperature", lambda: (min(float(r["T_mpc"]) for r in rows(T35)), max(float(r["T_mpc"]) for r in rows(T35))))
 E(L, "outdoor temperature range", ("31.6", "44.5"), f"{T35} t_out", "min..max over the two days", lambda: (min(float(r["t_out"]) for r in rows(T35)), max(float(r["t_out"]) for r in rows(T35))))
@@ -610,6 +652,74 @@ E(L, "MPC-MZ electricity within +/-0.7 % (max |energy_sav_eq|)", "0.7", "T31_mz_
 E(L, "MPC-MZ occupied over-temperature, 1x4 lij=35 (degC h)", "0.0001", "T31_mz_mpc_riyadh_1x4_lij35_h24 deg_h_over", "occupied degree-hours above the ceiling, 7 windows", lambda: float(rows("T31_mz_mpc_riyadh_1x4_lij35_h24")[0]["deg_h_over"]))
 E(L, "MPC-MZ commanded under-temperature, 2x2 (at most 0.00003)", "0.00003", "T31_mz_mpc_riyadh_2x2_lij{12.5,35}_h24 deg_h_cmd_under", "max over the two 2x2 runs",
   lambda: max(float(rows(f"T31_mz_mpc_riyadh_2x2_lij{l}_h24")[0]["deg_h_cmd_under"]) for l in ("12.5", "35")))
+
+
+# ================================================================== text presence
+# Every printed string must also occur in the manuscript text it is attributed to, so a value
+# that the text no longer states (or states differently) is caught when the paper is edited.
+PAPER = os.path.join(REPO, "paper")
+_TXT = {}
+
+
+def _read(name):
+    if name not in _TXT:
+        p = os.path.join(PAPER, name)
+        _TXT[name] = open(p).read() if os.path.exists(p) else ""
+    return _TXT[name]
+
+
+def _norm(t):
+    t = re.sub(r"(?m)(?<!\\)%.*$", "", t)
+    for a, b in (("\\le", "<="), ("\\,", ""), ("$", ""), ("{", ""), ("}", ""), ("~", " "), ("\\%", "%")):
+        t = t.replace(a, b)
+    return t
+
+
+def _env(text, label):
+    i = text.find("\\label{%s}" % label)
+    if i < 0:
+        return ""
+    a = max(text.rfind("\\begin{table}", 0, i), text.rfind("\\begin{table*}", 0, i), text.rfind("\\begin{figure", 0, i))
+    b = min(x for x in (text.find("\\end{table}", i), text.find("\\end{table*}", i), text.find("\\end{figure", i), len(text)) if x >= 0)
+    return text[a:b]
+
+
+def _section(text, start, stop):
+    a = text.find(start)
+    b = text.find(stop, a + 1) if a >= 0 else -1
+    return text[a:b] if a >= 0 and b > a else ""
+
+
+def region(loc):
+    main, sup = _read("main.tex"), _read("supplement.tex")
+    m = re.match(r"(?:S[\w-]* )?(tab:[\w-]+)", loc)
+    if loc.startswith("Fig. 3"):
+        return _read("fig_traces.tex")
+    if loc.startswith("Fig. 4"):
+        return _read("fig_timestep.tex")
+    if loc.startswith("Fig. 5"):
+        return _read("fig_ladder.tex")
+    if m:
+        lab = m.group(1)
+        return _env(main, lab) or _env(sup, lab)
+    if loc.startswith("abstract"):
+        return (_section(main, "\\begin{abstract}", "\\end{abstract}") + _section(main, "\\section{Discussion}", "\\subsection{What Governs")
+                + _section(main, "\\section{Conclusions}", "\\section{CRediT"))
+    return main + sup
+
+
+def present(e):
+    p = e["printed"]
+    if p in ("(pending)", "(cross-references)", "(repeat tab:main)") or e.get("words"):
+        return True
+    t = _norm(region(e["loc"]))
+    parts = list(p) if isinstance(p, tuple) else (p.split() if " " in p else [p])
+    for q in parts:
+        q = q.replace("<=", "<=")
+        pat = r"(?<![0-9.])" + re.escape(q) + r"(?![0-9])"
+        if not re.search(pat, t):
+            return False
+    return True
 
 
 # ================================================================== evaluation
@@ -697,7 +807,12 @@ FUNC = {"t1_v2.py": "run_t1 / run_t7 / run_csw -> evaluate()", "mpc_lambda.py": 
 
 
 def main(write=False):
-    res = [(e, *check(e)) for e in ENTRIES]
+    res = []
+    for e in ENTRIES:
+        st, got = check(e)
+        if st in ("OK", "EXTERNAL, CITED") and not present(e):
+            st = "NOT IN TEXT"
+        res.append((e, st, got))
     n = {}
     for _, st, _ in res:
         n[st] = n.get(st, 0) + 1
@@ -707,7 +822,7 @@ def main(write=False):
     print("summary:", ", ".join(f"{k} {v}" for k, v in sorted(n.items())), f"(of {len(res)})")
     if write:
         write_md(res, n)
-    return 1 if n.get("MISMATCH") or n.get("ERROR") else 0
+    return 1 if n.get("MISMATCH") or n.get("ERROR") or n.get("NOT IN TEXT") else 0
 
 
 def pr(p):
