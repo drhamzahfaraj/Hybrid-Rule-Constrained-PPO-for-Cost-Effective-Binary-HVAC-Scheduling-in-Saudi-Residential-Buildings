@@ -45,10 +45,8 @@ found (an achievable saving). Their gap is the duality gap, reported rather
 than assumed away.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -200,7 +198,7 @@ if __name__ == "__main__":
             print(f"{city:8s} {name:7s} lam*={r['lam']:7.3f}  "
                   f"THERM J={Jb:.4f}  cost >= {r['bound_J']:.4f}  "
                   f"=> saving <= {r['bound_sav']:.2f}%", flush=True)
-    with open(_ROOT + "/results/T11_meanbound.csv", "w", newline="") as f:
+    with open("/home/claude/rbrl/results/T11_meanbound.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
     print("\n--- every reported arm must lie below its own bound ---")

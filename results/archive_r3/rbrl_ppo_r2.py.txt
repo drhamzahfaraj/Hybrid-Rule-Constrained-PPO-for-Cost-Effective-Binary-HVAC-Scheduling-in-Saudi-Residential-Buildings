@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""RBRL: PPO under the corrected asymmetric rule layer, on the verified physics.
+
+Built directly on setback.py / headroom.py rather than on the older env.py, so
+the agent is trained and evaluated on exactly the dynamics, conductances,
+capacity and tariff used for THERM, TUNED and OPT in the same tables.
+
+Rule layer (hard, applied to the commanded action)
+  R1  force ON  when T >= T_max - eps_hot    eps_hot  = 0.20 K
+  R2  force OFF when T <= T_min + eps_cold   eps_cold = 0.40 K
+Both thresholds are derived rather than assumed: a guard band must cover the
+temperature excursion of one actuation interval in its own direction. Cooling
+moves the zone by Q*dt/C_th = 0.375 K per step; the worst warming, set by the
+peak load rather than by the plant, is 0.129 K. The bands are therefore
+asymmetric, and the symmetric eps_g = 0.5 of the earlier version of this study
+would confine the agent to (22.5, 23.5) and so forbid the best rule in its own
+family on a 2 K band.
+
+Training windows are the tuning set; evaluation is on the disjoint held-out set,
+the same split used for TUNED.
+"""
+from __future__ import annotations
+import sys, os, csv, time, argparse
+sys.path.insert(0, "/home/claude/rbrl")
+import numpy as np
+import headroom as H
+import setback as S
+import final_tables as F
+
+import gymnasium as gym
+from gymnasium import spaces
+
+EPS_HOT, EPS_COLD = 0.20, 0.40
+LO, HI = 22.0, 24.0
+PEN = 50.0                      # SAR per degree-hour, comfort penalty in reward
+
+
+USE_RULES = True
+
+
+def apply_rules(u, T, cap=HI):
+    """Hard rule layer. With USE_RULES False the agent is unconstrained, which
+    is the ablation that tests whether comfort is enforced by construction or
+    merely learned."""
+    if not USE_RULES: return int(u)
+    if T >= cap - EPS_HOT: return 1
+    if T <= LO + EPS_COLD: return 0
+    return int(u)
+
+
+class ZoneEnv(gym.Env):
+    def __init__(self, city, windows, price_v, c_th=4800.0, faces=1, seed=0):
+        super().__init__()
+        self.city, self.windows, self.price_v = city, list(windows), price_v
+        self.c_th, self.faces = c_th, faces
+        self.lam = H.lam_of(faces, city)
+        self.decay = float(np.exp(-H.DT * 3600.0 * self.lam / (c_th * 1e3)))
+        self.p_el = H.Q_HVAC / H.COP_RATED / 1000.0
+        self.series = {w: H.series(city, 168, w) for w in self.windows}
+        self.N = self.series[self.windows[0]][2]
+        self.rng = np.random.default_rng(seed)
+        self.action_space = spaces.Discrete(2)
+        self.observation_space = spaces.Box(-5.0, 5.0, shape=(8,), dtype=np.float32)
+
+    def _obs(self):
+        t_out, irr, _ = self.series[self.w]
+        k = min(self.k, self.N - 1)
+        kn = min(self.k + 4, self.N - 1)          # one hour ahead
+        h = (k * H.DT) % 24.0
+        return np.array([
+            (self.T - 23.0) / 1.0,
+            float(self.prev),
+            (t_out[k] - 35.0) / 10.0,
+            (t_out[kn] - 35.0) / 10.0,
+            irr[k] / 500.0,
+            np.sin(2 * np.pi * h / 24.0),
+            np.cos(2 * np.pi * h / 24.0),
+            self.k / self.N,
+        ], dtype=np.float32)
+
+    def reset(self, *, seed=None, options=None):
+        if seed is not None: self.rng = np.random.default_rng(seed)
+        self.w = self.windows[int(self.rng.integers(len(self.windows)))]
+        self.T, self.prev, self.k = 23.0, 0, 0
+        return self._obs(), {}
+
+    def step(self, action):
+        t_out, irr, _ = self.series[self.w]
+        k = self.k
+        u = apply_rules(action, self.T)
+        cost = 0.0
+        if u == 1 and self.prev == 0: cost += H.C_SW
+        if u == 1: cost += self.price_v * self.p_el * H.DT
+        T_inf = t_out[k] + (H.SHGC * H.A_GL * irr[k] - H.Q_HVAC * u) / self.lam
+        self.T = T_inf + (self.T - T_inf) * self.decay
+        dh = max(0.0, self.T - HI) * H.DT + max(0.0, LO - self.T) * H.DT
+        self.prev = u; self.k += 1
+        done = self.k >= self.N
+        if done:   # price the terminal thermal state, as the DP and sim do
+            cost += self.price_v * (self.T - 23.0) * self.c_th * 1e3 / 3.6e6 / H.COP_RATED
+        return self._obs(), float(-(cost + PEN * dh)), done, False, {}
+
+
+def evaluate(model, city, windows, price_v, c_th=4800.0, faces=1, cap=HI):
+    """Run the learned policy on the SAME simulator used for every other arm."""
+    out = []
+    lam = H.lam_of(faces, city)
+    decay = float(np.exp(-H.DT * 3600.0 * lam / (c_th * 1e3)))
+    for w in windows:
+        t_out, irr, N = H.series(city, 168, w)
+        occ = np.ones(N, bool)
+        lo, hi = S.bands(occ, LO, HI, 18.0, 30.0)
+        price = H.price_flat(N, price_v)
+        state = {"T": 23.0, "prev": 0}
+        def pol(T, prev, k):
+            kn = min(k + 4, N - 1)
+            h = (k * H.DT) % 24.0
+            obs = np.array([(T - 23.0) / 1.0, float(prev),
+                            (t_out[k] - 35.0) / 10.0, (t_out[kn] - 35.0) / 10.0,
+                            irr[k] / 500.0, np.sin(2*np.pi*h/24.0),
+                            np.cos(2*np.pi*h/24.0), k / N], dtype=np.float32)
+            a, _ = model.predict(obs, deterministic=True)
+            return apply_rules(int(a), T, cap)
+        out.append(S.sim(pol, city, faces, c_th, price, lo, hi, occ,
+                         168, w, 23.0, c_sw=H.C_SW))
+    return out
+
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--steps", type=int, default=200_000)
+    ap.add_argument("--seeds", type=int, default=5)
+    ap.add_argument("--cities", default="riyadh,jeddah,taif")
+    ap.add_argument("--price", type=float, default=0.18)
+    ap.add_argument("--norules", action="store_true",
+                    help="ablate the hard rule layer (R1/R2 off)")
+    ap.add_argument("--out", default="rbrl_ppo")
+    ap.add_argument("--nomatch", action="store_true",
+                    help="skip comfort matching (for the no-rules ablation, "
+                         "where the band is violated and matching is undefined)")
+    a = ap.parse_args()
+    from stable_baselines3 import PPO
+    globals()["USE_RULES"] = not a.norules
+    import rbrl_ppo as _self
+    _self.USE_RULES = not a.norules
+    print(f"rule layer: {'ON' if _self.USE_RULES else 'OFF (ablation)'}", flush=True)
+    t0 = time.time(); rows = []
+    # Per-window costs, not only their mean. A paired test and a bootstrap
+    # interval both need the window-level pairs; reporting only the mean and its
+    # standard deviation discards exactly the pairing that makes the comparison
+    # between two controllers on the SAME seven weeks informative.
+    pw = []
+    for city in a.cities.split(","):
+        th = {w: F.therm_run(city, w, a.price) for w in F.EVAL_W}
+        Jb = np.array([th[w]["J"] for w in F.EVAL_W])
+        for seed in range(42, 42 + a.seeds):
+            env = ZoneEnv(city, F.TUNE_W, a.price, seed=seed)
+            model = PPO("MlpPolicy", env, seed=seed, verbose=0,
+                        n_steps=1344, batch_size=336, gamma=0.999,
+                        learning_rate=3e-4, policy_kwargs=dict(net_arch=[256, 128]))
+            model.learn(total_timesteps=a.steps)
+            # comfort-match: bisect the ceiling the RULE LAYER permits until the
+            # learned policy delivers THERM's mean occupied temperature. The
+            # policy is fixed; only R1's threshold moves, and the rule layer is
+            # part of RBRL by construction. Same device as used for OPT.
+            tgt = float(np.mean([th[w]["T_mean_occ"] for w in F.EVAL_W]))
+            loC, hiC, ev, capf = LO + 0.6, HI, None, HI
+            for _ in range(0 if a.nomatch else 12):
+                m = 0.5 * (loC + hiC)
+                e = evaluate(model, city, F.EVAL_W, a.price, cap=m)
+                if max(r["deg_h_occ"] for r in e) > 1e-9:
+                    loC = m; continue
+                ev, capf = e, m
+                tn = float(np.mean([r["T_mean_occ"] for r in e]))
+                if abs(tn - tgt) <= 0.03: break
+                if tn > tgt: hiC = m
+                else: loC = m
+            if ev is None:
+                ev, capf = evaluate(model, city, F.EVAL_W, a.price), HI
+            J = np.array([r["J"] for r in ev]); E = np.array([r["E"] for r in ev])
+            fs = np.array([r["f_s"] for r in ev])
+            To = np.array([r["T_mean_occ"] for r in ev])
+            dh = np.array([r["deg_h_occ"] for r in ev])
+            sav = 100.0 * (Jb - J) / Jb
+            for i, w in enumerate(F.EVAL_W):
+                pw.append(dict(city=city, seed=seed, w=w, cap=round(capf, 4),
+                               therm_J=round(float(Jb[i]), 6),
+                               J=round(float(J[i]), 6), E=round(float(E[i]), 6),
+                               f_s=round(float(fs[i]), 4),
+                               T_occ=round(float(To[i]), 5),
+                               deg_h=round(float(dh[i]), 6),
+                               sav=round(float(sav[i]), 4)))
+            rows.append(dict(city=city, seed=seed, steps=a.steps, cap=round(capf,3),
+                             J=round(J.mean(), 4), J_sd=round(J.std(ddof=1), 4),
+                             E=round(E.mean(), 4), f_s=round(fs.mean(), 3),
+                             T_occ=round(To.mean(), 3), max_deg_h=round(dh.max(), 5),
+                             sav=round(sav.mean(), 2), sav_sd=round(sav.std(ddof=1), 2)))
+            print(f"  {city:7s} seed {seed}: cap={capf:.3f} J={J.mean():.4f} f_s={fs.mean():.2f} "
+                  f"T_occ={To.mean():.3f} deg-h={dh.max():.4f} "
+                  f"saving={sav.mean():+.1f}+/-{sav.std(ddof=1):.1f}%  "
+                  f"[{time.time()-t0:.0f}s]", flush=True)
+    os.makedirs("/home/claude/rbrl/results", exist_ok=True)
+    with open(f"/home/claude/rbrl/results/{a.out}.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
+    with open(f"/home/claude/rbrl/results/{a.out}_perwindow.csv", "w",
+              newline="") as f:
+        w = csv.DictWriter(f, fieldnames=list(pw[0])); w.writeheader(); w.writerows(pw)
+    print(f"-> results/{a.out}.csv, results/{a.out}_perwindow.csv")

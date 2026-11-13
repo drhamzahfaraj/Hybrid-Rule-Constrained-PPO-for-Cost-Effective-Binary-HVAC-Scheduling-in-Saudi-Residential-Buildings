@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 """Retry pass for the AMY fetch: only missing city-years, slow pacing."""
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, time, json, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import amy_fetch as A
 
 rows = []

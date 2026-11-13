@@ -6,10 +6,8 @@ Benchmarks in this harness (24-30 held-out weeks, Riyadh 4x4, Model S):
   always-on               J = 2.5047  f_s = 15.78
   rule hysteresis (3.15K) J = 0.3932  f_s = 1.84   v_c = 0.82
 """
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 from env import Rules
 from train import train, eval_policy, agg
 from run_all import cooling_test_starts, write, P15

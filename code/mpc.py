@@ -20,10 +20,8 @@ class, and that what there is to gain requires a forecast the agent does not
 have.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -161,7 +159,7 @@ if __name__ == "__main__":
                   f"f_s={r['f_s']:.2f} dT={r['dT']:+.4f} "
                   f"sav={r['sav']:+.2f}+/-{r['sav_sd']:.2f}%  "
                   f"[{time.time()-t0:.0f}s]", flush=True)
-    with open(_ROOT + "/results/T8_mpc.csv", "w", newline="") as f:
+    with open("/home/claude/rbrl/results/T8_mpc.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
     print("-> results/T8_mpc.csv")

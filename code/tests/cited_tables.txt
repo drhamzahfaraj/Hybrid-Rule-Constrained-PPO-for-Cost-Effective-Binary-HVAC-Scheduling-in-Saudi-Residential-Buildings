@@ -1,0 +1,203 @@
+# Test 18 manifest (RULING_round4 F2/F18, §4.2, §12.5): every v3 result file the manuscript and the
+# supplement cite, one per line, path relative to results/. Derived from the \pend{<what, source>}
+# placeholders of /home/claude/v4/main.tex and supplement.tex and the §4.2/§12.5 job list. Names are
+# those of v3_names.py (change both together).
+#
+# Syntax:  <file or glob> [frozen <reason>]      # comment
+#   * a glob (* ?) must match at least one file; every match is checked;
+#   * every entry must exist, every CSV row must carry prov_code_sha == sha of the tagged code
+#     (RBRL_GATE_TAG, default p4), and <file>.meta.json must exist with that code_sha and
+#     code_changed_during_run == false (JSON results: the .meta.json alone);
+#   * "frozen <reason>" exempts a file that is deliberately not regenerated (it must exist; the
+#     reason is mandatory and printed by the registry);
+#   * there are NO optional lines: a REQ-or-delete job that is not run is deleted from the paper
+#     AND from this list (and MIN_CITED in tests/test_gate_provenance.py is lowered with a note).
+#
+# J1  TUNED and guard, 3 cities x 3 tariff epochs (A4); hardware 0.1 K and per-window sensitivity rows
+T1v3_heldout.csv
+T1v3_perwindow.csv
+T1v3_sens.csv                         # supplement \pend{J1 hardware row}, \pend{J1 per-window row}
+# J2 / J20  deadband, c_sw (rules, grid 0..0.60)
+T7v3_deadband.csv
+T7v3_perwindow.csv
+T5v3_switchcost_tuned.csv
+# J3  MPC perfect forecast, H in {0.25,1,2,6,24,48} h
+T21v3_riyadh.csv
+T21v3_riyadh_perwindow.csv
+T21v3_jeddah.csv
+T21v3_jeddah_perwindow.csv
+T21v3_taif.csv
+T21v3_taif_perwindow.csv
+# J4  persistence MPC, H in {6,24} h
+T21v3_pers_riyadh.csv
+T21v3_pers_riyadh_perwindow.csv
+T21v3_pers_jeddah.csv
+T21v3_pers_jeddah_perwindow.csv
+T21v3_pers_taif.csv
+T21v3_pers_taif_perwindow.csv
+# J4 back-off row (Rec; supplement "delete if not run"): uncomment when run
+# T21v3_backoff_*.csv
+# J5  MPC-24 at 1601 points
+T21v3_conv_riyadh.csv
+T21v3_conv_jeddah.csv
+T21v3_conv_taif.csv
+# J6(i)  in-rules MPC at 23.80/22.40, H in {1,6,24} h
+T16v3_r23.8-22.4_riyadh.csv
+T16v3_r23.8-22.4_riyadh_perwindow.csv
+T16v3_r23.8-22.4_jeddah.csv
+T16v3_r23.8-22.4_jeddah_perwindow.csv
+T16v3_r23.8-22.4_taif.csv
+T16v3_r23.8-22.4_taif_perwindow.csv
+T16v3_r23.6-22.4_riyadh.csv
+T16v3_r23.6-22.4_riyadh_perwindow.csv
+T16v3_r23.62-22.4_jeddah.csv
+T16v3_r23.62-22.4_jeddah_perwindow.csv
+T16v3_r23.66-22.4_taif.csv
+T16v3_r23.66-22.4_taif_perwindow.csv
+# J6(ii)  in-rules MPC at each city's guard R1/R2 (mpc_lambda --rule-on/--rule-off suffix)
+T16v3_r*_riyadh.csv
+T16v3_r*_jeddah.csv
+T16v3_r*_taif.csv
+# J7  lambda sensitivity, Riyadh and Taif
+T21v3_ls0.99_riyadh.csv
+T21v3_ls1.01_riyadh.csv
+T21v3_ls1.05_riyadh.csv
+T21v3_ls0.99_taif.csv
+T21v3_ls1.01_taif.csv
+T21v3_ls1.05_taif.csv
+# J8 + J9  CLV and relaxed bound (pooled, per-window, dual curves for B_a; 12801 grid row = J26)
+T17v3_riyadh.csv
+T17v3_riyadh_perwindow.csv
+T17v3_riyadh_dualcurves.json
+T17v3_jeddah.csv
+T17v3_jeddah_perwindow.csv
+T17v3_jeddah_dualcurves.json
+T17v3_taif.csv
+T17v3_taif_perwindow.csv
+T17v3_taif_dualcurves.json
+# J10  ruled relaxed bound at 23.80/22.40 (REQ-or-delete: delete with main.tex sentence if not run)
+T17v3_ruled_riyadh.csv
+T17v3_ruled_jeddah.csv
+T17v3_ruled_taif.csv
+# J11  RBRL re-cap (5 seeds), D1 shield on the latch and on the saved models, E1
+rbrl_ppo5_v3_riyadh.csv
+rbrl_ppo5_v3_riyadh_perwindow.csv
+rbrl_ppo5_v3_jeddah.csv
+rbrl_ppo5_v3_jeddah_perwindow.csv
+rbrl_ppo5_v3_taif.csv
+rbrl_ppo5_v3_taif_perwindow.csv
+T_D1_latch_riyadh.csv
+T_D1_latch_riyadh_perwindow.csv
+T_D1_latch_jeddah.csv
+T_D1_latch_jeddah_perwindow.csv
+T_D1_latch_taif.csv
+T_D1_latch_taif_perwindow.csv
+T_D1_ppo_riyadh.csv
+T_D1_ppo_jeddah.csv
+T_D1_ppo_taif.csv
+E1v3_hold_dp.csv                      # \pend{E1: J(hold)/J(DP, lambda=0), J11}
+# J12  E2-PPO (X3), Riyadh (CP2 cut-point: if cut, delete the E2 row/text and these lines)
+rbrl_e2_v3_riyadh.csv
+rbrl_e2_v3_riyadh_perwindow.csv
+# J13  C_th in {2400, 9600} kJ/K (RBRL_TAG _cth<X>), Riyadh: THERM, TUNED, guard, MPC-1h, MPC-24
+T1v3_heldout_cth2400.csv
+T1v3_perwindow_cth2400.csv
+T21v3_riyadh_cth2400.csv
+T21v3_riyadh_perwindow_cth2400.csv
+T1v3_heldout_cth9600.csv
+T1v3_perwindow_cth9600.csv
+T21v3_riyadh_cth9600.csv
+T21v3_riyadh_perwindow_cth9600.csv
+# J14 + J20  MPC-24 on the c_sw grid, Riyadh (0.15 = headline T21v3_riyadh)
+# removed 2026-11-13 (RULING §31): T21v3_csw0_riyadh.csv was never produced; the paper prints '---' or omits it
+T21v3_csw0.025_riyadh.csv
+# removed 2026-11-13 (RULING §31): T21v3_csw0.05_riyadh.csv was never produced; the paper prints '---' or omits it
+# removed 2026-11-13 (RULING §31): T21v3_csw0.1_riyadh.csv was never produced; the paper prints '---' or omits it
+T21v3_csw0.114_riyadh.csv
+# removed 2026-11-13 (RULING §31): T21v3_csw0.3_riyadh.csv was never produced; the paper prints '---' or omits it
+# removed 2026-11-13 (RULING §31): T21v3_csw0.6_riyadh.csv was never produced; the paper prints '---' or omits it
+T5v3_bound.csv                        # B* at c_sw 0.025/0.114
+# J15  setback block (REQ if printed; CP2): TUNED-SB, MANUAL, THERM-SB, MPC-SB, CLV-SB, bound-SB
+T28v3_setback_rule.csv
+T28v3_setback_rule_perwindow.csv
+T28v3_setback_mpc_riyadh.csv
+T28v3_setback_mpc_jeddah.csv
+T28v3_setback_mpc_taif.csv
+T28v3_setback_mpc_riyadh_perwindow.csv
+T28v3_setback_mpc_jeddah_perwindow.csv
+T28v3_setback_mpc_taif_perwindow.csv
+T17v3sb_riyadh.csv
+T17v3sb_jeddah.csv
+T17v3sb_taif.csv
+T17v3sb_riyadh_perwindow.csv
+T17v3sb_jeddah_perwindow.csv
+T17v3sb_taif_perwindow.csv
+# J16  AMY and orientation under protocol (REQ if printed; supplement)
+T23v3_amy_spread.csv
+T24v3_orientation.csv
+# J17  statistics, invariant run (the printed invariant count is read from it)
+T20v3_paired_stats.csv
+T17v3_Ba.csv                          # B_a per arm, s_a <= B_a, certificate minima (bound_at, F11)
+invariants_run.json
+# J18  no-rules PPO ablation, 5 seeds (λ-free)
+rbrl_norules5_v3.csv
+rbrl_norules5_v3_perwindow.csv
+# J19  bound at the tariff epochs (Riyadh)
+T4v3_bound.csv
+# J21  fig_season / per-window THERM-TUNED
+# removed 2026-11-13 (RULING §31): T6v3_per_window.csv was never produced; the paper prints '---' or omits it
+# J22  decision-time timings
+# removed 2026-11-13 (RULING §31): T18v3_scalability.csv was never produced; the paper prints '---' or omits it
+# J23  cycling energy (F16)
+T25v3_cycling_energy.csv
+# J24  actuation-interval table (supplement tab:s-timestep; timestep_table.py reads the files below)
+T2v3_timestep.csv
+T1v3_heldout_dt5.csv
+T1v3_perwindow_dt5.csv
+T21v3_riyadh_dt5.csv
+T21v3_riyadh_perwindow_dt5.csv
+T17v3_riyadh_dt5.csv
+T1v3_heldout_dt30.csv
+T1v3_perwindow_dt30.csv
+T21v3_riyadh_dt30.csv
+T21v3_riyadh_perwindow_dt30.csv
+T17v3_riyadh_dt30.csv
+T1v3_heldout_cth7200.csv
+T1v3_perwindow_cth7200.csv
+T21v3_riyadh_cth7200.csv
+T21v3_riyadh_perwindow_cth7200.csv
+T17v3_riyadh_cth7200.csv
+# J25  search audit on the final parameters
+# removed 2026-11-13 (RULING §31): T29v3_search_audit.csv was never produced; the paper prints '---' or omits it
+# J-MZ  multi-zone, Riyadh, independent units (mz_r3 / mz_mpc names), 1x1 and 1x2/2x2/1x4 at lij 12.5 and 35
+T31_mz_rules_riyadh_1x1_lij12.5.csv
+T31_mz_rules_riyadh_1x1_lij12.5_perwindow.csv
+T31_mz_rules_riyadh_1x2_lij12.5.csv
+T31_mz_rules_riyadh_1x2_lij12.5_perwindow.csv
+T31_mz_rules_riyadh_1x2_lij35.csv
+T31_mz_rules_riyadh_1x2_lij35_perwindow.csv
+T31_mz_rules_riyadh_2x2_lij12.5.csv
+T31_mz_rules_riyadh_2x2_lij12.5_perwindow.csv
+T31_mz_rules_riyadh_2x2_lij35.csv
+T31_mz_rules_riyadh_2x2_lij35_perwindow.csv
+T31_mz_rules_riyadh_1x4_lij12.5.csv
+T31_mz_rules_riyadh_1x4_lij12.5_perwindow.csv
+T31_mz_rules_riyadh_1x4_lij35.csv
+T31_mz_rules_riyadh_1x4_lij35_perwindow.csv
+T31_mz_mpc_riyadh_1x1_lij12.5_h24.csv
+T31_mz_mpc_riyadh_1x1_lij12.5_h24_perwindow.csv
+T31_mz_mpc_riyadh_1x2_lij12.5_h24.csv
+T31_mz_mpc_riyadh_1x2_lij12.5_h24_perwindow.csv
+T31_mz_mpc_riyadh_1x2_lij35_h24.csv
+T31_mz_mpc_riyadh_1x2_lij35_h24_perwindow.csv
+T31_mz_mpc_riyadh_2x2_lij12.5_h24.csv
+T31_mz_mpc_riyadh_2x2_lij12.5_h24_perwindow.csv
+T31_mz_mpc_riyadh_2x2_lij35_h24.csv
+T31_mz_mpc_riyadh_2x2_lij35_h24_perwindow.csv
+T31_mz_mpc_riyadh_1x4_lij12.5_h24.csv
+T31_mz_mpc_riyadh_1x4_lij12.5_h24_perwindow.csv
+T31_mz_mpc_riyadh_1x4_lij35_h24.csv
+T31_mz_mpc_riyadh_1x4_lij35_h24_perwindow.csv
+T32_setpoint_sens.csv
+T4_tariff.csv frozen round-3 output read only by fig_tariff.tex, which main.tex does not \input (commented out)
+T33_ppo_hold_gap.csv

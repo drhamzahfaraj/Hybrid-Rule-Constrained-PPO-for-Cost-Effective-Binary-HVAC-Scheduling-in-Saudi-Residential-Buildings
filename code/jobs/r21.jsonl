@@ -1,0 +1,58 @@
+# Ruling §21 + J24 job list for jobq2.py. DO NOT START until the coordinator says so; run it from a clean
+# checkout of the POST-O4 tag (this file is the only place the bound family and the J24 bounds are queued,
+# so no bound output -- R21_* or J24_bound_* -- is produced on pre-O4 code; jobs/j24.jsonl is retired).
+#   cd <post-O4 tree> && nohup python3 -I jobq2.py jobs/r21.jsonl > logs_jobq2_r21.txt 2>&1 &
+# Every job declares outputs (jobq2 refuses jobs without them, §21.1). The runner is hard-killed at 2 h
+# wall, so every job is <= ~100 min (p6 timings at 15 min on one core: bound main 11 min/city, ruled 7,
+# sb 15, tariff 12, csw ~40, MPC in rules 1/6/24 h ~15 min/city, shield latch 3 s, shield PPO 11 s/model,
+# t1_sens 3 s/city, clv_refine ~5 min/city, bound_at < 5 min).
+# §21.4 producers (independent of O4): R21_D1_*, R21_J6ii_* (R1 = each city's fitted guard on,
+#   T26v3_guard_fit p6: 23.6 / 23.62 / 23.66; R2 = 22.4), R21_T1_sens.
+# Bound family on the O4 terminal (§21.3; includes the reruns of the killed Taif J8_9 / J10 jobs):
+#   R21_J8_9_*, R21_J10_*, R21_J8_clv_*, R21_J15_sbbound_*, R21_J19_tariff_bound, R21_T5_bound, R21_bound_at.
+# J24 (F23, merged from jobs/j24.jsonl; V-code-48):
+#   * the J24 bounds run here, on the O4 code, like every other bound;
+#   * J24_mpc_dt5_riyadh is the one job that would exceed ~100 min at 1601 nodes (MPC cost ~ 1/dt^2:
+#     ~70 min, up to ~100 min with the §16 back-off knob). DISCLOSED COST REDUCTION: it runs at 801 nodes
+#     (half the cost, ~35-50 min). At 15 min, 801 -> 1601 moved MPC-24 by 0.25-0.60 pt (§15), below the
+#     3-pt resolution rule; the 5-min row of tab:s-timestep is footnoted "801-node grid". J24_bound_dt5
+#     (~32 min) and every other J24 job are unchanged and well under the limit.
+#   * J24_table also waits for R21_J8_9_bound_riyadh. CAUTION: its --headline dirs (p9:p6) hold the PRE-O4
+#     15-min B* (T17v3_riyadh); before the table is cited, point --headline at the post-O4 results for T17v3.
+{"id": "R21_D1_latch_riyadh", "cmd": "python3 shield.py latch riyadh", "env": {}, "outputs": ["results/T_D1_latch_riyadh.csv", "results/T_D1_latch_riyadh_perwindow.csv"]}
+{"id": "R21_D1_ppo_riyadh", "cmd": "python3 shield.py ppo riyadh", "env": {}, "outputs": ["results/T_D1_ppo_riyadh.csv"]}
+{"id": "R21_J6ii_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 1,6,24 --rule-on 23.6 --rule-off 22.4", "env": {}, "outputs": ["results/T16v3_r23.6-22.4_riyadh.csv", "results/T16v3_r23.6-22.4_riyadh_perwindow.csv"]}
+{"id": "R21_D1_latch_jeddah", "cmd": "python3 shield.py latch jeddah", "env": {}, "outputs": ["results/T_D1_latch_jeddah.csv", "results/T_D1_latch_jeddah_perwindow.csv"]}
+{"id": "R21_D1_ppo_jeddah", "cmd": "python3 shield.py ppo jeddah", "env": {}, "outputs": ["results/T_D1_ppo_jeddah.csv"]}
+{"id": "R21_J6ii_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 1,6,24 --rule-on 23.62 --rule-off 22.4", "env": {}, "outputs": ["results/T16v3_r23.62-22.4_jeddah.csv", "results/T16v3_r23.62-22.4_jeddah_perwindow.csv"]}
+{"id": "R21_D1_latch_taif", "cmd": "python3 shield.py latch taif", "env": {}, "outputs": ["results/T_D1_latch_taif.csv", "results/T_D1_latch_taif_perwindow.csv"]}
+{"id": "R21_D1_ppo_taif", "cmd": "python3 shield.py ppo taif", "env": {}, "outputs": ["results/T_D1_ppo_taif.csv"]}
+{"id": "R21_J6ii_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 1,6,24 --rule-on 23.66 --rule-off 22.4", "env": {}, "outputs": ["results/T16v3_r23.66-22.4_taif.csv", "results/T16v3_r23.66-22.4_taif_perwindow.csv"]}
+{"id": "R21_T1_sens", "cmd": "python3 t1_sens.py", "env": {}, "outputs": ["results/T1v3_sens.csv", "results/T1v3_sens_perwindow.csv"]}
+{"id": "R21_J8_9_bound_riyadh", "cmd": "python3 bound_v2.py main riyadh", "env": {}, "outputs": ["results/T17v3_riyadh.csv", "results/T17v3_riyadh_perwindow.csv", "results/T17v3_riyadh_dualcurves.json"]}
+{"id": "R21_J10_ruled_bound_riyadh", "cmd": "python3 bound_v2.py ruled riyadh", "env": {}, "outputs": ["results/T17v3_ruled_riyadh.csv", "results/T17v3_ruled_riyadh_perwindow.csv"]}
+{"id": "R21_J8_clv_riyadh", "cmd": "python3 clv_refine.py riyadh", "env": {}, "outputs": ["results/T13v3_clv_riyadh.csv"], "after": ["R21_J8_9_bound_riyadh"]}
+{"id": "R21_J15_sbbound_riyadh", "cmd": "python3 bound_v2.py sb riyadh", "env": {}, "outputs": ["results/T17v3sb_riyadh.csv", "results/T17v3sb_riyadh_perwindow.csv", "results/T17v3sb_riyadh_dualcurves.json"]}
+{"id": "R21_J8_9_bound_jeddah", "cmd": "python3 bound_v2.py main jeddah", "env": {}, "outputs": ["results/T17v3_jeddah.csv", "results/T17v3_jeddah_perwindow.csv", "results/T17v3_jeddah_dualcurves.json"]}
+{"id": "R21_J10_ruled_bound_jeddah", "cmd": "python3 bound_v2.py ruled jeddah", "env": {}, "outputs": ["results/T17v3_ruled_jeddah.csv", "results/T17v3_ruled_jeddah_perwindow.csv"]}
+{"id": "R21_J8_clv_jeddah", "cmd": "python3 clv_refine.py jeddah", "env": {}, "outputs": ["results/T13v3_clv_jeddah.csv"], "after": ["R21_J8_9_bound_jeddah"]}
+{"id": "R21_J15_sbbound_jeddah", "cmd": "python3 bound_v2.py sb jeddah", "env": {}, "outputs": ["results/T17v3sb_jeddah.csv", "results/T17v3sb_jeddah_perwindow.csv", "results/T17v3sb_jeddah_dualcurves.json"]}
+{"id": "R21_J8_9_bound_taif", "cmd": "python3 bound_v2.py main taif", "env": {}, "outputs": ["results/T17v3_taif.csv", "results/T17v3_taif_perwindow.csv", "results/T17v3_taif_dualcurves.json"]}
+{"id": "R21_J10_ruled_bound_taif", "cmd": "python3 bound_v2.py ruled taif", "env": {}, "outputs": ["results/T17v3_ruled_taif.csv", "results/T17v3_ruled_taif_perwindow.csv"]}
+{"id": "R21_J8_clv_taif", "cmd": "python3 clv_refine.py taif", "env": {}, "outputs": ["results/T13v3_clv_taif.csv"], "after": ["R21_J8_9_bound_taif"]}
+{"id": "R21_J15_sbbound_taif", "cmd": "python3 bound_v2.py sb taif", "env": {}, "outputs": ["results/T17v3sb_taif.csv", "results/T17v3sb_taif_perwindow.csv", "results/T17v3sb_taif_dualcurves.json"]}
+{"id": "R21_J19_tariff_bound", "cmd": "python3 bound_v2.py tariff", "env": {}, "outputs": ["results/T4v3_bound.csv"]}
+{"id": "R21_T5_bound", "cmd": "python3 bound_v2.py csw", "env": {}, "outputs": ["results/T5v3_bound.csv"]}
+{"id": "R21_bound_at", "cmd": "python3 bound_at.py", "env": {}, "outputs": ["results/T17v3_Ba.csv"], "after": ["R21_D1_latch_riyadh", "R21_J6ii_riyadh", "R21_D1_latch_jeddah", "R21_J6ii_jeddah", "R21_D1_latch_taif", "R21_J6ii_taif", "R21_J8_9_bound_riyadh", "R21_J10_ruled_bound_riyadh", "R21_J15_sbbound_riyadh", "R21_J8_9_bound_jeddah", "R21_J10_ruled_bound_jeddah", "R21_J15_sbbound_jeddah", "R21_J8_9_bound_taif", "R21_J10_ruled_bound_taif", "R21_J15_sbbound_taif"]}
+{"id": "J24_t1_dt5", "cmd": "python3 t1_v2.py t1", "env": {"RBRL_DT_MIN": "5", "RBRL_TAG": "_dt5"}, "outputs": ["results/T1v3_heldout_dt5.csv", "results/T1v3_perwindow_dt5.csv", "results/tuned_params_v2_dt5.json"]}
+{"id": "J24_mpc_dt5_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 24 --ngrid 801", "env": {"RBRL_DT_MIN": "5", "RBRL_TAG": "_dt5"}, "outputs": ["results/T21v3_riyadh_dt5.csv", "results/T21v3_riyadh_perwindow_dt5.csv"], "after": ["J24_t1_dt5"]}
+{"id": "J24_bound_dt5_riyadh", "cmd": "python3 bound_v2.py main riyadh", "env": {"RBRL_DT_MIN": "5", "RBRL_TAG": "_dt5"}, "outputs": ["results/T17v3_riyadh_dt5.csv", "results/T17v3_riyadh_dt5_dualcurves.json"], "after": ["J24_t1_dt5"]}
+{"id": "J24_t1_dt30", "cmd": "python3 t1_v2.py t1", "env": {"RBRL_DT_MIN": "30", "RBRL_TAG": "_dt30"}, "outputs": ["results/T1v3_heldout_dt30.csv", "results/T1v3_perwindow_dt30.csv", "results/tuned_params_v2_dt30.json"]}
+{"id": "J24_mpc_dt30_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 24 --ngrid 1601", "env": {"RBRL_DT_MIN": "30", "RBRL_TAG": "_dt30"}, "outputs": ["results/T21v3_riyadh_dt30.csv", "results/T21v3_riyadh_perwindow_dt30.csv"], "after": ["J24_t1_dt30"]}
+{"id": "J24_mpc_dt30_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 24 --ngrid 1601", "env": {"RBRL_DT_MIN": "30", "RBRL_TAG": "_dt30"}, "outputs": ["results/T21v3_jeddah_dt30.csv", "results/T21v3_jeddah_perwindow_dt30.csv"], "after": ["J24_t1_dt30"]}
+{"id": "J24_mpc_dt30_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 24 --ngrid 1601", "env": {"RBRL_DT_MIN": "30", "RBRL_TAG": "_dt30"}, "outputs": ["results/T21v3_taif_dt30.csv", "results/T21v3_taif_perwindow_dt30.csv"], "after": ["J24_t1_dt30"]}
+{"id": "J24_bound_dt30", "cmd": "python3 bound_v2.py main riyadh,jeddah,taif", "env": {"RBRL_DT_MIN": "30", "RBRL_TAG": "_dt30"}, "outputs": ["results/T17v3_riyadh_dt30.csv", "results/T17v3_jeddah_dt30.csv", "results/T17v3_taif_dt30.csv"], "after": ["J24_t1_dt30"]}
+{"id": "J24_t1_cth7200", "cmd": "python3 t1_v2.py t1", "env": {"RBRL_CTH": "7200", "RBRL_TAG": "_cth7200"}, "outputs": ["results/T1v3_heldout_cth7200.csv", "results/T1v3_perwindow_cth7200.csv", "results/tuned_params_v2_cth7200.json"]}
+{"id": "J24_mpc_cth7200_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 24 --ngrid 1601", "env": {"RBRL_CTH": "7200", "RBRL_TAG": "_cth7200"}, "outputs": ["results/T21v3_riyadh_cth7200.csv", "results/T21v3_riyadh_perwindow_cth7200.csv"], "after": ["J24_t1_cth7200"]}
+{"id": "J24_bound_cth7200_riyadh", "cmd": "python3 bound_v2.py main riyadh", "env": {"RBRL_CTH": "7200", "RBRL_TAG": "_cth7200"}, "outputs": ["results/T17v3_riyadh_cth7200.csv", "results/T17v3_riyadh_cth7200_dualcurves.json"], "after": ["J24_t1_cth7200"]}
+{"id": "J24_table", "cmd": "python3 timestep_table.py --headline /home/claude/rbrl_p9/results:/home/claude/rbrl_p6/results", "env": {}, "outputs": ["results/T2v3_timestep.csv"], "after": ["J24_mpc_dt5_riyadh", "J24_bound_dt5_riyadh", "J24_mpc_dt30_riyadh", "J24_mpc_dt30_jeddah", "J24_mpc_dt30_taif", "J24_bound_dt30", "J24_mpc_cth7200_riyadh", "J24_bound_cth7200_riyadh", "R21_J8_9_bound_riyadh"]}

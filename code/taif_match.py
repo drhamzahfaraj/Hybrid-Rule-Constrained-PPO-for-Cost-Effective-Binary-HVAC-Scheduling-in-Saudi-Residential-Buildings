@@ -13,10 +13,8 @@ under-temperature excursion that no cooling-only plant can correct, so it can
 converge on a phase accident rather than on the comfort target.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -85,7 +83,7 @@ if __name__ == "__main__":
         print(f"{r['cap']:6.2f} {r['on_at']:6.2f} {r['J']:8.4f} {r['f_s']:6.2f} "
               f"{r['T_occ']:8.4f} {r['dT']:+8.4f} {r['deg_h_over']:7.4f} "
               f"{r['deg_h_under']:7.4f} {r['sav']:+8.2f}{flag}")
-    with open(_ROOT + "/results/taif_cap_scan.csv", "w", newline="") as f:
+    with open("/home/claude/rbrl/results/taif_cap_scan.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
     ok = [r for r in rows if r["deg_h_over"] <= 1e-9 and abs(r["dT"]) <= 0.03]

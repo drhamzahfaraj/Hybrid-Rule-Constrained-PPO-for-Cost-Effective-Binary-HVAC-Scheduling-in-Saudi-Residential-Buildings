@@ -26,10 +26,8 @@ at the finest resolution, so that the number printed in the manuscript is
 conservative with respect to the residual discretisation error.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import final_tables as F
 import dp_meanconstrained as M
@@ -85,7 +83,7 @@ if __name__ == "__main__":
                       f"(finest {best:.3f} + drift margin {abs(drift):.3f})",
                       flush=True)
                 rows[-1]["published"] = safe
-    with open(_ROOT + "/results/T17_bound_convergence.csv", "w",
+    with open("/home/claude/rbrl/results/T17_bound_convergence.csv", "w",
               newline="") as f:
         fn = ["city", "arm", "lam", "n_grid", "bound_J", "bound_sav",
               "published"]

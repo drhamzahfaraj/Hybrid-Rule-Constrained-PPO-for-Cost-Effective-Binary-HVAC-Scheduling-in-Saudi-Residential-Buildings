@@ -17,70 +17,48 @@ a higher solar load lengthens on-phases, cuts the start count, and so shrinks
 the switching share that the saving is made of.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
-import sys, csv, os
-sys.path.insert(0, _ROOT + "")
+import sys, os
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 
 import headroom as H
 import final_tables as F
-from hvac import read_epw, vertical_irradiance
+from hvac import read_epw
+import amy_spread as AS          # weather() swap + the §2 protocol helpers (HOOK(F6/F7) there)
 
-_epw_series = H.series
 AZ = {"north": 0.0, "east": 90.0, "south": 180.0, "west": 270.0}
 
 
 def series_at(city, azimuth):
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
-    irr = vertical_irradiance(dni, dhi, H.CITIES[city], azimuth_deg=azimuth)
-    tdb = np.asarray(tdb, float)
+    """headroom.series replacement: the city's TMYx record transposed to one glazed azimuth."""
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
+    return AS._series_from(tdb, dni, dhi, city, azimuth)
 
-    def series(city_, hours, start_day):
-        spd = int(round(1.0 / H.DT)); N = int(round(hours / H.DT))
-        h0 = start_day * 24
-        return (np.repeat(tdb[h0:h0 + hours], spd)[:N],
-                np.repeat(irr[h0:h0 + hours], spd)[:N], N)
-    return series
+
+def run(city="riyadh", price_v=AS.PRICE):
+    rows = []
+    for name, az in AZ.items():
+        with AS.weather(series_at(city, az)):
+            th = {w: F.therm_run(city, w, price_v) for w in F.EVAL_W}
+            r = AS.protocol(city, price_v)
+        row = dict(city=city, orientation=name, azimuth=az,
+                   therm_J=float(np.mean([th[w]["J"] for w in F.EVAL_W])),
+                   therm_E=float(np.mean([th[w]["E"] for w in F.EVAL_W])),
+                   therm_fs=float(np.mean([th[w]["f_s"] for w in F.EVAL_W])), **r)
+        print(f"{name:6s} az={az:5.0f}  THERM J={row['therm_J']:.4f}  {AS._fmt(r)}", flush=True)
+        rows.append(row)
+    return rows
 
 
 if __name__ == "__main__":
-    city = "riyadh"
-    rows = []
-    for name, az in AZ.items():
-        H.series = series_at(city, az)
-        th = {w: F.therm_run(city, w, 0.18) for w in F.EVAL_W}
-        Jb = np.array([th[w]["J"] for w in F.EVAL_W])
-        got = F.tune_rule(city, 0.18, F.TUNE_W,
-                          lambda w: F.therm_run(city, w, 0.18)["T_mean_occ"])
-        if got is None:
-            print(f"{name:6s}: no admissible rule"); continue
-        _, on_, off_ = got
-        rs = [F.rule_run(city, w, 0.18, on_, off_) for w in F.EVAL_W]
-        J = np.array([r["J"] for r in rs])
-        fs_t = float(np.mean([th[w]["f_s"] for w in F.EVAL_W]))
-        fs_r = float(np.mean([r["f_s"] for r in rs]))
-        sav = 100.0 * (Jb - J) / Jb
-        E_t = float(np.mean([th[w]["E"] for w in F.EVAL_W]))
-        row = dict(orientation=name, azimuth=az,
-                   therm_J=round(float(Jb.mean()), 4),
-                   therm_E=round(E_t, 3),
-                   therm_fs=round(fs_t, 3), rule_fs=round(fs_r, 3),
-                   on=round(on_, 2), off=round(off_, 2),
-                   sav=round(float(sav.mean()), 2),
-                   sav_sd=round(float(sav.std(ddof=1)), 2),
-                   dT=round(float(np.mean([r["T_mean_occ"] for r in rs])
-                            - np.mean([th[w]["T_mean_occ"] for w in F.EVAL_W])), 4),
-                   max_deg_h=round(max(r["deg_h_occ"] for r in rs), 5))
-        rows.append(row)
-        print(f"{name:6s} az={az:5.0f}  THERM J={row['therm_J']:.4f} "
-              f"E={row['therm_E']:.3f} f_s={fs_t:.2f}  rule {on_:.2f}/{off_:.2f}"
-              f"  sav {row['sav']:+.2f}+/-{row['sav_sd']:.2f}%  f_s {fs_r:.2f}"
-              f"  dT {row['dT']:+.4f}", flush=True)
-    H.series = _epw_series
-    os.makedirs(_ROOT + "/results", exist_ok=True)
-    with open(_ROOT + "/results/T24_orientation.csv", "w",
-              newline="") as f:
-        w = csv.DictWriter(f, fieldnames=list(rows[0]))
-        w.writeheader(); w.writerows(rows)
-    print("-> results/T24_orientation.csv")
+    import rbrl_io as IO
+    city = sys.argv[1] if len(sys.argv) > 1 else "riyadh"
+    rows = run(city)
+    ok = [r for r in rows if r.get("fit_status") != "none"]
+    for r in rows:
+        if r.get("fit_status") == "none":
+            print(f"  not tabulated (no admissible parameter): {r['orientation']}")
+    import v3_names as V
+    IO.write_csv(V.name("ORIENT") + ("" if city == "riyadh" else f"_{city}"), ok,
+                 inputs=[f"{IO.ROOT}/{city}.epw"], impl="orientation.py")
+    print(f"-> results/{V.name('ORIENT')}.csv")

@@ -1,0 +1,20 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "mpc_lambda.py",
+ "argv": "mpc_lambda.py --city riyadh --horizons 6,24 --forecast persistence",
+ "env": {},
+ "inputs": {
+  "results/tuned_params_v2.json": "018af48fb56ba521",
+  "riyadh.epw": "a2e88409591c158f",
+  "jeddah.epw": "690cae887558f09e",
+  "taif.epw": "dc35449564eea0ae"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 7291,
+ "utc": "2026-11-12T11:03:29Z"
+}

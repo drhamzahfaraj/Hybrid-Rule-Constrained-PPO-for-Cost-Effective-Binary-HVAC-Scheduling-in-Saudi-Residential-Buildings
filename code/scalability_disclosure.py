@@ -16,10 +16,8 @@ Reported separately and never conflated:
     timings and are marked as extrapolation beyond the largest size actually run
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, time, platform, json, resource, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 
 
@@ -170,10 +168,10 @@ if __name__ == "__main__":
               f"joint actions = {states * 2**nz:9.3g} transitions/interval")
 
     env["peak_rss_mib"] = round(peak_mb, 1)
-    with open(_ROOT + "/results/T18_scalability.csv", "w",
+    with open("/home/claude/rbrl/results/T18_scalability.csv", "w",
               newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
-    with open(_ROOT + "/results/T18_environment.json", "w") as f:
+    with open("/home/claude/rbrl/results/T18_environment.json", "w") as f:
         json.dump(env, f, indent=2)
     print("\n-> results/T18_scalability.csv, results/T18_environment.json")

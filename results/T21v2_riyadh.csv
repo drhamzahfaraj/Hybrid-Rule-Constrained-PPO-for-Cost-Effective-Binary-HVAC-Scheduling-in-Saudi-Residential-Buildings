@@ -1,0 +1,4 @@
+city,horizon_h,n_grid,lam,relaxed_pooled,fallback_steps,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,max_abs_dT_w,start_sav_eq,energy_sav_eq,J_arm_mean,J_eq_mean,J_therm0_mean,deg_h_over,deg_h_under,s_w_mean,s_w_sd,max_bracket_gap
+riyadh,24.0,801,0.241584,True,0,7,TUNE_W,18.529655,19.279378,0.038435,0.06866,33.861549,0.455549,0.902694,1.108004,1.118295,0.0,0.0,18.413456,1.357095,0.074249
+riyadh,48.0,801,0.50258,True,0,7,TUNE_W,19.155475,18.589029,-0.007901,0.064284,34.634516,1.147831,0.910414,1.12613,1.118295,0.0,0.0,19.102888,1.365299,0.046274
+riyadh,6.0,801,0.242838,True,0,7,TUNE_W,15.561659,15.641655,0.012361,0.051438,28.284049,-0.606172,0.943375,1.117235,1.118295,0.0,0.0,15.62776,0.867085,0.046274

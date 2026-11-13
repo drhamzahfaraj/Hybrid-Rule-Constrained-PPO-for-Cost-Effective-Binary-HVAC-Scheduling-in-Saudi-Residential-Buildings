@@ -25,10 +25,8 @@ unavoidable:
 Reporting both distinguishes unavoidable infeasibility from policy error.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, argparse
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from hvac import read_epw, vertical_irradiance
 
@@ -44,7 +42,7 @@ def solve(city="riyadh", walls=1, hours=168, start_day=181,
     lam = lam_per_wall * walls                      # W/K
     p_hvac = q_hvac / cop / 1000.0                  # kW
     lat = {"riyadh": 24.7, "jeddah": 21.5}[city]
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
     irr = vertical_irradiance(dni, dhi, lat, azimuth_deg=180.0)
 
     spd = int(round(1.0 / dt))                      # steps per hour

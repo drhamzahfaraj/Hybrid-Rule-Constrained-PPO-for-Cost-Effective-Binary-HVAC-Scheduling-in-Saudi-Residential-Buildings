@@ -27,10 +27,8 @@ warms by the hot-guard excursion before the plant bites, and switching off at
 and for a deadband centred on the band, d <= 2 * min(half-band - excursion).
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -110,7 +108,7 @@ if __name__ == "__main__":
               f"TUNED={r['tuned_sav']}+/-{r['tuned_sd']}%  "
               f"guard-hyst={r['guard_sav']:+.2f}%", flush=True)
 
-    with open(_ROOT + "/results/T7_deadband.csv", "w", newline="") as f:
+    with open("/home/claude/rbrl/results/T7_deadband.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
     print("\n-> results/T7_deadband.csv")

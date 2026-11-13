@@ -44,10 +44,8 @@ Electrical draw is Q_tot / COP while on, so the energy penalty of a humid
 climate appears as longer run time, not as a different instantaneous power.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, argparse
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 
 CP, RHO, H_FG = 1005.0, 1.2, 2450e3
@@ -103,7 +101,7 @@ class LatentZone:
                  t_min=22.0, t_max=26.0, rh_max=60.0, price=0.05, c_sw=0.15):
         self.__dict__.update(locals()); del self.self
         lat = {"riyadh": 24.7, "jeddah": 21.5, "taif": 21.483}[city]
-        t, rh, pa, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+        t, rh, pa, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
         n = len(t)
         self.t_out = t
         self.w_out = w_from_rh(t, rh, pa)
@@ -208,7 +206,7 @@ if __name__ == "__main__":
                   f"{r['lat_capped']:8.1f}")
         print()
     import os
-    os.makedirs(_ROOT + "/results", exist_ok=True)
-    with open(_ROOT + "/results/latent.csv", "w", newline="") as f:
+    os.makedirs("/home/claude/rbrl/results", exist_ok=True)
+    with open("/home/claude/rbrl/results/latent.csv", "w", newline="") as f:
         wr = csv.DictWriter(f, fieldnames=list(rows[0])); wr.writeheader(); wr.writerows(rows)
     print("-> results/latent.csv")

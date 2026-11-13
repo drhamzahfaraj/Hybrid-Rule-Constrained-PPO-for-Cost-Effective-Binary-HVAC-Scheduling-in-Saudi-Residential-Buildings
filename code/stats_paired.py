@@ -44,10 +44,8 @@ Methods
   the reader sees the margin rather than inferring it.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, csv, json
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from scipy import stats
 
@@ -211,7 +209,7 @@ def mpc_h(city, hh=24.0):
     """MPC per-window cost from the 1601-point grid-converged, cap-refined run
     (T21), the arm the manuscript quotes. T15 (801-point, 0.05 K caps) is kept
     for the record only."""
-    p = f"{_ROOT}/results/T21_g1601_{city}_mpc_perwindow.csv"
+    p = f"/home/claude/rbrl/results/T21_g1601_{city}_mpc_perwindow.csv"
     if not os.path.exists(p):
         return None
     out = {}
@@ -221,7 +219,7 @@ def mpc_h(city, hh=24.0):
     return out
 
 
-def rbrl(city, path=_ROOT + "/results/rbrl_ppo5_perwindow.csv"):
+def rbrl(city, path="/home/claude/rbrl/results/rbrl_ppo5_perwindow.csv"):
     """RBRL per-window cost, averaged across seeds within each window.
 
     Averaging across seeds BEFORE pairing is the right order: the window is the
@@ -278,8 +276,8 @@ if __name__ == "__main__":
                 print(f"\n  [MPC-{hh:.0f}h not matched in all 7 windows for "
                       f"this city; comparison omitted]")
 
-    os.makedirs(_ROOT + "/results", exist_ok=True)
-    with open(_ROOT + "/results/T20_paired_stats.csv", "w",
+    os.makedirs("/home/claude/rbrl/results", exist_ok=True)
+    with open("/home/claude/rbrl/results/T20_paired_stats.csv", "w",
               newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)

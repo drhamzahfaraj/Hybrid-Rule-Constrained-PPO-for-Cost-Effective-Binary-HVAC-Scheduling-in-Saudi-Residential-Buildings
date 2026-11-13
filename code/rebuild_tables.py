@@ -33,10 +33,8 @@ degree-hours, and MEAN ZONE TEMPERATURE -- the column whose absence makes a
 controller comparison uninterpretable.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, os, time, platform
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from hvac import Params, read_epw, vertical_irradiance
 
@@ -73,7 +71,7 @@ def grid(nx, ny):
 
 def series(city, hours, start_day):
     lat = {"riyadh": 24.7, "jeddah": 21.5}[city]
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
     irr = vertical_irradiance(dni, dhi, lat, azimuth_deg=180.0)
     spd = int(round(1.0 / DT)); N = int(round(hours / DT)); h0 = start_day * 24
     return (np.repeat(tdb[h0:h0 + hours], spd)[:N],
@@ -150,7 +148,7 @@ if __name__ == "__main__":
                 print(f"  {topo:5s} {r['n_zones']:3d} {lab:12s} {r['J']:8.4f} "
                       f"{r['E']:7.3f} {r['f_s']:5.2f} {r['T_mean']:7.2f} "
                       f"{r['v_c']:6.2f} {r['deg_h']:7.3f} {ss:>8s}")
-    os.makedirs(_ROOT + "/results", exist_ok=True)
-    with open(_ROOT + "/results/rebuilt_tables.csv", "w", newline="") as f:
+    os.makedirs("/home/claude/rbrl/results", exist_ok=True)
+    with open("/home/claude/rbrl/results/rebuilt_tables.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
     print(f"\n-> results/rebuilt_tables.csv   ({time.time()-t0:.0f}s)")

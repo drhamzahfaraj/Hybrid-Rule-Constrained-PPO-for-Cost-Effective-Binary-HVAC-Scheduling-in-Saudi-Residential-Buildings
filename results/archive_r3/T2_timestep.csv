@@ -1,0 +1,5 @@
+admissible,dp_sav_pct,dt_min,overshoot_K,rule_sav_pct,therm_J,therm_deg_h
+True,28.03,5.0,0.125,25.57,1.0085,0.0
+True,19.25,15.0,0.375,13.96,0.9246,0.0
+True,13.0,30.0,0.75,-2.43,0.8824,0.0251
+False,-8.62,60.0,1.5,-12.95,0.8212,4.4699

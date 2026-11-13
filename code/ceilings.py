@@ -15,10 +15,8 @@ own position on under-temperature excursions), and reports the arm whose mean
 occupied temperature is closest to the baseline's.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -85,7 +83,7 @@ if __name__ == "__main__":
                              sav=round(sav, 2), sav_sd=round(sd, 2)))
             print(f"{city:8s} {name:10s} {cap:6.2f} {J:8.4f} {dT:+8.4f} "
                   f"{fs:6.2f} {sav:+8.2f}+/-{sd:5.2f}%", flush=True)
-    with open(_ROOT + "/results/T9_ceilings.csv", "w", newline="") as f:
+    with open("/home/claude/rbrl/results/T9_ceilings.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
     print("-> results/T9_ceilings.csv")

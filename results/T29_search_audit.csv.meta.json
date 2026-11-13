@@ -1,0 +1,25 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "search_audit.py",
+ "argv": "search_audit.py",
+ "env": {},
+ "inputs": {
+  "results/tuned_params_v2.json": "018af48fb56ba521",
+  "results/rbrl_ppo5_v2_riyadh.csv": "41bb68b8fe70e311",
+  "results/T21v3_riyadh.csv": "0864b283204b3dcf",
+  "results/T21v2_riyadh.csv": "ab75379827e2206e",
+  "results/rbrl_ppo5_v2_jeddah.csv": "1fc8dcfdbbe65298",
+  "results/T21v3_jeddah.csv": "987e03903b75d076",
+  "results/T21v2_jeddah.csv": "6bd7c2531060ac70",
+  "results/T21v3_taif.csv": "326e9bf8ccace9fa",
+  "results/T21v2_taif.csv": "bd9c69aad48f873d"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 10141,
+ "utc": "2026-11-12T14:02:45Z"
+}

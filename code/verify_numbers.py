@@ -1,242 +1,211 @@
 #!/usr/bin/env python3
-"""Reverse-engineer every headline number in the manuscript from its source.
+"""Re-derive every tabulated number from the v3 result files (RULING_round4 F18, job J17).
 
-For each figure the paper prints, this script finds the CSV it must come from,
-re-derives it from first principles, and compares. A number that cannot be
-re-derived is reported as UNTRACEABLE, which is as serious as a mismatch: it
-means no reader could check it either.
+No result value is typed in this file (the v1/v2 version compared CSVs with figures copied from
+the manuscript; those are deleted). Every check derives one v3 quantity from another:
 
-Three classes of check:
+  A  SUMMARY    every summary row re-derives from its per-window rows (pooled Rule C saving,
+                starts, dT, J, §2.1 metric sums, T_end, fallback_steps)
+  B  IDENTITY   at equal clipped mean the arm and its comparator use the same terminal-priced
+                energy, so the cost saving is c_sw x on-commands avoided (the text's claim)
+  C  CYCLING    T25v3 re-derives from the per-window files (cycling_energy)
+  D  STATS      T20v3 re-derives from the per-window files (stats_v3)
+  E  TABLES     every generated LaTeX table exists, carries no nan, and was generated from the
+                CURRENT bytes of each input (sha in its provenance header == sha of the file now)
+  F  TEXT       every \\input{tables/...} in main.tex / supplement.tex exists; the number of
+                remaining \\pend{} placeholders is printed (with --final every one is a FAIL:
+                0 printed values without a CURRENT source)
 
-  SOURCE   the printed value equals the value in the results file
-  DERIVED  the printed value equals what the definition produces from the
-           underlying costs, e.g. saving = (J_base - J_arm) / J_base
-  ORDER    the printed values satisfy the inequalities the argument asserts,
-           e.g. every arm at or below its city's bound
-
-Exit code is non-zero if any check fails, so this can gate a build.
+A missing file is a FAIL. Exit code is non-zero on any FAIL.
+Usage: python3 verify_numbers.py [--final] [--tex DIR] [--tables DIR]
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
-import csv, sys
+import argparse, csv, json, os, re, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import numpy as np
+import rbrl_io as IO
+import v3_names as V
 
 FAILS: list[str] = []
-NCHK = 0
-
-
-def load(path):
-    with open(f"{_ROOT}/results/{path}") as f:
-        return list(csv.DictReader(f))
+NCHK = [0]
+TEX = os.environ.get("RBRL_TEX_DIR", "/home/claude/v4")
 
 
 def chk(label, ok, detail=""):
-    global NCHK
-    NCHK += 1
+    NCHK[0] += 1
     print(f"  [{'PASS' if ok else 'FAIL'}] {label}" + (f" -- {detail}" if detail else ""))
     if not ok:
         FAILS.append(label)
+    return ok
 
 
-def close(a, b, tol=0.06):
+def guard(label, fn):
+    try:
+        fn()
+    except (FileNotFoundError, LookupError, KeyError, ValueError) as e:
+        chk(label, False, f"{type(e).__name__}: {e}")
+
+
+def close(a, b, tol):
     return abs(float(a) - float(b)) <= tol
 
 
-if __name__ == "__main__":
-    print("REVERSE-ENGINEERING CHECK: every printed number re-derived\n")
+TOL = 2e-4          # 6-digit CSV rounding, propagated through a pooled ratio (points / K / SAR)
 
-    # ------------------------------------------------------------------ A
-    print("A. TABLE 5 -- costs and savings, derived from J not copied")
-    t14 = {(r["city"], r["arm"]): r for r in load("T14_perwindow_summary.csv")}
-    printed = {  # city: (J_therm, J_tuned, tuned_sav, J_clv, clv_sav)
-        "riyadh": (1.1183, 1.0170, 9.3, 0.9174, 18.1),
-        "jeddah": (0.9926, 0.9006, 9.3, 0.8161, 17.8),
-        "taif":   (0.6139, 0.5881, 4.6, 0.5170, 15.0),
-    }
-    # The printed saving is the MEAN OF PER-WINDOW SAVINGS (the paired
-    # statistic the caption defines), not the saving computed from the mean
-    # costs. The two differ by up to 0.81 points in Taif, so a reader dividing
-    # the printed J column will not reproduce the printed percentage. The
-    # caption now says so; this check enforces the stated definition.
-    import statistics as _st
-    pw = load("T14_perwindow.csv")
-    for city, (Jb, Jt, st, Jc, sc) in printed.items():
-        rows = [r for r in pw if r["city"] == city and r["arm"] == "OPT"]
-        mean_of_ratios = _st.mean(float(r["att_sav"]) for r in rows)
-        ratio_of_means = 100.0 * (Jb - Jc) / Jb
-        chk(f"{city}: CLV saving is the MEAN of per-window savings",
-            close(mean_of_ratios, sc, 0.06),
-            f"mean-of-ratios {mean_of_ratios:.2f}% vs printed {sc}%")
-        chk(f"{city}: the two definitions differ, and the caption says which",
-            True,
-            f"mean-of-ratios {mean_of_ratios:.2f}% vs ratio-of-means "
-            f"{ratio_of_means:.2f}% ({mean_of_ratios-ratio_of_means:+.2f} pts)")
-        row = t14[(city, "OPT")]
-        chk(f"{city}: CLV cost matches the per-window solver",
-            close(row["att_J"], Jc, 1e-3),
-            f"csv {row['att_J']} vs printed {Jc}")
-        chk(f"{city}: CLV saving matches the per-window solver",
-            close(row["att_sav"], sc, 0.06),
-            f"csv {row['att_sav']}% vs printed {sc}%")
-        chk(f"{city}: CLV is no warmer than baseline in EVERY window",
-            float(row["max_dT"]) <= 1e-6,
-            f"worst dT {float(row['max_dT']):+.4f} K")
 
-    # ------------------------------------------------------------------ B
-    print("\nB. THE BOUND -- published value is conservative of the finest grid")
-    cv = load("T17_bound_convergence.csv")
-    pub = {"riyadh": 19.8, "jeddah": 19.5, "taif": 20.2}
-    for city, b in pub.items():
-        rows = [r for r in cv if r["city"] == city and r["arm"] == "OPT"]
-        finest = max(float(r["bound_sav"]) for r in rows)
-        coarse = min(float(r["bound_sav"]) for r in rows)
-        chk(f"{city}: published bound >= finest-grid value",
-            b >= finest, f"published {b} >= finest {finest:.3f}")
-        chk(f"{city}: the bound rises with refinement (unsafe direction known)",
-            finest > coarse, f"{coarse:.3f} -> {finest:.3f}")
+def summary_matches(label, s, pw):
+    """A: one summary row against its per-window rows."""
+    pw = list(pw)
+    der = dict(s_pooled_eq=V.pooled(pw),
+               start_sav_eq=100 * (1 - sum(float(r["fs_arm"]) for r in pw) / sum(float(r["fs_eq"]) for r in pw)),
+               dT_pooled=float(np.mean([float(r["dT_w"]) for r in pw])),
+               J_arm_mean=float(np.mean([float(r["J_arm"]) for r in pw])),
+               J_eq_mean=float(np.mean([float(r["J_eq"]) for r in pw])),
+               deg_h_over=sum(float(r["deg_h_over"]) for r in pw),
+               deg_h_cmd_under=sum(float(r["deg_h_cmd_under"]) for r in pw),
+               deg_h_ff_under=sum(float(r["deg_h_ff_under"]) for r in pw),
+               T_end_mean=float(np.mean([float(r["T_end"]) for r in pw])),
+               fallback_steps=sum(int(float(r["fallback_steps"])) for r in pw))
+    bad = {k: (s.get(k), round(v, 6)) for k, v in der.items()
+           if s.get(k) in (None, "") or not close(s[k], v, TOL * max(1.0, abs(v)))}
+    chk(f"A {label}: summary re-derives from its {len(pw)} per-window rows", not bad and len(pw) == 7,
+        f"mismatch {bad}" if bad else f"s={der['s_pooled_eq']:.3f}")
 
-    # ------------------------------------------------------------------ C
-    print("\nC. THE BRACKET -- attainable <= optimum <= bound, every city")
-    for city, b in pub.items():
-        att = float(t14[(city, "OPT")]["att_sav"])
-        chk(f"{city}: attainable <= bound", att <= b,
-            f"{att:.2f}% <= {b}%")
-        chk(f"{city}: the gap is reported, not assumed",
-            0.0 < b - att < 6.0, f"gap {b-att:.2f} points")
 
-    # ------------------------------------------------------------------ D
-    print("\nD. EVERY REPORTED ARM LIES BELOW ITS CITY'S BOUND")
-    arms = {"riyadh": [("RBRL", 5.66), ("guard hysteresis", 5.82),
-                       ("TUNED", 9.25), ("MPC 24h", 9.10),
-                       ("MPC 24h inside rules", 2.43)],
-            "jeddah": [("RBRL", 5.80), ("guard hysteresis", 5.80),
-                       ("TUNED", 9.26), ("MPC 24h", 8.01)],
-            "taif":   [("RBRL", 7.62), ("guard hysteresis", 7.62),
-                       ("TUNED", 4.56), ("MPC 24h", 5.33)]}
-    for city, lst in arms.items():
-        for name, v in lst:
-            chk(f"{city}: {name} <= bound", v <= pub[city],
-                f"{v:.2f}% vs {pub[city]}%")
+def identity(label, pw):
+    """B: equal terminal-priced energy, and s = c_sw x dN / J_eq (pooled)."""
+    import cycling_energy as C
+    pw = list(pw)
+    vals = np.array([C.window_energy(r) for r in pw])
+    Ea, Eq, fa, fq = vals.T
+    rel = 1 - Ea.sum() / Eq.sum()
+    cs = np.array([C._csw(r) for r in pw])
+    s_sw = 100 * float(np.sum(cs * (fq - fa))) / sum(float(r["J_eq"]) for r in pw)
+    s = V.pooled(pw)
+    chk(f"B {label}: terminal-priced energy equals the comparator's; s = c_sw x on-commands avoided",
+        abs(rel) < 1e-4 and abs(s - s_sw) < 0.05,
+        f"energy rel {rel:+.1e}; s {s:.3f} vs c_sw*dN/J_eq {s_sw:.3f}")
 
-    # ------------------------------------------------------------------ E
-    print("\nE. MPC -- per-window matched, and the correction is in the "
-          "stated direction")
-    # the quoted MPC arm: 1601-point grid, per-window matched, 0.01 K caps
-    t15 = {}
-    for c in ("riyadh", "jeddah", "taif"):
-        for r in load(f"T21_g1601_{c}_mpc_summary.csv"):
-            t15[(r["city"], float(r["horizon_h"]))] = r
-    t8 = {(r["city"], float(r["horizon_h"])): r for r in load("T8_mpc.csv")}
-    for key in t15:
-        new = float(t15[key]["sav"])
-        old = float(t8[key]["sav"]) if key in t8 else None
-        chk(f"{key[0]} H={key[1]:.0f}h is no warmer in any window",
-            float(t15[key]["worst_dT"]) <= 1e-6,
-            f"worst dT {float(t15[key]['worst_dT']):+.4f} K")
-        if old is not None:
-            chk(f"{key[0]} H={key[1]:.0f}h: aggregate match was optimistic",
-                new <= old + 1e-9,
-                f"per-window {new:.2f}% <= aggregate {old:.2f}%")
-    chk("Taif 24 h and 48 h matched in six of seven windows, as the footnote says",
-        int(t15[("taif", 24.0)]["n_win"]) == 6
-        and int(t15[("taif", 48.0)]["n_win"]) == 6,
-        f"n_win = {t15[('taif',24.0)]['n_win']} / {t15[('taif',48.0)]['n_win']}")
 
-    # ------------------------------------------------------------------ F
-    print("\nF. THE 2x2 -- the restated finding's inequalities")
-    t16 = {bool(r["ruled"] == "True"): r
-           for r in load("T16_mpc_ruled_summary.csv")}
-    ruled = float(t16[True]["sav"])
-    unruled = float(t16[False]["sav"])
-    chk("Riyadh: 24 h inside the rules is far worse than outside them",
-        unruled - ruled > 4.0,
-        f"unruled {unruled:.2f}% vs ruled {ruled:.2f}% "
-        f"(gap {unruled-ruled:.2f} points)")
-    chk("Riyadh: a day of lookahead does not beat the tuned rule",
-        unruled <= 9.25 + 0.5,
-        f"MPC24 {unruled:.2f}% vs TUNED 9.25%")
-    chk("the unconstrained 24 h figure agrees with the independent re-match",
-        close(unruled, t15[("riyadh", 24.0)]["sav"], 0.06),
-        f"mpc_ruled {unruled:.2f}% vs mpc_perwindow "
-        f"{t15[('riyadh',24.0)]['sav']}%")
+def class_A_B():
+    print("\nA/B. SUMMARIES RE-DERIVE; DUTY-CYCLE IDENTITY")
+    for c in V.CITIES:
+        for arm in ("TUNED", "guard"):
+            guard(f"A/B {arm} {c}", lambda arm=arm, c=c: (
+                summary_matches(f"{arm} {c}", V.summary(arm, c), V.perwindow(arm, c).values()),
+                identity(f"{arm} {c}", V.perwindow(arm, c).values())))
+        for key, pre in (("MPC", "MPC"), ("MPC_PERS", "MPCp"), ("MPC_RULED", "MPCr")):
+            def mpc(key=key, pre=pre, c=c):
+                for r in V.read(key, c):
+                    lab = f"{pre}{float(r['horizon_h']):g}"
+                    pw = V.perwindow(lab, c).values()
+                    summary_matches(f"{lab} {c}", r, pw); identity(f"{lab} {c}", pw)
+            guard(f"A/B MPC {key} {c}", mpc)
 
-    # ------------------------------------------------------------------ G
-    print("\nG. DUTY-CYCLE IDENTITY -- energy flat where temperature matched")
-    # Table 5's energy column must be small wherever the mean is matched
-    for city, e in (("riyadh", -0.3), ("jeddah", 0.5), ("taif", -0.1)):
-        chk(f"{city}: TUNED energy change is under one point",
-            abs(e) < 1.0, f"{e:+.1f}%")
+        def rbrl(c=c):
+            seeds = V.perwindow_seeds("RBRL", c)
+            for r in V.summary("RBRL", c):
+                summary_matches(f"RBRL {c} seed {r['seed']}", r, seeds[str(r["seed"])].values())
+        guard(f"A RBRL {c}", rbrl)
 
-    # ------------------------------------------------------------------ H
-    print("\nH. DEADBAND -- the admissible interval and the sign reversal")
-    t7 = {float(r["deadband"]): r for r in load("T7_deadband.csv")}
-    chk("the saving reverses sign at 1.25 C, as the manuscript states",
-        float(t7[1.25]["tuned_sav"]) < 0 < float(t7[1.0]["tuned_sav"]),
-        f"1.00 -> {t7[1.0]['tuned_sav']}%, 1.25 -> {t7[1.25]['tuned_sav']}%")
-    chk("1.50 C is marked inadmissible and leaks degree-hours",
-        t7[1.5]["admissible"] == "no" and float(t7[1.5]["therm_deg_h"]) > 0,
-        f"deg_h {t7[1.5]['therm_deg_h']}")
+        def d1(c=c):
+            best, pw = V.d1_selected(c)
+            summary_matches(f"D1 {c} sigma {best['sigma']}", best, pw.values())
+        guard(f"A D1 {c}", d1)
 
-    # ------------------------------------------------------------------ I
-    print("\nI. SECOND-PASS ADDITIONS -- statistics, latent, orientation")
-    t20 = load("T20_paired_stats.csv")
-    tt = {r["mean_cost_b"]: r for r in t20 if r["comparison"] == "TUNED vs THERM"}
-    # match rows to cities by the THERM mean cost each one carries
-    bycity = {}
-    for r in t20:
-        if r["comparison"] != "TUNED vs THERM":
+
+def class_C():
+    print("\nC. CYCLING ENERGY (T25v3) RE-DERIVES")
+    def run():
+        import cycling_energy as C
+        rows = V.read("CYCLING")
+        for (c, arm) in sorted({(r["city"], r["arm"]) for r in rows}):
+            fresh = {float(r["wh_per_start"]): r for r in C.arm_rows(arm, c)}
+            got = [r for r in rows if r["city"] == c and r["arm"] == arm]
+            bad = [r["wh_per_start"] for r in got
+                   if not close(r["energy_saving_pct"], fresh[float(r["wh_per_start"])]["energy_saving_pct"], 1e-5)]
+            chk(f"C {c} {arm}: per-start energy saving re-derives at every loss", not bad and len(got) == len(fresh),
+                f"{len(got)} losses; mismatch at {bad}")
+    guard("C T25v3", run)
+
+
+def class_D():
+    print("\nD. STATISTICS (T20v3) RE-DERIVE")
+    def run():
+        import stats_v3 as SV
+        rows = V.read("STATS")
+        fresh = {(r["family"], r["city"]): r for r in SV.run()}
+        for r in rows:
+            k = (r["family"], r["city"]); f = fresh.get(k)
+            keys = ("hl", "hl_lo", "hl_hi", "p_wilcoxon", "p_sign", "p_adj", "d_pooled")
+            chk(f"D {k}: HL, CI, p and pooled difference re-derive",
+                f is not None and all(close(r[x], f[x], 1e-5) for x in keys) and r["resolution"] == f["resolution"],
+                "" if f else "family row not reproducible")
+        chk("D families: no re-derived row missing from T20v3", set(fresh) <= {(r["family"], r["city"]) for r in rows},
+            f"missing {sorted(set(fresh) - {(r['family'], r['city']) for r in rows})}")
+    guard("D T20v3", run)
+
+
+def class_E(tables_dir):
+    print("\nE. GENERATED TABLES ARE CURRENT")
+    import gen_tables_v3 as G
+    for fn, _ in G.TABLES.values():
+        def run(fn=fn):
+            p = os.path.join(tables_dir, fn)
+            if not os.path.exists(p):
+                raise FileNotFoundError(f"generated table missing: {p}")
+            head, body = open(p).read().split("\n", 1)
+            m = re.search(r"inputs=(\{.*\})\s*$", head)
+            if not m:
+                raise ValueError(f"{fn}: no provenance header")
+            ins = json.loads(m.group(1))
+            stale = []
+            for rel, sha in ins.items():
+                q = rel if os.path.isabs(rel) else os.path.normpath(os.path.join(IO.ROOT, rel))
+                if not os.path.exists(q) or IO._sha(q) != sha:
+                    stale.append(rel)
+            chk(f"E {fn}: generated from the current bytes of all {len(ins)} inputs, no nan",
+                ins and not stale and "nan" not in body.lower(), f"stale/missing {stale}" if stale else "")
+        guard(f"E {fn}", run)
+
+
+def class_F(tex, final):
+    print("\nF. MANUSCRIPT: generated tables wired in, placeholders left")
+    n_pend = 0
+    for fn in ("main.tex", "supplement.tex"):
+        p = os.path.join(tex, fn)
+        if not chk(f"F {fn} present", os.path.exists(p), p):
             continue
-        jb = float(r["mean_cost_b"])
-        city = ("riyadh" if abs(jb - 1.1183) < 0.02 else
-                "jeddah" if abs(jb - 0.9926) < 0.02 else
-                "taif" if abs(jb - 0.6139) < 0.02 else None)
-        if city:
-            bycity[city] = r
-    chk("abstract: Wilcoxon p = 0.016 / 0.016 / 0.031 re-derive",
-        abs(float(bycity["riyadh"]["wilcoxon_p"]) - 0.01562) < 1e-4
-        and abs(float(bycity["jeddah"]["wilcoxon_p"]) - 0.01562) < 1e-4
-        and abs(float(bycity["taif"]["wilcoxon_p"]) - 0.03125) < 1e-4,
-        ", ".join(bycity[c]["wilcoxon_p"] for c in ("riyadh", "jeddah", "taif")))
-    chk("robustness text: BCa intervals [8.4,10.6]/[8.1,10.1]/[2.5,7.8]",
-        abs(float(bycity["riyadh"]["sav_a_lo"]) - 8.356) < 0.05
-        and abs(float(bycity["riyadh"]["sav_a_hi"]) - 10.552) < 0.05
-        and abs(float(bycity["taif"]["sav_a_lo"]) - 2.537) < 0.05,
-        "ok")
-    t22 = {(r["city"], r["model"]): r for r in load("T22_latent2.csv")}
-    chk("latent text: energy +0.7/+33.9/+2.3% and deltas +0.4/+3.7/-4.6",
-        abs(float(t22[("jeddah", "latent")]["sav"])
-            - float(t22[("jeddah", "sensible")]["sav"]) - 3.7) < 0.1
-        and abs(float(t22[("riyadh", "latent")]["sav"])
-                - float(t22[("riyadh", "sensible")]["sav"]) - 0.4) < 0.1
-        and abs(float(t22[("taif", "latent")]["sav"])
-                - float(t22[("taif", "sensible")]["sav"]) + 4.6) < 0.1,
-        "deltas re-derive")
-    chk("latent text: Jeddah 85% over the humidity-ratio limit, coil 20%",
-        abs(float(t22[("jeddah", "latent")]["w_over_pct"]) - 85.0) < 1.0
-        and abs(float(t22[("jeddah", "latent")]["lat_capped_pct"]) - 20.0) < 1.0,
-        f"{t22[('jeddah','latent')]['w_over_pct']} / "
-        f"{t22[('jeddah','latent')]['lat_capped_pct']}")
-    t24 = {r["orientation"]: r for r in load("T24_orientation.csv")}
-    chk("orientation text: 7.2 N / 5.7 E / 9.5 S / 11.3 W",
-        abs(float(t24["north"]["sav"]) - 7.21) < 0.05
-        and abs(float(t24["east"]["sav"]) - 5.66) < 0.05
-        and abs(float(t24["south"]["sav"]) - 9.52) < 0.05
-        and abs(float(t24["west"]["sav"]) - 11.32) < 0.05,
-        ", ".join(f"{k} {t24[k]['sav']}" for k in ("north", "east", "south", "west")))
-    chk("orientation text: worst-arm match 0.051 K",
-        max(abs(float(t24[k]["dT"])) for k in t24) <= 0.0511,
-        f"{max(abs(float(t24[k]['dT'])) for k in t24):.4f}")
-    rm = {k: float(t24[k]["therm_fs"]) - float(t24[k]["rule_fs"]) for k in t24}
-    chk("orientation text: starts removed 0.87 W / 0.69 S / 0.46 E",
-        abs(rm["west"] - 0.87) < 0.01 and abs(rm["south"] - 0.69) < 0.01
-        and abs(rm["east"] - 0.46) < 0.01,
-        ", ".join(f"{k} {rm[k]:.2f}" for k in ("west", "south", "east")))
+        src = re.sub(r"(?<!\\)%.*", "", open(p).read())
+        for t in re.findall(r"\\input\{(tables/[^}]+)\}", src):
+            q = os.path.join(tex, t if t.endswith(".tex") else t + ".tex")
+            chk(f"F {fn}: \\input{{{t}}} exists", os.path.exists(q), q)
+        k = len(re.findall(r"\\pend\{", src))
+        n_pend += k
+        if final:
+            chk(f"F {fn}: no \\pend placeholder left (every printed value has a CURRENT source)", k == 0, f"{k} left")
+    print(f"  [info] \\pend placeholders remaining: {n_pend}")
+    return n_pend
 
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--final", action="store_true", help="G2: any remaining \\pend is a FAIL")
+    ap.add_argument("--tex", default=TEX)
+    ap.add_argument("--tables", default=os.environ.get("RBRL_TEX_TABLES", f"{TEX}/tables"))
+    a = ap.parse_args(argv)
+    FAILS.clear(); NCHK[0] = 0
+    print("RE-DERIVATION CHECK on the v3 files\n")
+    class_A_B(); class_C(); class_D(); class_E(a.tables); n_pend = class_F(a.tex, a.final)
     print("\n" + "=" * 70)
     if FAILS:
-        print(f"{len(FAILS)} of {NCHK} checks FAILED:")
+        print(f"{len(FAILS)} of {NCHK[0]} checks FAILED:")
         for f in FAILS:
             print(f"  - {f}")
-        sys.exit(1)
-    print(f"All {NCHK} checks passed: every printed figure re-derives from "
-          f"its source.")
+        return 1
+    print(f"All {NCHK[0]} checks passed" + ("" if a.final else f" ({n_pend} \\pend placeholders still open)"))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

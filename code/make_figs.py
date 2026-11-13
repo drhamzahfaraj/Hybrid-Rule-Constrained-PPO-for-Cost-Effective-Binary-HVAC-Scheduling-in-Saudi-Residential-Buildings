@@ -2,19 +2,17 @@
 """Generate the manuscript's data figures from the gated result CSVs.
 
 Every number plotted here comes from results/*.csv, which invariants.py gates.
-Nothing is drawn by hand. Output: <repo>/paper/figs/*.pdf
+Nothing is drawn by hand. Output: /home/claude/v4/figs/*.pdf
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import csv, os
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-OUT = _os.path.join(_ROOT, "..", "paper", "figs")
-RES = _ROOT + "/results"
+OUT = "/home/claude/v4/figs"
+RES = "/home/claude/rbrl/results"
 os.makedirs(OUT, exist_ok=True)
 
 plt.rcParams.update({

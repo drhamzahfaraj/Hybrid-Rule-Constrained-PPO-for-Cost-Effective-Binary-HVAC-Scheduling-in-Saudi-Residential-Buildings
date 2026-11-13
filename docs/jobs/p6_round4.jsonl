@@ -1,0 +1,80 @@
+# Round-4 reruns on p6 (c5c2fdb): MPC headline grid 1601
+{"id": "J1_t1", "cmd": "python3 t1_v2.py t1", "env": {}, "after": []}
+{"id": "J2_t7", "cmd": "python3 t1_v2.py t7", "env": {}, "after": ["J1_t1"]}
+{"id": "J2_csw", "cmd": "python3 t1_v2.py csw", "env": {}, "after": ["J1_t1"]}
+{"id": "J3_mpc_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 0.25,1,2,6,24,48", "env": {}, "after": ["J1_t1"]}
+{"id": "J4_pers_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 6,24 --forecast persistence", "env": {}, "after": ["J1_t1"]}
+{"id": "J5_conv_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 24 --ngrid 3201 --lam-from T21v3", "env": {}, "after": ["J3_mpc_riyadh"]}
+{"id": "J6_ruled_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 1,6,24 --rule-on 23.80 --rule-off 22.40", "env": {}, "after": ["J1_t1"]}
+{"id": "J8_9_bound_riyadh", "cmd": "python3 bound_v2.py main riyadh", "env": {}, "after": ["J1_t1"]}
+{"id": "J10_ruled_bound_riyadh", "cmd": "python3 bound_v2.py ruled riyadh", "env": {}, "after": ["J1_t1"]}
+{"id": "J8_clv_riyadh", "cmd": "python3 clv_refine.py riyadh", "env": {}, "after": ["J1_t1"]}
+{"id": "J15_sbmpc_riyadh", "cmd": "python3 setback_arms.py mpc riyadh 24", "env": {}, "after": ["J15_sbrule"]}
+{"id": "J15_sbbound_riyadh", "cmd": "python3 bound_v2.py sb riyadh", "env": {}, "after": ["J15_sbrule"]}
+{"id": "J18_norules_riyadh_42", "cmd": "python3 rbrl_ppo.py --norules --cities riyadh --seeds 1 --seed0 42", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_riyadh_43", "cmd": "python3 rbrl_ppo.py --norules --cities riyadh --seeds 1 --seed0 43", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_riyadh_44", "cmd": "python3 rbrl_ppo.py --norules --cities riyadh --seeds 1 --seed0 44", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_riyadh_45", "cmd": "python3 rbrl_ppo.py --norules --cities riyadh --seeds 1 --seed0 45", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_riyadh_46", "cmd": "python3 rbrl_ppo.py --norules --cities riyadh --seeds 1 --seed0 46", "env": {}, "after": ["J1_t1"]}
+{"id": "J3_mpc_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 0.25,1,2,6,24,48", "env": {}, "after": ["J1_t1"]}
+{"id": "J4_pers_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 6,24 --forecast persistence", "env": {}, "after": ["J1_t1"]}
+{"id": "J5_conv_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 24 --ngrid 3201 --lam-from T21v3", "env": {}, "after": ["J3_mpc_jeddah"]}
+{"id": "J6_ruled_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 1,6,24 --rule-on 23.80 --rule-off 22.40", "env": {}, "after": ["J1_t1"]}
+{"id": "J8_9_bound_jeddah", "cmd": "python3 bound_v2.py main jeddah", "env": {}, "after": ["J1_t1"]}
+{"id": "J10_ruled_bound_jeddah", "cmd": "python3 bound_v2.py ruled jeddah", "env": {}, "after": ["J1_t1"]}
+{"id": "J8_clv_jeddah", "cmd": "python3 clv_refine.py jeddah", "env": {}, "after": ["J1_t1"]}
+{"id": "J15_sbmpc_jeddah", "cmd": "python3 setback_arms.py mpc jeddah 24", "env": {}, "after": ["J15_sbrule"]}
+{"id": "J15_sbbound_jeddah", "cmd": "python3 bound_v2.py sb jeddah", "env": {}, "after": ["J15_sbrule"]}
+{"id": "J18_norules_jeddah_42", "cmd": "python3 rbrl_ppo.py --norules --cities jeddah --seeds 1 --seed0 42", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_jeddah_43", "cmd": "python3 rbrl_ppo.py --norules --cities jeddah --seeds 1 --seed0 43", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_jeddah_44", "cmd": "python3 rbrl_ppo.py --norules --cities jeddah --seeds 1 --seed0 44", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_jeddah_45", "cmd": "python3 rbrl_ppo.py --norules --cities jeddah --seeds 1 --seed0 45", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_jeddah_46", "cmd": "python3 rbrl_ppo.py --norules --cities jeddah --seeds 1 --seed0 46", "env": {}, "after": ["J1_t1"]}
+{"id": "J3_mpc_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 0.25,1,2,6,24,48", "env": {}, "after": ["J1_t1"]}
+{"id": "J4_pers_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 6,24 --forecast persistence", "env": {}, "after": ["J1_t1"]}
+{"id": "J5_conv_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 24 --ngrid 3201 --lam-from T21v3", "env": {}, "after": ["J3_mpc_taif"]}
+{"id": "J6_ruled_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 1,6,24 --rule-on 23.80 --rule-off 22.40", "env": {}, "after": ["J1_t1"]}
+{"id": "J8_9_bound_taif", "cmd": "python3 bound_v2.py main taif", "env": {}, "after": ["J1_t1"]}
+{"id": "J10_ruled_bound_taif", "cmd": "python3 bound_v2.py ruled taif", "env": {}, "after": ["J1_t1"]}
+{"id": "J8_clv_taif", "cmd": "python3 clv_refine.py taif", "env": {}, "after": ["J1_t1"]}
+{"id": "J15_sbmpc_taif", "cmd": "python3 setback_arms.py mpc taif 24", "env": {}, "after": ["J15_sbrule"]}
+{"id": "J15_sbbound_taif", "cmd": "python3 bound_v2.py sb taif", "env": {}, "after": ["J15_sbrule"]}
+{"id": "J18_norules_taif_42", "cmd": "python3 rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 42", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_taif_43", "cmd": "python3 rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 43", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_taif_44", "cmd": "python3 rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 44", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_taif_45", "cmd": "python3 rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 45", "env": {}, "after": ["J1_t1"]}
+{"id": "J18_norules_taif_46", "cmd": "python3 rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 46", "env": {}, "after": ["J1_t1"]}
+{"id": "J15_sbrule", "cmd": "python3 setback_arms.py rule", "env": {}, "after": ["J1_t1"]}
+{"id": "J19_tariff_bound", "cmd": "python3 bound_v2.py tariff", "env": {}, "after": ["J1_t1"]}
+{"id": "J11_recap", "cmd": "python3 rbrl_ppo.py --refit", "env": {}, "after": ["J1_t1"]}
+{"id": "J13_t1_cth2400", "cmd": "python3 t1_v2.py t1 --cth 2400", "env": {}, "after": ["J1_t1"]}
+{"id": "J13_mpc_cth2400_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 1,24 --cth 2400", "env": {}, "after": ["J13_t1_cth2400"]}
+{"id": "J13_t1_cth9600", "cmd": "python3 t1_v2.py t1 --cth 9600", "env": {}, "after": ["J1_t1"]}
+{"id": "J13_mpc_cth9600_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 1,24 --cth 9600", "env": {}, "after": ["J13_t1_cth9600"]}
+{"id": "J14_csw0.025_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 24 --csw 0.025", "env": {}, "after": ["J2_csw", "J3_mpc_riyadh"]}
+{"id": "J14_csw0.114_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 24 --csw 0.114", "env": {}, "after": ["J2_csw", "J3_mpc_riyadh"]}
+{"id": "J16_amy", "cmd": "python3 amy_spread.py", "env": {}, "after": ["J1_t1"]}
+{"id": "J16_orient", "cmd": "python3 orientation.py riyadh", "env": {}, "after": ["J1_t1"]}
+{"id": "JMZ_rules_1x1", "cmd": "python3 mz_r3.py rules riyadh 1x1", "env": {}, "after": []}
+{"id": "JMZ_rules_1x2", "cmd": "python3 mz_r3.py rules riyadh 1x2", "env": {}, "after": []}
+{"id": "JMZ_rules_2x2", "cmd": "python3 mz_r3.py rules riyadh 2x2", "env": {}, "after": []}
+{"id": "JMZ_rules_1x4", "cmd": "python3 mz_r3.py rules riyadh 1x4", "env": {}, "after": []}
+{"id": "JMZ_rules_2x2_lij35", "cmd": "python3 mz_r3.py rules riyadh 2x2 --lam-ij 35", "env": {}, "after": []}
+{"id": "J25_audit", "cmd": "python3 search_audit.py", "env": {}, "after": ["J1_t1"]}
+{"id": "J9_bound_at", "cmd": "python3 bound_at.py", "env": {}, "after": ["J3_mpc_riyadh", "J4_pers_riyadh", "J6_ruled_riyadh", "J8_9_bound_riyadh", "J8_clv_riyadh", "J15_sbmpc_riyadh", "J15_sbbound_riyadh", "J3_mpc_jeddah", "J4_pers_jeddah", "J6_ruled_jeddah", "J8_9_bound_jeddah", "J8_clv_jeddah", "J15_sbmpc_jeddah", "J15_sbbound_jeddah", "J3_mpc_taif", "J4_pers_taif", "J6_ruled_taif", "J8_9_bound_taif", "J8_clv_taif", "J15_sbmpc_taif", "J15_sbbound_taif", "J15_sbrule", "J11_recap", "J8_9_bound_riyadh", "J8_9_bound_jeddah", "J8_9_bound_taif"]}
+{"id": "J23_cycling", "cmd": "python3 cycling_energy.py", "env": {}, "after": ["J1_t1", "J3_mpc_riyadh", "J3_mpc_jeddah", "J3_mpc_taif"]}
+{"id": "J12_e2_42", "cmd": "bash e2_job.sh 42", "env": {}, "after": ["J6_ruled_riyadh"]}
+{"id": "J12_e2_43", "cmd": "bash e2_job.sh 43", "env": {}, "after": ["J6_ruled_riyadh"]}
+{"id": "J12_e2_44", "cmd": "bash e2_job.sh 44", "env": {}, "after": ["J6_ruled_riyadh"]}
+{"id": "J11_e1", "cmd": "python3 rbrl_ppo.py --e1 --cities riyadh", "env": {}, "after": ["J1_t1"]}
+{"id": "JMZ_rules_1x2_lij35", "cmd": "python3 mz_r3.py rules riyadh 1x2 --lam-ij 35", "env": {}, "after": []}
+{"id": "JMZ_rules_1x4_lij35", "cmd": "python3 mz_r3.py rules riyadh 1x4 --lam-ij 35", "env": {}, "after": []}
+{"id": "J7_lam0.99_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 6,24 --lam-scale 0.99", "env": {}, "after": ["J3_mpc_riyadh"]}
+{"id": "J7_lam1.01_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 6,24 --lam-scale 1.01", "env": {}, "after": ["J3_mpc_riyadh"]}
+{"id": "J7_lam1.05_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 6,24 --lam-scale 1.05", "env": {}, "after": ["J3_mpc_riyadh"]}
+{"id": "J7_lam0.99_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 6,24 --lam-scale 0.99", "env": {}, "after": ["J3_mpc_jeddah"]}
+{"id": "J7_lam1.01_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 6,24 --lam-scale 1.01", "env": {}, "after": ["J3_mpc_jeddah"]}
+{"id": "J7_lam1.05_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 6,24 --lam-scale 1.05", "env": {}, "after": ["J3_mpc_jeddah"]}
+{"id": "J7_lam0.99_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 6,24 --lam-scale 0.99", "env": {}, "after": ["J3_mpc_taif"]}
+{"id": "J7_lam1.01_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 6,24 --lam-scale 1.01", "env": {}, "after": ["J3_mpc_taif"]}
+{"id": "J7_lam1.05_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 6,24 --lam-scale 1.05", "env": {}, "after": ["J3_mpc_taif"]}

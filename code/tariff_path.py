@@ -29,10 +29,8 @@ The script verifies this three ways:
       consumption ACROSS a billing-month boundary, where the tiers reset.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 
 TIERS = [(2000.0, 0.05), (4000.0, 0.10), (6000.0, 0.20),

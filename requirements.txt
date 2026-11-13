@@ -1,4 +1,4 @@
-# Exact versions that produced every result in the paper (see code/results/T18_environment.json)
+# Exact versions that produced every result in the paper (see results/T18_environment.json)
 # Python 3.13.18
 numpy==2.5.3
 scipy==1.18.1

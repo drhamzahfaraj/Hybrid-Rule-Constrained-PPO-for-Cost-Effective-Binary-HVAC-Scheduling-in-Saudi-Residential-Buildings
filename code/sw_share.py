@@ -10,10 +10,8 @@ same configuration because each recomputed the share its own way. Only THERM
 runs are needed, so this is cheap and can be regenerated at will.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import final_tables as F
@@ -57,6 +55,6 @@ assert a["sw_share_pct"] == b["sw_share_pct"] and a["therm_J"] == b["therm_J"], 
 print(f"\nOK: both panels give {a['sw_share_pct']}% at the shared configuration "
       f"(THERM J = {a['therm_J']})")
 
-with open(_ROOT + "/results/sw_share.csv", "w", newline="") as f:
+with open("/home/claude/rbrl/results/sw_share.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 print("-> results/sw_share.csv")

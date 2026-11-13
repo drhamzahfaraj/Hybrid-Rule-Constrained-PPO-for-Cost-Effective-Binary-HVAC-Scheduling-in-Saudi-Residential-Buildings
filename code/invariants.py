@@ -15,23 +15,31 @@ that set of checks, grouped by the failure it would have caught:
   E  monotonicity           - symmetric-only deadband sweep (27.5% vs 4.25%)
   F  decomposition closure  - "runs warmer" claim (components summed to 106%)
   G  feasibility            - Q*dt/C_th vs band width
+  H  deadband actuation     - the condition predicts the baseline's feasibility
+  P  round-4 protocol (v3)  - fit_status, Rule C bracket, §2.1 metrics, optimiser constraints and
+                              fallback, every arm s_a <= B_a, CLV certificate, grid convergence,
+                              statistics re-derived (reads the v3 files named in v3_names)
+
+A missing source file is a FAIL, never a skip. The run is saved to results/invariants_run.json
+(n_checks, n_failed): the invariant count printed anywhere is read from that file.
 
 Each test prints PASS or FAIL with the measured quantity. A FAIL is a stop, not
 a warning: the number does not get reported.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
-import sys, math
-sys.path.insert(0, _ROOT + "")
+import sys, math, os
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from hvac import Params, read_epw, vertical_irradiance
 import results_table as RT
+import config as CFG
 
 FAILS = []
+NCHECK = [0]
 
 
 def check(name, ok, detail):
+    NCHECK[0] += 1
     tag = "PASS" if ok else "FAIL"
     print(f"  [{tag}] {name}: {detail}")
     if not ok:
@@ -42,7 +50,7 @@ def check(name, ok, detail):
 # ---------------------------------------------------------------- A. physical
 def a_physical():
     print("\nA. PHYSICAL SANITY")
-    tdb, dni, dhi = read_epw(_ROOT + "/riyadh.epw")
+    tdb, dni, dhi = read_epw("/home/claude/rbrl/riyadh.epw")
     jul = slice(181 * 24, 212 * 24)
     def vi(az, sl=None):
         v = vertical_irradiance(dni, dhi, 24.7, azimuth_deg=az)
@@ -200,18 +208,35 @@ def g_feasibility():
               r["deg_h"] <= 1e-9, f"degree-hours {r['deg_h']:.4f}")
 
 
-if __name__ == "__main__":
-    print("=" * 72)
-    print("INVARIANT GATE - run before any number is reported")
-    print("=" * 72)
-    a_physical(); b_bounds(); c_accounting()
-    d_provenance(); e_monotonic(); g_feasibility()
-    # the decomposition claim that was reported wrongly once
+def h_deadband():
+    print("\nH. DEADBAND ACTUATION CONDITION (necessary AND sufficient form)")
+    import headroom as H, setback as S
+    DB = (24.0 - 22.0) - 1.0        # THERM's deadband on the [22,24] band
+    try:
+        for dt, cth, want in ((0.25, 4800.0, True), (1.0, 4800.0, False)):
+            H.DT = dt; S.DT = dt
+            ov = H.Q_HVAC * dt * 3600 / (cth * 1e3)
+            _, _, N = H.series("riyadh", 168, 121)
+            occ = np.ones(N, bool)
+            lo, hi = S.bands(occ, 22.0, 24.0, 18.0, 30.0)
+            r = S.sim(S.therm(lo, hi), "riyadh", 1, cth, H.price_flat(N, CFG.PRICE),
+                      lo, hi, occ, 168, 121, CFG.T0, c_sw=CFG.C_SW)
+            holds = ov <= DB
+            feasible = r["deg_h_occ"] <= 1e-9
+            check(f"dt={dt*60:.0f}min: condition ({ov:.3f}<={DB:.2f}) predicts "
+                  f"feasibility and the baseline agrees",
+                  holds == feasible and holds == want,
+                  f"condition {'holds' if holds else 'fails'}, "
+                  f"baseline deg-h {r['deg_h_occ']:.3f}")
+    finally:
+        H.DT = 0.25; S.DT = 0.25
+
+
+def f_tuned_vs_dp():
     price = RT.tariff("inforce")
     d = RT.dp_optimum("riyadh", 1, 4800.0, price)
     t = RT.tuned("riyadh", 1, 4800.0, price)
     gap = t[0]["J"] - d["J"]
-    P = Params()
     lam = RT.lam_of(1, "riyadh")
     dEdT = lam * 24 * 3600 / 1e6 / 3.6 / RT.COP_RATED
     f_closure({"switching": RT.C_SW * (t[0]["f_s"] - d["f_s"]),
@@ -219,261 +244,180 @@ if __name__ == "__main__":
                "residual": gap - RT.C_SW * (t[0]["f_s"] - d["f_s"])
                            - price * dEdT * (d["T_mean"] - t[0]["T_mean"])},
               gap, "tuned rule vs DP, Riyadh")
-    # ---- H. new in this revision: the deadband actuation condition -------
-    print("\nH. DEADBAND ACTUATION CONDITION (necessary AND sufficient form)")
-    import headroom as H, setback as S
-    import numpy as _np
-    DB = (24.0 - 22.0) - 1.0        # THERM's deadband on the [22,24] band
-    for dt, cth, want in ((0.25, 4800.0, True), (1.0, 4800.0, False)):
-        H.DT = dt; S.DT = dt
-        ov = H.Q_HVAC * dt * 3600 / (cth * 1e3)
-        _, _, N = H.series("riyadh", 168, 121)
-        occ = _np.ones(N, bool)
-        lo, hi = S.bands(occ, 22.0, 24.0, 18.0, 30.0)
-        r = S.sim(S.therm(lo, hi), "riyadh", 1, cth, H.price_flat(N, 0.18),
-                  lo, hi, occ, 168, 121, 23.0)
-        holds = ov <= DB
-        feasible = r["deg_h_occ"] <= 1e-9
-        check(f"dt={dt*60:.0f}min: condition ({ov:.3f}<={DB:.2f}) predicts "
-              f"feasibility and the baseline agrees",
-              holds == feasible and holds == want,
-              f"condition {'holds' if holds else 'fails'}, "
-              f"baseline deg-h {r['deg_h_occ']:.3f}")
-    H.DT = 0.25; S.DT = 0.25
 
-    # ---- I. corollary closure: the rule layer IS the policy ---------------
-    print("\nI. COROLLARY CLOSURE (rule layer vs learned policy)")
-    import final_tables as F
-    import csv as _csv
 
-    # Read EVERY seed from the results file rather than comparing against a
-    # hand-typed figure. An earlier version of this invariant hardcoded the
-    # best Riyadh seed (1.0576) and therefore passed while the manuscript
-    # claimed, wrongly, that all three seeds were identical: seed 42 gives
-    # 1.0610. A gate that checks a typed constant checks nothing.
-    with open(_ROOT + "/results/rbrl_ppo.csv") as _f:
-        ppo_rows = list(_csv.DictReader(_f))
+# ---------------------------------------------------------------- P. round-4 protocol on the v3 files
+# (RULING_round4 F18.) The v1 classes I-O (rbrl_ppo.csv / T21_g1601 / T14 / T17 / T20 / T22 / T23 with
+# figures typed into this file) are deleted: their sources are superseded and none of those figures
+# is printed any more. Every check below reads a v3 file through v3_names; a MISSING file is a FAIL,
+# never a skip. The only optional source is E2 (X3), which is reported as "not run".
+import final_tables as _FT
+OK_STATUS = set(_FT.FIT_STATUSES) - {"none"}        # config/final_tables: the §2.2 set + oracle, fixed
 
-    for city, cap in (("riyadh", 23.737), ("jeddah", 23.737)):
-        Js = [F.rule_run(city, w, 0.18, cap - 0.20, 22.40)["J"] for w in F.EVAL_W]
-        Jm = float(_np.mean(Js))
-        seeds = [(int(r["seed"]), float(r["J"])) for r in ppo_rows
-                 if r["city"] == city]
-        assert seeds, f"no PPO rows for {city}"
 
-        # The corollary predicts an INEQUALITY: under the hard rules and at
-        # matched comfort the rule is cost-optimal in its class, so no learned
-        # policy may cost LESS than it. Equality is the typical case, not the
-        # claim. Tolerance is one unit in the fourth decimal of a SAR figure.
-        worst_under = min(J - Jm for _, J in seeds)
-        check(f"{city}: no seed costs less than the guard hysteresis "
-              f"(corollary is an inequality)", worst_under > -1e-4,
-              f"rule {Jm:.4f}; seeds " +
-              ", ".join(f"s{s}={J:.4f}" for s, J in sorted(seeds)) +
-              f"; largest shortfall {worst_under:+.4f} SAR/day")
-
-        # and the manuscript's reported mean must be the mean of all seeds
-        mean_J = float(_np.mean([J for _, J in seeds]))
-        n_exact = sum(1 for _, J in seeds if abs(J - Jm) < 1e-4)
-        check(f"{city}: reported RBRL cost is the mean over all seeds, "
-              f"not the best one", abs(mean_J - Jm) < 5e-3,
-              f"seed mean {mean_J:.4f} vs rule {Jm:.4f}; "
-              f"{n_exact}/{len(seeds)} seeds reproduce the rule exactly")
-
-    print("\nJ. COROLLARY SCOPE (the constant-disturbance hypothesis)")
-    # Corollary 1 holds only when the disturbance is time-invariant. Under the
-    # diurnally varying weather actually simulated, a clairvoyant DP over
-    # EXACTLY the rule-admissible action set beats the guard hysteresis. The
-    # gap is the measured price of the dropped hypothesis; the manuscript
-    # quotes it, so it is gated here. An earlier version of this file asserted
-    # the corollary without this check and the claim went to review unqualified.
+def _guard(name, fn):
+    """run one check group; a missing/unreadable source is a FAIL with the file named."""
     try:
-        import verify_corollary as VC
-        for city, cap, quoted in (("riyadh", 23.737, 0.59), ("jeddah", 23.737, 0.02)):
-            hy = [F.rule_run(city, w, 0.18, cap - 0.20, 22.40) for w in F.EVAL_W]
-            dp = [VC.dp_rule_constrained(city, w, 0.18, cap) for w in F.EVAL_W]
-            if any(d is None for d in dp):
-                check(f"{city}: rule-constrained DP solvable", False, "infeasible")
-                continue
-            Jh = float(_np.mean([r["J"] for r in hy]))
-            Jd = float(_np.mean([r["J"] for r in dp]))
-            gap = 100.0 * (Jh - Jd) / Jh
-            check(f"{city}: measured gap to the rule-constrained optimum matches "
-                  f"the figure quoted in the manuscript",
-                  abs(gap - quoted) < 0.1,
-                  f"rule {Jh:.4f}, constrained DP {Jd:.4f}, gap {gap:.2f}% "
-                  f"(manuscript quotes {quoted:.2f}%)")
-            check(f"{city}: the gap is non-negative, as the corollary's "
-                  f"inequality requires", gap > -1e-6, f"gap {gap:+.3f}%")
-    except Exception as e:
-        check("corollary-scope check ran", False, f"{type(e).__name__}: {e}")
+        fn()
+    except (FileNotFoundError, LookupError, KeyError, ValueError) as e:
+        check(name, False, f"{type(e).__name__}: {e}")
 
-    print("\nK. MPC BASELINE, matched window by window on the DP's own grid")
-    # The MPC run is too slow to recompute in the gate, so the gate checks the
-    # released CSVs against the figures printed in the paper. History of the
-    # criterion: T8 matched only the aggregate mean (weaker than every other
-    # arm); T15 matched per window on an 801-point grid with 0.05 K caps; the
-    # quoted arm is T21_g1601, per-window matched on the 1601-point grid with
-    # the cap refined to 0.01 K, plus a 48 h horizon. Earlier files are kept
-    # for the record but must not be the source of a printed figure.
-    try:
-        import csv as _csv, glob as _glob
-        mp = {}
-        for p in _glob.glob(_ROOT + "/results/T21_g1601_*_mpc_summary.csv"):
-            for r in _csv.DictReader(open(p)):
-                mp[(r["city"], float(r["horizon_h"]))] = r
-        quoted = {("riyadh", 6.0): -4.0, ("riyadh", 24.0): 8.4,
-                  ("riyadh", 48.0): 10.8,
-                  ("jeddah", 6.0): -4.7, ("jeddah", 24.0): 5.9,
-                  ("jeddah", 48.0): 9.5,
-                  ("taif", 6.0): -18.2, ("taif", 24.0): 2.9,
-                  ("taif", 48.0): 4.3}
-        for key, q in quoted.items():
-            r = mp.get(key)
-            check(f"MPC {key[0]} H={key[1]:.0f}h matches the manuscript",
-                  r is not None and abs(float(r["sav"]) - q) < 0.06,
-                  f"csv {r['sav'] if r else 'MISSING'}%, manuscript {q}%")
-        # every MPC row must be NO WARMER than its baseline in every window,
-        # which is the criterion the manuscript claims for all arms
-        for key, r in mp.items():
-            check(f"{key[0]} H={key[1]:.0f}h is no warmer in any window",
-                  float(r["worst_dT"]) <= 1e-6,
-                  f"worst dT {float(r['worst_dT']):+.4f} K")
-        # the orderings the restated finding rests on
-        riy24 = float(mp[("riyadh", 24.0)]["sav"])
-        check("Riyadh: a 24 h horizon does NOT beat the tuned rule",
-              riy24 < 9.25 + 0.5,
-              f"MPC24 {riy24:.2f}% vs TUNED 9.25%")
-        jed24 = float(mp[("jeddah", 24.0)]["sav"])
-        check("Jeddah: the 24 h arm sits below the tuned rule, as the "
-              "significance claim requires", jed24 < 9.27,
-              f"MPC24 {jed24:.2f}% vs TUNED 9.27%")
-        for city, tuned in (("riyadh", 9.25), ("jeddah", 9.27)):
-            h48 = float(mp[(city, 48.0)]["sav"])
-            check(f"{city}: the 48 h arm is level or ahead of the tuned rule",
-                  h48 > tuned - 1.0, f"MPC48 {h48:.2f}% vs TUNED {tuned}%")
-    except Exception as e:
-        check("MPC baseline check ran", False, f"{type(e).__name__}: {e}")
 
-    print("\nL. THE BRACKET (every arm below its own bound, in every city)")
-    # The gate previously encoded the SUPERSEDED pointwise-capped device as
-    # "the bound" and tested Riyadh only, which is why it passed while the
-    # manuscript's framing was wrong. It now reads the published bracket and
-    # tests all three cities.
-    try:
-        import csv as _csv
-        with open(_ROOT + "/results/T14_perwindow_summary.csv") as _f:
-            pw = {(r["city"], r["arm"]): r for r in _csv.DictReader(_f)}
-        # published bounds: finest grid plus the last increment, rounded outward
-        published = {"riyadh": 19.8, "jeddah": 19.5, "taif": 20.2}
-        # every arm the manuscript reports at the in-force tariff, no setback
-        arms = {"riyadh": [("RBRL", 5.66), ("guard hyst", 5.82), ("TUNED", 9.25),
-                           ("MPC 24h", 9.10)],
-                "jeddah": [("RBRL", 5.80), ("guard hyst", 5.80), ("TUNED", 9.26),
-                           ("MPC 24h", 8.01)],
-                "taif": [("RBRL", 7.62), ("guard hyst", 7.62), ("TUNED", 4.56)]}
-        for city, b in published.items():
-            att = float(pw[(city, "OPT")]["att_sav"])
-            check(f"{city}: the attainable schedule lies below the bound",
-                  att <= b, f"attainable {att:.2f}% vs bound {b:.1f}%")
-            check(f"{city}: the attainable schedule is cool in every window",
-                  float(pw[(city, "OPT")]["max_dT"]) <= 1e-6,
-                  f"worst dT {float(pw[(city,'OPT')]['max_dT']):+.4f} K")
-            for name, v in arms[city]:
-                check(f"{city}: {name} lies below the bound",
-                      v <= b, f"{v:.2f}% vs bound {b:.1f}%")
-        # the bound must be quoted OUTWARD of the finest grid value
-        with open(_ROOT + "/results/T17_bound_convergence.csv") as _f:
-            cv = [r for r in _csv.DictReader(_f)]
-        for city, b in published.items():
-            fin = [r for r in cv if r["city"] == city and r["arm"] == "OPT"]
-            if not fin:
-                continue
-            finest = max(float(r["bound_sav"]) for r in fin)
-            check(f"{city}: the published bound is conservative of the "
-                  f"finest grid", b >= finest,
-                  f"published {b:.1f}% >= finest {finest:.3f}%")
-    except Exception as e:
-        check("bracket check ran", False, f"{type(e).__name__}: {e}")
+def _arms(city):
+    """every causal arm with v3 per-window rows in this city: [(label, {w: row})]."""
+    import v3_names as V
+    out = [("TUNED", V.perwindow("TUNED", city)), ("guard", V.perwindow("guard", city))]
+    for key, pre in (("MPC", "MPC"), ("MPC_PERS", "MPCp"), ("MPC_RULED", "MPCr")):
+        for h in sorted({float(r["horizon_h"]) for r in V.read(key, city)}):
+            lab = f"{pre}{h:g}"
+            out.append((lab, V.perwindow(lab, city)))
+    for seed, pw in sorted(V.perwindow_seeds("RBRL", city).items()):
+        out.append((f"RBRL s{seed}", pw))
+    out.append(("D1", V.perwindow("D1", city)))
+    if city == "riyadh":
+        try:
+            for seed, pw in sorted(V.perwindow_seeds("E2", city).items()):
+                out.append((f"E2 s{seed}", pw))
+        except FileNotFoundError:
+            print("  [note] E2 (X3) not run: no E2 rows checked")
+    return out
 
-    # ------------------------------------------------- M. paired statistics
-    # The statistical paragraph added in revision must agree with its CSV, and
-    # the claims the abstract makes (p-values, direction) must be reproducible
-    # from the per-window data, not merely quoted.
-    try:
-        with open(_ROOT + "/results/T20_paired_stats.csv") as _f:
-            st = [r for r in _csv.DictReader(_f)]
-        tt = [r for r in st if r["comparison"] == "TUNED vs THERM"]
-        check("stats: TUNED-vs-THERM rows exist for three cities", len(tt) == 3,
-              f"{len(tt)} rows")
-        for r in tt:
-            check(f"stats: TUNED beats THERM with p<=0.05 "
-                  f"(sav {r['sav_a']}%)", float(r["wilcoxon_p"]) <= 0.05,
-                  f"p={r['wilcoxon_p']}")
-            check(f"stats: BCa interval excludes zero for TUNED-vs-THERM "
-                  f"(sav {r['sav_a']}%)", float(r["diff_lo"]) > 0.0,
-                  f"lo={r['diff_lo']}")
-            check("stats: point estimate inside its own interval",
-                  float(r["diff_lo"]) <= float(r["diff_pts"])
-                  <= float(r["diff_hi"]), r["diff_pts"])
-    except FileNotFoundError:
-        check("stats CSV present", False, "T20_paired_stats.csv missing")
-    except Exception as e:
-        check("stats check ran", False, f"{type(e).__name__}: {e}")
 
-    # ------------------------------------------------- N. latent side study
-    # The rebuilt latent module must (a) reproduce the headline in its
-    # sensible-only arm, (b) never exceed saturation, and (c) agree with the
-    # deltas quoted in the manuscript (+0.4 Riyadh, +3.7 Jeddah, -4.6 Taif).
-    try:
-        with open(_ROOT + "/results/T22_latent2.csv") as _f:
-            lt = {(r["city"], r["model"]): r for r in _csv.DictReader(_f)}
-        pub_sen = {"riyadh": 9.25, "jeddah": 9.26, "taif": 4.56}
-        pub_dlt = {"riyadh": +0.4, "jeddah": +3.7, "taif": -4.6}
-        for city, v in pub_sen.items():
-            sen = float(lt[(city, "sensible")]["sav"])
-            check(f"latent: sensible arm reproduces the headline in {city}",
-                  abs(sen - v) < 0.05, f"{sen:.2f} vs {v:.2f}")
-            d = float(lt[(city, "latent")]["sav"]) - sen
-            check(f"latent: quoted delta holds in {city}",
-                  abs(d - pub_dlt[city]) < 0.1, f"{d:+.2f} vs {pub_dlt[city]:+.1f}")
-            check(f"latent: no supersaturation in {city}",
-                  float(lt[(city, "latent")]["rh_max"]) <= 100.0 + 1e-6,
-                  lt[(city, "latent")]["rh_max"])
-        check("latent: Jeddah humidity non-compliance is the quoted 85%",
-              abs(float(lt[("jeddah", "latent")]["w_over_pct"]) - 85.0) < 1.0,
-              lt[("jeddah", "latent")]["w_over_pct"])
-    except FileNotFoundError:
-        check("latent CSV present", False, "T22_latent2.csv missing")
-    except Exception as e:
-        check("latent check ran", False, f"{type(e).__name__}: {e}")
+def p_v3():
+    import v3_names as V
+    print("\nP. ROUND-4 PROTOCOL ON THE v3 FILES (fit_status, Rule C, §2.1, B_a, CLV, convergence)")
+    STATS["max_bracket_gap"] = {}
 
-    # ------------------------------------------------- O. AMY weather years
-    try:
-        import csv as _csv
-        tr = {}
-        for r in _csv.DictReader(open(_ROOT + "/results/T23_amy_spread.csv")):
-            if r.get("kind") == "TRANSFER":
-                tr[(r["city"], str(r["year"]))] = float(r["sav"])
-        riy = [tr[("riyadh", y)] for y in ("2013", "2018", "2021")]
-        jed = [tr[("jeddah", y)] for y in ("2011", "2017", "2023")]
-        tai = [tr[("taif", y)] for y in ("2013", "2012", "2021")]
-        check("AMY: Riyadh transfer spans 9.4-10.5% as quoted",
-              abs(min(riy) - 9.40) < 0.05 and abs(max(riy) - 10.45) < 0.05,
-              f"{min(riy)}-{max(riy)}")
-        check("AMY: Jeddah transfer spans 9.1-9.4% as quoted",
-              abs(min(jed) - 9.10) < 0.05 and abs(max(jed) - 9.38) < 0.05,
-              f"{min(jed)}-{max(jed)}")
-        check("AMY: Taif transfer spans 1.5-4.3% as quoted",
-              abs(min(tai) - 1.48) < 0.05 and abs(max(tai) - 4.32) < 0.05,
-              f"{min(tai)}-{max(tai)}")
-    except Exception as e:
-        check("AMY check ran", False, f"{type(e).__name__}: {e}")
+    def p1():
+        tabs = [("T1", None), ("T7", None), ("T5", None)] + \
+               [(k, c) for c in V.CITIES for k in ("MPC", "MPC_PERS", "MPC_RULED", "MPC_GUARD", "RBRL", "D1", "CLV")]
+        for k, c in tabs:
+            rows = V.read(k, c)
+            dflt = "oracle" if k == "CLV" else "<missing>"   # the CLV/bound summary is the oracle by definition
+            bad = sorted({r.get("fit_status") or dflt for r in rows} - OK_STATUS)
+            check(f"P1 {V.name(k, c)}: every row carries an admissible fit_status",
+                  not bad, f"{len(rows)} rows; bad {bad}" if bad else f"{len(rows)} rows")
+    _guard("P1 fit_status present", p1)
 
+    for c in V.CITIES:
+        def p2(c=c):
+            arms = _arms(c)
+            # §13: the THERM(delta) curve is not monotone, so gap = m[b] - m[a] is signed; test |gap|
+            gaps = [abs(float(r["bracket_gap"])) for _, pw in arms for r in pw.values()]
+            clipped = [(a, w) for a, pw in arms for w, r in pw.items() if str(r.get("eq_clipped")) == "True"]
+            STATS["max_bracket_gap"][c] = max(gaps)
+            check(f"P2 {c}: Rule C comparator bracketed in every window of every arm (no eq_clipped)",
+                  not clipped and all(np.isfinite(g) and g >= 0 for g in gaps),
+                  f"{len(arms)} arms; max bracket_gap {max(gaps):.4f} K; clipped {clipped}")
+            for a, pw in arms:
+                need = ("deg_h_over", "deg_h_cmd_under", "deg_h_ff_under", "T_end", "fallback_steps")
+                miss = sorted({k for r in pw.values() for k in need if r.get(k) in (None, "")})
+                check(f"P3 {c} {a}: §2.1 metrics present in every window", not miss, f"missing {miss}")
+            # optimisers: hard constraints and no fallback (V-code-7: fallback_steps == 0 in every cell)
+            for a, pw in arms:
+                if a.startswith("MPC"):
+                    over = sum(float(r["deg_h_over"]) for r in pw.values())
+                    cmd = sum(float(r["deg_h_cmd_under"]) for r in pw.values())
+                    fb = sum(int(float(r["fallback_steps"])) for r in pw.values())
+                    # ruling §28: a persistence-forecast plan is checked against the forecast, so the
+                    # realised cold-rule shortfall may be > 0; it is printed and bounded by 1e-3 K h
+                    tol = 1e-3 if a.startswith("MPCp") else 1e-9
+                    check(f"P4 {c} {a}: optimiser keeps both constraints and never falls back",
+                          over <= 1e-9 and cmd <= tol and fb == 0,
+                          f"deg_h_over {over:.4f}, deg_h_cmd_under {cmd:.4f}, fallback_steps {fb}")
+            # B_a: every arm below the bound at its own mean (s_a <= B_a holds exactly)
+            viol, n = [], 0
+            for a, pw in arms:
+                s_a = V.pooled(pw.values()); b_a, Ta = V.B_a(c, pw.values()); n += 1
+                if s_a > b_a + 1e-9:
+                    viol.append(f"{a}: s {s_a:.3f} > B_a {b_a:.3f} (T_a {Ta:.3f})")
+            check(f"P10 {c}: every causal arm s_a <= B_a (bound at its own clipped mean)", not viol,
+                  f"{n} arms; violations {viol}")
+        _guard(f"P2-P10 {c}: v3 arm files", p2)
+
+        def p7(c=c):
+            (b,) = [r for r in V.read("CLV", c) if str(r.get("setback", "False")) == "False"]
+            Bs = float(b["bound_reported"])
+            rel = {k[len("bound_rel"):]: float(v) for k, v in b.items() if k.startswith("bound_rel") and v}
+            unr = {k[len("bound_unrel"):]: float(v) for k, v in b.items() if k.startswith("bound_unrel") and v}
+            common = sorted(set(rel) & set(unr))
+            check(f"P7 {c}: relaxed bound >= unrelaxed (saving) at every common grid",
+                  bool(common) and all(rel[g] >= unr[g] - 1e-6 for g in common),
+                  ", ".join(f"{g}: {rel[g]:.3f} vs {unr[g]:.3f}" for g in common) or "no common grid")
+            check(f"P8 {c}: CLV below the relaxed bound in every window (per-window certificate)",
+                  str(b.get("clv_le_bound_all_windows")) == "True", str(b.get("clv_le_bound_all_windows")))
+            check(f"P9 {c}: CLV <= B* pooled", float(b["clv_s_pooled"]) <= Bs + 1e-9,
+                  f"CLV {float(b['clv_s_pooled']):.3f} vs B* {Bs:.1f}")
+            # ruling §14: CLV is the best attained schedule no warmer than THERM (the 0.002 K match is
+            # met in few windows); the bracket pairs raw CLV with B*, and Rule C CLV with B_CLV
+            check(f"P9b {c}: CLV no warmer than THERM (pooled dT <= 0)",
+                  float(b["clv_dT_pooled"]) <= 1e-9, f"{float(b['clv_dT_pooled']):+.4f} K")
+            check(f"P9c {c}: raw CLV saving <= B*", float(b["clv_s_raw"]) <= Bs + 1e-9,
+                  f"raw {float(b['clv_s_raw']):.3f} vs B* {Bs:.1f}")
+            check(f"P9d {c}: Rule C CLV saving <= B_CLV", float(b["clv_s_pooled"]) <= float(b["clv_B_a"]) + 1e-9,
+                  f"{float(b['clv_s_pooled']):.3f} vs B_CLV {float(b['clv_B_a']):.3f}")
+        _guard(f"P7-P9 {c}: v3 CLV/bound file", p7)
+
+        def p11(c=c):
+            m8 = {float(r["horizon_h"]): float(r["s_pooled_eq"]) for r in V.read("MPC", c)
+                  if r.get("forecast", "perfect") == "perfect"}
+            conv = V.read("MPC_CONV", c)
+            for r in conv:
+                h = float(r["horizon_h"])
+                if h not in m8:
+                    raise LookupError(f"MPC {c} H={h:g}: no 801-point row to compare")
+                # ruling §21.6: grid uncertainty <= 0.5 point, disclosed
+                check(f"P11 {c} MPC {h:g} h: headline vs convergence grid |ds| <= 0.5 point",
+                      abs(m8[h] - float(r["s_pooled_eq"])) <= 0.5,
+                      f"{m8[h]:.3f} vs {float(r['s_pooled_eq']):.3f}")
+        _guard(f"P11 {c}: v3 MPC convergence files", p11)
+
+    def p12():
+        import stats_v3 as SV
+        rows = V.read("STATS")
+        fresh = {(r["family"], r["city"]): r for r in SV.run()}
+        for r in rows:
+            k = (r["family"], r["city"])
+            ok = k in fresh and all(abs(float(r[x]) - fresh[k][x]) < 1e-5 for x in ("hl", "hl_lo", "hl_hi", "p_adj"))
+            check(f"P12 stats {k}: re-derives from the per-window files; CI contains HL; p >= floor",
+                  ok and float(r["hl_lo"]) <= float(r["hl"]) <= float(r["hl_hi"])
+                  and float(r["p_adj"]) >= float(r["p_floor"]) - 1e-12,
+                  f"HL {float(r['hl']):+.2f} [{float(r['hl_lo']):+.2f},{float(r['hl_hi']):+.2f}] p_adj {float(r['p_adj']):.4f}")
+        check("P12 stats: families F1-F4 present for all three cities",
+              all((f, c) in fresh for f in ("F1", "F2", "F3", "F4") for c in V.CITIES), f"{len(rows)} rows")
+    _guard("P12 stats_v3 table", p12)
+
+
+STATS = {}
+CLASSES = dict(A=a_physical, B=b_bounds, C=c_accounting, D=d_provenance, E=e_monotonic,
+               F=f_tuned_vs_dp, G=g_feasibility, H=h_deadband, P=p_v3)
+
+
+def main(argv=None):
+    import argparse, rbrl_io as IO
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--classes", default="".join(CLASSES), help="subset, e.g. P (a gate run needs all)")
+    a = ap.parse_args(argv)
+    FAILS.clear(); NCHECK[0] = 0; STATS.clear()
+    print("=" * 72)
+    print("INVARIANT GATE - run before any number is reported")
+    print("=" * 72)
+    for k in a.classes:
+        CLASSES[k]()
+    full = set(a.classes) == set(CLASSES)
     print("\n" + "=" * 72)
+    # the saved run: the manuscript's invariant count is read from this file (F18), never typed
+    IO.write_json("invariants_run", dict(classes=a.classes, full_gate=full, n_checks=NCHECK[0],
+                                         n_failed=len(FAILS), failed=list(FAILS), **STATS))
     if FAILS:
-        print(f"GATE FAILED - {len(FAILS)} invariant(s) violated:")
+        print(f"GATE FAILED - {len(FAILS)} of {NCHECK[0]} invariant(s) violated:")
         for f in FAILS: print(f"  - {f}")
         print("Do not report these numbers.")
-        sys.exit(1)
-    print("GATE PASSED - all invariants hold. Numbers may be reported.")
+        return 1
+    print(f"GATE {'PASSED' if full else 'PASSED (partial: classes ' + a.classes + ')'} - "
+          f"all {NCHECK[0]} invariants hold.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

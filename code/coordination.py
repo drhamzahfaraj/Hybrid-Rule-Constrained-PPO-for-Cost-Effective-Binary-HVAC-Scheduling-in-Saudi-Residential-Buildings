@@ -29,10 +29,8 @@ compared at a mean occupied temperature no warmer than the baseline's, so no
 arm can buy a saving with temperature.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import multizone as MZ
 import final_tables as F
@@ -160,7 +158,7 @@ if __name__ == "__main__":
                              hold=hold,
                              **{k: round(v, 5) for k, v in co.items()}))
     if rows:
-        with open(_ROOT + "/results/T19_coordination.csv", "w",
+        with open("/home/claude/rbrl/results/T19_coordination.csv", "w",
                   newline="") as f:
             w = csv.DictWriter(f, fieldnames=list(rows[0]))
             w.writeheader(); w.writerows(rows)

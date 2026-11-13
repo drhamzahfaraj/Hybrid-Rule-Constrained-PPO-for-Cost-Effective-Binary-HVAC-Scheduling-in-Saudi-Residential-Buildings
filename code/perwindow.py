@@ -29,10 +29,8 @@ genuine window-to-window variation of a comfort-matched arm, directly
 comparable with the dispersion quoted for every other arm.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import final_tables as F
 import dp_meanconstrained as M
@@ -158,10 +156,10 @@ if __name__ == "__main__":
             print(f"  --> attainable {s['att_sav']:.2f}+/-{s['att_sd']:.2f}%  "
                   f"(every window no warmer; worst dT {s['max_dT']:+.4f})")
             print(f"  --> bound      {s['bnd_sav']:.2f}+/-{s['bnd_sd']:.2f}%")
-    with open(_ROOT + "/results/T14_perwindow.csv", "w", newline="") as f:
+    with open("/home/claude/rbrl/results/T14_perwindow.csv", "w", newline="") as f:
         w_ = csv.DictWriter(f, fieldnames=list(rows[0]))
         w_.writeheader(); w_.writerows(rows)
-    with open(_ROOT + "/results/T14_perwindow_summary.csv", "w",
+    with open("/home/claude/rbrl/results/T14_perwindow_summary.csv", "w",
               newline="") as f:
         w_ = csv.DictWriter(f, fieldnames=list(summary[0]))
         w_.writeheader(); w_.writerows(summary)

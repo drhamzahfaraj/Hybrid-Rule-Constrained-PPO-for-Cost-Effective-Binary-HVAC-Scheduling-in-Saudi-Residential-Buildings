@@ -29,22 +29,20 @@ and exact under the zero-order-hold forcing the weather record supplies. Both
 M and expm(M dt) are constant over a run, so they are formed once.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from scipy.linalg import expm
 
 import headroom as H
 
-C_TH = 4800.0 * 1e3      # J/K per zone
+C_TH = H.C_TH * 1e3      # J/K per zone; RBRL_CTH config (F21), same source as the single zone
 LAM_IJ = 12.5            # W/K across a shared wall
 PER_FACE = H.PER_FACE    # 11.90 W/K of fabric per exposed face
 Q_HVAC = H.Q_HVAC        # W of cooling per zone
 COP = H.COP_RATED
 SHGC, A_GL = H.SHGC, H.A_GL
-LO, HI = 22.0, 24.0
+LO, HI = H.BAND_LO, H.BAND_HI   # band from the one config (F8)
 T0 = 23.0
 
 
@@ -79,7 +77,7 @@ def topology(kind: str, n: int = 1):
     raise ValueError(kind)
 
 
-def build(kind, n, city, lam_ij=LAM_IJ):
+def build(kind, n, city, lam_ij=LAM_IJ, c_th=None):
     """Assemble M, expm(M dt), M^{-1} and the per-zone conductances.
 
     `lam_ij` is exposed so that a topology can be run with coupling SWITCHED
@@ -90,6 +88,7 @@ def build(kind, n, city, lam_ij=LAM_IJ):
     study made exactly that error -- it attributed a per-zone cost change to
     coupling when envelope geometry alone explained it to 0.3%.
     """
+    c_th = C_TH if c_th is None else c_th
     pairs, faces, label = topology(kind, n)
     nz = len(faces)
     lam_env = PER_FACE * faces + H.lam_inf_of(city)      # W/K, per zone
@@ -98,11 +97,11 @@ def build(kind, n, city, lam_ij=LAM_IJ):
         L[i, j] += lam_ij
         L[j, i] += lam_ij
     lam_iz = L.sum(axis=1)
-    M = -(np.diag(lam_env + lam_iz) - L) / C_TH          # 1/s
+    M = -(np.diag(lam_env + lam_iz) - L) / c_th          # 1/s
     Minv = np.linalg.inv(M)
     A = expm(M * H.DT * 3600.0)
     return dict(label=label, nz=nz, pairs=pairs, faces=faces, lam_ij=lam_ij,
-                lam_env=lam_env, lam_iz=lam_iz, L=L, M=M, Minv=Minv, A=A)
+                lam_env=lam_env, lam_iz=lam_iz, L=L, M=M, Minv=Minv, A=A, c_th=c_th)
 
 
 def t_inf(geo, t_out, irr, u):

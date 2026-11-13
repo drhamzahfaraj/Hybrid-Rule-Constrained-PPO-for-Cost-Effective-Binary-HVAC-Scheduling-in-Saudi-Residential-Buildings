@@ -1,0 +1,18 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "clv_refine.py",
+ "argv": "clv_refine.py riyadh",
+ "env": {},
+ "inputs": {
+  "results/T17v3_riyadh_perwindow.csv": "d97698f7a4c25fd8",
+  "results/T17v3_riyadh_dualcurves.json": "dabd90e2a013606c"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 15256,
+ "utc": "2026-11-12T16:05:59Z"
+}

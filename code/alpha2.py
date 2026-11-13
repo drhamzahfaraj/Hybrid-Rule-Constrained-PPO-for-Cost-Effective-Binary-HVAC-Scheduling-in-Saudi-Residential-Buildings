@@ -16,10 +16,8 @@ alpha of order 0.1-0.5.
 
 Benchmarks: random J=2.2612 f_s=14.16 v_c=3.03; rule J=0.3932 f_s=1.84 v_c=0.82.
 """
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 from env import Rules
 from train import train, eval_policy, agg
 from run_all import cooling_test_starts, write, P15

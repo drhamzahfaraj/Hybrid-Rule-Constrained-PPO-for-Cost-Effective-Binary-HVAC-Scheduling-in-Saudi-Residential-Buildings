@@ -36,10 +36,8 @@ Also added
   bound, so both are reported.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, argparse
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from hvac import Params, read_epw, vertical_irradiance
 
@@ -55,7 +53,7 @@ def lam_of(faces: int) -> float:
 
 def exogenous(city, hours, start_day, dt):
     lat = {"riyadh": 24.7, "jeddah": 21.5, "taif": 21.483}[city]
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
     irr = vertical_irradiance(dni, dhi, lat, azimuth_deg=180.0)
     spd = int(round(1.0 / dt)); N = int(round(hours / dt)); h0 = start_day * 24
     return (np.repeat(tdb[h0:h0 + hours], spd)[:N],

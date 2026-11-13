@@ -9,10 +9,8 @@ every arm comfort-matched to THERM's mean occupied temperature, paired per
 window.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import final_tables as F
 
@@ -62,6 +60,6 @@ for tag, price in SCHEDULES:
           f"TUNED {r['tuned_sav']:+.1f}+/-{r['tuned_sd']:.1f}  "
           f"OPT {r['opt_sav']:+.1f}+/-{r['opt_sd']:.1f}  (n_dp={nd})", flush=True)
 
-with open(_ROOT + "/results/T4_tariff_heldout.csv", "w", newline="") as f:
+with open("/home/claude/rbrl/results/T4_tariff_heldout.csv", "w", newline="") as f:
     w = csv.DictWriter(f, fieldnames=list(rows[0])); w.writeheader(); w.writerows(rows)
 print("-> results/T4_tariff_heldout.csv")

@@ -3,15 +3,13 @@
 
 Every coordinate written here is read from results/*.csv. No number is typed by
 hand, so a figure cannot drift from the table it illustrates.
-Output: <repo>/paper/fig_*.tex, each \\input from main.tex.
+Output: /home/claude/v4/fig_*.tex, each \\input from main.tex.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import csv
 
-RES = _ROOT + "/results"
-OUT = _os.path.join(_ROOT, "..", "paper")
+RES = "/home/claude/rbrl/results"
+OUT = "/home/claude/v4"
 
 
 def rows(n):
@@ -330,7 +328,7 @@ def fig_guards():
     """Guard-band geometry. The excursions are recomputed here from the same
     constants the simulator uses, so the figure cannot disagree with the text."""
     import sys
-    sys.path.insert(0, _ROOT + "")
+    sys.path.insert(0, "/home/claude/rbrl")
     import headroom as H
     C_TH = 4800.0
     SEASON_H = 176 * 24          # 1 May (day 121) to 23 Oct, continuous
@@ -433,7 +431,7 @@ def fig_leap():
     scalar solution rather than sketched."""
     import sys
     import numpy as np
-    sys.path.insert(0, _ROOT + "")
+    sys.path.insert(0, "/home/claude/rbrl")
     import headroom as H
     C_TH, TOUT = 4800.0, 40.0
     LO, HI = 22.0, 24.0
@@ -515,7 +513,7 @@ def fig_leap():
 \addplot[red,thick,const plot] coordinates{{{du}}};
 \end{{axis}}
 \end{{tikzpicture}}
-\caption{{The complete-cycle structure of Proposition~\ref{{prop:structure}}, drawn
+\caption{{The complete-cycle structure of Observation~\ref{{prop:structure}}, drawn
 from the closed-form scalar solution at $\Tout=40\,^\circ$C,
 $\Lambda_i={lam:.2f}\,$W/K and $\Cth={C_TH:.0f}\,$kJ/K. The optimal schedule
 touches each band edge exactly once per cycle: the plant runs only while cooling
@@ -523,12 +521,11 @@ $\Tmax\!\to\!\Tmin$ and is idle while the zone drifts back. The dwell times
 follow in closed form from the scalar update, $\tau^-=\tau\ln[(\Tout{{-}}\Tmin)/
 (\Tout{{-}}\Tmax)]={tm:.2f}\,$h and $\tau^+=\tau\ln[(\Tmax{{-}}T_\infty^+)/
 (\Tmin{{-}}T_\infty^+)]={tp:.2f}\,$h with $\tau=\Cth/\Lambda_i={tau:.1f}\,$h,
-giving a cycle of {cyc:.2f}\,h, or ${per_day:.2f}$ switch-ons per day---within
-$4\%$ of the $3.00$ measured for the clairvoyant optimum
-(Table~\ref{{tab:main}}). The duty ratio $\tau^+/(\tau^-{{+}}\tau^+)=
-{tp / cyc:.3f}$ is what the duty-cycle identity~\eqref{{eq:duty_identity}} fixes:
-because any policy that switches earlier shortens a phase and so adds a switch,
-this geometry is what Corollary~\ref{{cor:rules_sufficient}} rests on.}}
+giving a cycle of {cyc:.2f}\,h, or ${per_day:.2f}$ switch-ons per day at this constant
+$40\,^\circ$C load; on the held-out Riyadh weeks the clairvoyant schedule
+issues $2.83$ on-commands per day (THERM's $4.10$ less the $31.1\%$ of
+Table~\ref{{tab:main}}). This geometry is what
+Corollary~\ref{{cor:rules_sufficient}} rests on.}}
 \label{{fig:leap}}
 \end{{figure}}
 """

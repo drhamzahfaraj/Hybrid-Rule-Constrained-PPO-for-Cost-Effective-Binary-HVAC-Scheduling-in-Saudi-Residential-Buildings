@@ -1,0 +1,26 @@
+# DEPRECATED (RULING_round4 F1): retired; use jobq2.py + jobs/round4.jsonl. Not read by any runner any more.
+# --- multi-zone MPC 24 h: 2 rooms, 4 rooms (1x4 and 2x2), independent and shared plant, +/- setback
+nice python3 mz_mpc.py riyadh 1x2 1 > logs_mzmpc_1x2_m1.txt 2>&1
+nice python3 mz_mpc.py riyadh 1x4 none > logs_mzmpc_1x4_none.txt 2>&1
+nice python3 mz_mpc.py riyadh 1x4 2 > logs_mzmpc_1x4_m2.txt 2>&1
+nice python3 mz_mpc.py riyadh 2x2 none > logs_mzmpc_2x2_none.txt 2>&1
+nice python3 mz_mpc.py riyadh 2x2 2 > logs_mzmpc_2x2_m2.txt 2>&1
+nice python3 mz_r3.py rules riyadh 1x2 none setback > logs_mzrules_1x2_none_sb.txt 2>&1
+nice python3 mz_r3.py rules riyadh 1x2 1 setback > logs_mzrules_1x2_m1_sb.txt 2>&1
+nice python3 mz_r3.py rules riyadh 1x4 none setback > logs_mzrules_1x4_none_sb.txt 2>&1
+nice python3 mz_r3.py rules riyadh 1x4 2 setback > logs_mzrules_1x4_m2_sb.txt 2>&1
+nice python3 mz_r3.py rules riyadh 2x2 none setback > logs_mzrules_2x2_none_sb.txt 2>&1
+nice python3 mz_r3.py rules riyadh 2x2 2 setback > logs_mzrules_2x2_m2_sb.txt 2>&1
+# PAUSED (E-sw-8 setback rollout) nice python3 mz_mpc.py riyadh 1x2 none setback > logs_mzmpc_1x2_none_sb.txt 2>&1
+# PAUSED (E-sw-8 setback rollout) nice python3 mz_mpc.py riyadh 1x2 1 setback > logs_mzmpc_1x2_m1_sb.txt 2>&1
+# PAUSED (E-sw-8 setback rollout) nice python3 mz_mpc.py riyadh 1x4 2 setback > logs_mzmpc_1x4_m2_sb.txt 2>&1
+# PAUSED (E-sw-8 setback rollout) nice python3 mz_mpc.py riyadh 2x2 2 setback > logs_mzmpc_2x2_m2_sb.txt 2>&1
+# PAUSED (E-sw-8 setback rollout) nice python3 mz_mpc.py riyadh 1x4 none setback > logs_mzmpc_1x4_none_sb.txt 2>&1
+# PAUSED (E-sw-8 setback rollout) nice python3 mz_mpc.py riyadh 2x2 none setback > logs_mzmpc_2x2_none_sb.txt 2>&1
+# --- all features: setback + shared plant + outdoor-dependent COP (single zone and multi-zone)
+# PAUSED (E-sw-6 COP not in all paths) RBRL_COP=badescu RBRL_TAG=_copT nice python3 t1_v2.py t1 > logs_copT_t1.txt 2>&1
+# PAUSED (E-sw-6 COP not in all paths) RBRL_COP=badescu RBRL_TAG=_copT nice python3 setback_arms.py rule > logs_copT_sbrule.txt 2>&1
+# PAUSED (E-sw-6 COP not in all paths) until [ -f results/tuned_params_v2_copT.json ]; do sleep 30; done; RBRL_COP=badescu RBRL_TAG=_copT nice python3 mpc_lambda.py --city riyadh --horizons 24 > logs_copT_mpc_riyadh.txt 2>&1
+# PAUSED (E-sw-6 COP not in all paths) until [ -f results/tuned_params_v2_copT.json ]; do sleep 30; done; until [ -f results/setback_rule_params_copT.json ]; do sleep 30; done; RBRL_COP=badescu RBRL_TAG=_copT nice python3 setback_arms.py mpc riyadh 24 > logs_copT_sbmpc_riyadh.txt 2>&1
+# PAUSED (E-sw-6 COP not in all paths) until [ -f results/setback_rule_params_copT.json ]; do sleep 30; done; RBRL_COP=badescu RBRL_TAG=_copT nice python3 mz_r3.py rules riyadh 2x2 2 setback > logs_copT_mzrules.txt 2>&1
+# PAUSED (E-sw-6 COP not in all paths) until [ -f results/tuned_params_v2_copT.json ]; do sleep 30; done; until [ -f results/setback_rule_params_copT.json ]; do sleep 30; done; RBRL_COP=badescu RBRL_TAG=_copT nice python3 mz_mpc.py riyadh 2x2 2 setback > logs_copT_mzmpc.txt 2>&1

@@ -1,0 +1,22 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "shield.py",
+ "argv": "shield.py ppo riyadh",
+ "env": {},
+ "inputs": {
+  "riyadh.epw": "a2e88409591c158f",
+  "results/models/rbrl_ppo5_v2_riyadh_riyadh_42.zip": "6c133064120bdf16",
+  "results/models/rbrl_ppo5_v2_riyadh_riyadh_43.zip": "e1e15afc98fa2148",
+  "results/models/rbrl_ppo5_v2_riyadh_riyadh_44.zip": "9d52773126ecad6c",
+  "results/models/rbrl_ppo5_v2_riyadh_riyadh_45.zip": "b8c283c3edf307c9",
+  "results/models/rbrl_ppo5_v2_riyadh_riyadh_46.zip": "d3a17939aec03864"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 14904,
+ "utc": "2026-11-12T15:22:30Z"
+}

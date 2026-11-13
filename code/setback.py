@@ -33,10 +33,8 @@ Invariant: with occupancy set to all-occupied and the band to 22-26, sim() must
 reproduce headroom.simulate() exactly.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 
@@ -64,36 +62,97 @@ def bands(occ, occ_lo=22.0, occ_hi=24.0, away_lo=18.0, away_hi=30.0):
 
 # ----------------------------------------------------------------- simulation
 def sim(policy, city, faces, c_th, price, lo, hi, occ,
-        hours=168, start_day=181, T0=23.0, c_sw=H.C_SW, q_hvac=None, cop=None):
+        hours=168, start_day=181, T0=23.0, c_sw=H.C_SW, q_hvac=None, cop=None,
+        t_min=None, record=False):
+    """Simulate one arm. Comfort is scored on the post-step state T_{k+1} with
+    the step-k occupancy and band (ruling round 4, Sec. 2.1). Metrics:
+      deg_h_over       occupied sum max(0, T' - hi)*dt                (upper)
+      deg_h_cmd_under  sum over COOLING steps (u=1), occupied or away, of
+                       max(0, t_min - T')*dt: cooling-caused under-temperature
+                       (the corrected cold rule says this must be 0)
+      deg_h_ff_under   the same over u=0 (free-float) steps, occupied only
+      deg_h_under      plain occupied under-temperature (= cmd + ff, occupied)
+      deg_h_occ        deg_h_over + deg_h_under (legacy)
+      T_end, T_max_away (nan when there are no away steps)
+    t_min defaults to the occupied lower limit of the caller's band (lo on
+    occupied steps). record=True adds r["u"], r["T_next"] (per-step arrays)
+    for in_domain()."""
     q = H.Q_HVAC if q_hvac is None else q_hvac
     cp = H.COP_RATED if cop is None else cop
     lam = H.lam_of(faces, city)
     t_out, irr, N = H.series(city, hours, start_day)
     decay = float(np.exp(-DT * 3600.0 * lam / (c_th * 1e3)))
-    p_el = q / cp / 1000.0
+    p_el_k = q / (H.cop_series(t_out) if cop is None else np.full(N, cp)) / 1000.0
+    occ_a = np.asarray(occ, bool)
+    if t_min is None:
+        t_min = float(np.max(np.asarray(lo)[occ_a[:len(lo)]])) if occ_a.any() else H.BAND_LO
     T, prev = T0, 0
     cost = e = 0.0; sw = 0; viol = 0; dh = 0.0
-    Tocc = []
+    Tocc = []; Tclip = []; dh_over = dh_under = 0.0
+    dh_cmd = dh_ff = 0.0; T_max_away = -np.inf; n_away = 0
+    U = []; TN = []
     for k in range(N):
         u = int(policy(T, prev, k))
         if u == 1 and prev == 0:
             cost += c_sw + price[k] * H.E_START; sw += 1; e += H.E_START
         if u == 1:
-            cost += price[k] * p_el * DT; e += p_el * DT
+            cost += price[k] * p_el_k[k] * DT; e += p_el_k[k] * DT
         T_inf = t_out[k] + (H.SHGC * H.A_GL * irr[k] - q * u) / lam
         T = T_inf + (T - T_inf) * decay
+        if record:
+            U.append(u); TN.append(T)
+        if u == 1:
+            dh_cmd += max(0.0, t_min - T - 1e-9) * DT
         if occ[k]:
             Tocc.append(T)
+            Tclip.append(max(T, lo[k]))      # Rule B: cold excursions buy no warm credit
+            dh_over += max(0.0, T - hi[k] - 1e-9) * DT
+            dh_under += max(0.0, lo[k] - T - 1e-9) * DT
+            if u == 0:
+                dh_ff += max(0.0, t_min - T - 1e-9) * DT
             if T > hi[k] + 1e-9 or T < lo[k] - 1e-9:
                 viol += 1
                 dh += max(0.0, T - hi[k]) * DT + max(0.0, lo[k] - T) * DT
+        else:
+            n_away += 1
+            T_max_away = max(T_max_away, T)
         prev = u
     d = hours / 24.0
     cost += price[-1] * (T - T0) * c_th * 1e3 / 3.6e6 / cp
-    return dict(J=cost / d, E=e / d, f_s=sw / d, deg_h_occ=dh,
-                v_occ=100.0 * viol / max(1, len(Tocc)),
-                T_mean_occ=float(np.mean(Tocc)) if Tocc else float("nan"),
-                T_end=T)
+    out = dict(J=cost / d, E=e / d, f_s=sw / d, deg_h_occ=dh,
+               v_occ=100.0 * viol / max(1, len(Tocc)),
+               T_mean_occ=float(np.mean(Tocc)) if Tocc else float("nan"),
+               T_mean_occ_clip=float(np.mean(Tclip)) if Tclip else float("nan"),
+               deg_h_over=dh_over, deg_h_under=dh_under,
+               deg_h_cmd_under=dh_cmd, deg_h_ff_under=dh_ff,
+               T_max_away=float(T_max_away) if n_away else float("nan"),
+               T_end=T)
+    if record:
+        out["u"] = np.array(U, np.int8); out["T_next"] = np.array(TN)
+    return out
+
+
+def in_domain(u, T_next, occ, hi, t_min=None, away_max=None, tol=1e-9):
+    """Is an arm's realised trajectory inside the feasible set D of the DP /
+    MPC / bound (ruling round 4, Sec. 2.1)?  D is defined pointwise on the
+    post-step state T_{k+1} = T_next[k] of the action u[k]:
+      * occupied steps: T_{k+1} <= hi[k] (= HI);
+      * away steps:     T_{k+1} <= AWAY_MAX (hi[k] on away steps by default);
+      * every step:     u[k] = 1  =>  T_{k+1} >= t_min (cooling never ends
+                        below the occupied lower limit); u[k] = 0 is free.
+    Returns (ok, info) with the counts of each kind of exclusion and the first
+    offending step. Use r = sim(..., record=True); in_domain(r["u"], r["T_next"], occ, hi)."""
+    u = np.asarray(u).astype(int); Tn = np.asarray(T_next, float)
+    occ = np.asarray(occ, bool)[:len(u)]; hi = np.asarray(hi, float)[:len(u)]
+    t_min = H.BAND_LO if t_min is None else t_min
+    cap = hi if away_max is None else np.where(occ, hi, away_max)
+    over = Tn > cap + tol
+    cold = (u == 1) & (Tn < t_min - tol)
+    bad = over | cold
+    info = dict(n_over_occ=int((over & occ).sum()), n_over_away=int((over & ~occ).sum()),
+                n_cmd_under=int(cold.sum()),
+                first=int(np.argmax(bad)) if bad.any() else -1)
+    return (not bad.any()), info
 
 
 def dp(city, faces, c_th, price, lo, hi, occ, hours=168, start_day=181,

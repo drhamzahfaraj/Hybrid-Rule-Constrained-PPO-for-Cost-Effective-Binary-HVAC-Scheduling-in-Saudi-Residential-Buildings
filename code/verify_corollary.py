@@ -12,10 +12,8 @@ corollary says it cannot be cheaper.  If it IS cheaper at a matched mean, the
 corollary as stated is false.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S

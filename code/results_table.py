@@ -28,10 +28,8 @@ Design decisions, each stated because each is a place a referee will look:
   lower bound on what is left for control, not an achievable target.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, csv, argparse, itertools
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from hvac import Params, read_epw, vertical_irradiance
 
@@ -72,7 +70,7 @@ def tariff(kind):
 
 def series(city, hours, start_day):
     lat = CITIES[city]
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
     irr = vertical_irradiance(dni, dhi, lat, azimuth_deg=180.0)
     spd = int(round(1.0 / DT)); N = int(round(hours / DT)); h0 = start_day * 24
     return (np.repeat(tdb[h0:h0 + hours], spd)[:N],
@@ -232,8 +230,8 @@ if __name__ == "__main__":
               f"{d['f_s']:5.2f} {d['T_mean']:7.2f} {d['v_T']:6.2f} {d['deg_h']:7.3f} "
               f"{'--':>10s}   [V_bwd {d['V_bwd']:.4f}]")
         print()
-    os.makedirs(_ROOT + "/results", exist_ok=True)
-    with open(_ROOT + "/results/replacement_table.csv", "w", newline="") as f:
+    os.makedirs("/home/claude/rbrl/results", exist_ok=True)
+    with open("/home/claude/rbrl/results/replacement_table.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=sorted({k for r in rows for k in r}))
         w.writeheader(); w.writerows(rows)
     print("-> results/replacement_table.csv")

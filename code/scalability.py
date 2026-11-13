@@ -31,10 +31,8 @@ absence. The deployability claim is correspondingly narrow: inference is cheap,
 which is measured; training cost is not claimed.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, time, platform, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import multizone as MZ
 import headroom as H
@@ -106,7 +104,7 @@ if __name__ == "__main__":
         print(f"{geo['label']:6s} {nz:3d} {tw:10.3f}s {ts*1e3:9.3f}ms "
               f"{tr*1e6:9.2f}us {states:14.3g} {actions:11d}", flush=True)
 
-    with open(_ROOT + "/results/T18_scalability.csv", "w",
+    with open("/home/claude/rbrl/results/T18_scalability.csv", "w",
               newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)

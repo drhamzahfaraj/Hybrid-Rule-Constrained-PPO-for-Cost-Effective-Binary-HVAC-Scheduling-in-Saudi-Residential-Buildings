@@ -1,0 +1,21 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "setback_arms.py",
+ "argv": "setback_arms.py mpc taif 24",
+ "env": {},
+ "inputs": {
+  "results/setback_rule_params_v3.json": "9cd3308767e7973d",
+  "results/T21v3_taif_perwindow.csv": "e96ef0d1a2c99067",
+  "riyadh.epw": "a2e88409591c158f",
+  "jeddah.epw": "690cae887558f09e",
+  "taif.epw": "dc35449564eea0ae"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 9605,
+ "utc": "2026-11-12T13:29:31Z"
+}

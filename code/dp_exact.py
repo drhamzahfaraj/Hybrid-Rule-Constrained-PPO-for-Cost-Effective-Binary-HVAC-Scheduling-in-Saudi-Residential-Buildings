@@ -20,10 +20,8 @@ Comfort  : hard. Leaving [t_min, t_max] is infeasible (cost +inf), so the DP
            the rule-based controllers.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from hvac import read_epw, vertical_irradiance
 
@@ -35,7 +33,7 @@ def dp_single_zone(city="riyadh", start_day=181, days=7, dt=0.25,
                    c_sw=0.15, price=0.18, shgc=0.25, a_gl=2.0,
                    t_min=22.0, t_max=26.0, nT=801, verbose=True):
     lat = {"riyadh": 24.7, "jeddah": 21.5}[city]
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
     irr = vertical_irradiance(dni, dhi, lat, azimuth_deg=180.0)
 
     spd = int(round(24.0 / dt))

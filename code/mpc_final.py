@@ -10,10 +10,8 @@ Produces, in one place, every number the manuscript's MPC propagation needs:
   * the 48 h horizon row
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, os, glob
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 
 import final_tables as F
@@ -23,7 +21,7 @@ from scipy import stats
 
 def load(prefix):
     rows = []
-    for p in glob.glob(f"{_ROOT}/results/{prefix}*_mpc_perwindow.csv"):
+    for p in glob.glob(f"/home/claude/rbrl/results/{prefix}*_mpc_perwindow.csv"):
         rows += list(csv.DictReader(open(p)))
     return rows
 

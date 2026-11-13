@@ -45,7 +45,7 @@
 \addplot[red,thick,const plot] coordinates{(0.0000,0)(6.6120,0)(6.6120,1)(8.2828,1)(8.2828,0)(8.2828,0)(14.8948,0)(14.8948,1)(16.5655,1)(16.5655,0)};
 \end{axis}
 \end{tikzpicture}
-\caption{The complete-cycle structure of Proposition~\ref{prop:structure}, drawn
+\caption{The complete-cycle structure of Observation~\ref{prop:structure}, drawn
 from the closed-form scalar solution at $\Tout=40\,^\circ$C,
 $\Lambda_i=23.75\,$W/K and $\Cth=4800\,$kJ/K. The optimal schedule
 touches each band edge exactly once per cycle: the plant runs only while cooling
@@ -53,9 +53,10 @@ $\Tmax\!\to\!\Tmin$ and is idle while the zone drifts back. The dwell times
 follow in closed form from the scalar update, $\tau^-=\tau\ln[(\Tout{-}\Tmin)/
 (\Tout{-}\Tmax)]=6.61\,$h and $\tau^+=\tau\ln[(\Tmax{-}T_\infty^+)/
 (\Tmin{-}T_\infty^+)]=1.67\,$h with $\tau=\Cth/\Lambda_i=56.1\,$h,
-giving a cycle of 8.28\,h, or $2.90$ switch-ons per day---within
-$4\%$ of the $3.00$ measured for the clairvoyant optimum
-(Table~\ref{tab:main}). This geometry is what
+giving a cycle of 8.28\,h, or $2.90$ switch-ons per day at this constant
+$40\,^\circ$C load; on the held-out Riyadh weeks the clairvoyant schedule
+issues $2.83$ on-commands per day (THERM's $4.10$ less the $31.1\%$ of
+Table~\ref{tab:main}). This geometry is what
 Corollary~\ref{cor:rules_sufficient} rests on.}
 \label{fig:leap}
 \end{figure}

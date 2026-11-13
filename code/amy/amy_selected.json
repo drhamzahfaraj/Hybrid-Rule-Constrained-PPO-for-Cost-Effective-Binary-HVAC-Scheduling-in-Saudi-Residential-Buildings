@@ -2,19 +2,16 @@
   "riyadh": {
     "hot": 2021,
     "mild": 2013,
-    "median": 2018,
-    "n": 15
+    "median": 2019
   },
   "jeddah": {
     "hot": 2023,
     "mild": 2011,
-    "median": 2017,
-    "n": 15
+    "median": 2015
   },
   "taif": {
-    "hot": 2021,
+    "hot": 2017,
     "mild": 2013,
-    "median": 2012,
-    "n": 15
+    "median": 2018
   }
 }

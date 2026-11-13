@@ -51,10 +51,8 @@ Comfort on the moisture axis follows ASHRAE 55's humidity-ratio limit of
 outdoor air and the zone.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, os, argparse
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 
 import headroom as H
@@ -87,7 +85,7 @@ def read_epw_humidity(city):
     """RH [%] and station pressure [Pa], hourly, from the same EPW as the
     dry-bulb and irradiance the main study uses."""
     rh, pa = [], []
-    with open(f"{_ROOT}/{city}.epw") as f:
+    with open(f"/home/claude/rbrl/{city}.epw") as f:
         for line in f:
             row = line.split(",")
             if len(row) > 20 and row[0].isdigit():
@@ -110,7 +108,7 @@ class Zone:
         self.lam = H.lam_of(faces, city)
         self.decay = float(np.exp(-DT * 3600.0 * self.lam / (c_th * 1e3)))
         self.p_el = H.Q_HVAC / H.COP_RATED / 1000.0
-        tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+        tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
         self.t_out_h = np.asarray(tdb, float)
         self.irr_h = vertical_irradiance(dni, dhi, H.CITIES[city],
                                          azimuth_deg=180.0)
@@ -274,8 +272,8 @@ if __name__ == "__main__":
                              rh_max=round(agg["rhm"], 1),
                              lat_capped_pct=round(agg["cap"] / n, 2),
                              max_deg_h=round(max(degs), 5)))
-    os.makedirs(_ROOT + "/results", exist_ok=True)
-    with open(_ROOT + "/results/T22_latent2.csv", "w", newline="") as f:
+    os.makedirs("/home/claude/rbrl/results", exist_ok=True)
+    with open("/home/claude/rbrl/results/T22_latent2.csv", "w", newline="") as f:
         wcsv = csv.DictWriter(f, fieldnames=list(rows[0]))
         wcsv.writeheader(); wcsv.writerows(rows)
     print(f"\nselftest {'PASSED' if ok else 'FAILED'}  "

@@ -27,10 +27,8 @@ resulting arm claims no comfort credit in any window and is directly comparable
 with TUNED, RBRL and the clairvoyant bracket.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import final_tables as F
 import mpc as P
@@ -85,7 +83,7 @@ def match_window(city, w, price_v, hh, tgt, n_grid=P.N_GRID):
 # and rescanned, so the result is identical to the full scan wherever the anchor
 # was poor. An anchor that is missing (the 48 h horizon, which has no 801-point
 # counterpart) falls back to the full scan.
-def _anchors(path=_ROOT + "/results/T15_mpc_perwindow.csv"):
+def _anchors(path="/home/claude/rbrl/results/T15_mpc_perwindow.csv"):
     import os
     out = {}
     if not os.path.exists(path):
@@ -192,11 +190,11 @@ if __name__ == "__main__":
             print(f"  --> {city} H={hh:.0f}h  {q['sav']:.2f}+/-{q['sav_sd']:.2f}%"
                   f"   worst dT {q['worst_dT']:+.4f} K  ({q['n_win']} windows)",
                   flush=True)
-    with open(f"{_ROOT}/results/{a.out}_mpc_perwindow.csv", "w",
+    with open(f"/home/claude/rbrl/results/{a.out}_mpc_perwindow.csv", "w",
               newline="") as f:
         w_ = csv.DictWriter(f, fieldnames=list(rows[0]))
         w_.writeheader(); w_.writerows(rows)
-    with open(f"{_ROOT}/results/{a.out}_mpc_summary.csv", "w",
+    with open(f"/home/claude/rbrl/results/{a.out}_mpc_summary.csv", "w",
               newline="") as f:
         w_ = csv.DictWriter(f, fieldnames=list(summary[0]))
         w_.writeheader(); w_.writerows(summary)

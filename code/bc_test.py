@@ -24,10 +24,8 @@ Interpretation:
     must be extended
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np, torch, torch.nn as nn
 from hvac import HVACModel, Params, read_epw, vertical_irradiance
 from dp2 import solve
@@ -42,7 +40,7 @@ SHGC, AGL = 0.25, 2.0
 
 def series():
     lat = {"riyadh": 24.7, "jeddah": 21.5}[CITY]
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{CITY}.epw")
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{CITY}.epw")
     irr = vertical_irradiance(dni, dhi, lat, azimuth_deg=180.0)
     spd = int(round(1.0 / DT)); N = int(round(HOURS / DT)); h0 = START * 24
     return (np.repeat(tdb[h0:h0 + HOURS + 4], spd)[:N + 12],

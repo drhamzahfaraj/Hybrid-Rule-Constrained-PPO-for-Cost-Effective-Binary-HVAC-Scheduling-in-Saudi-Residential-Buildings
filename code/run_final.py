@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """Runner: emits T1..T6 for the revised manuscript."""
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -203,6 +201,6 @@ for city in F.CITIES:
 F.dump("T6_per_window", t6)
 
 say(f"\nTotal runtime {time.time()-t_start:.0f} s")
-with open(_ROOT + "/results/FINAL_TABLES.txt", "w") as f:
+with open("/home/claude/rbrl/results/FINAL_TABLES.txt", "w") as f:
     f.write("\n".join(OUT))
 print("-> results/FINAL_TABLES.txt")

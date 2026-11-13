@@ -20,10 +20,8 @@ author's own two-state model at the configuration the paper actually adopts,
 over the held-out window set, with each city's measured SHR.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import latent as L
 import final_tables as F
@@ -85,7 +83,7 @@ if __name__ == "__main__":
                   f"TUNED J={Jt:.4f} f_s={ft:.2f}  saving={sav:+.2f}%  "
                   f"starts={starts:+.1f}%  RH mean={rb:.1f}% max={rxb:.1f}%",
                   flush=True)
-    with open(_ROOT + "/results/T10_latent.csv", "w", newline="") as f:
+    with open("/home/claude/rbrl/results/T10_latent.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader(); w.writerows(rows)
     print("\n--- effect of latent load on the reported percentage ---")

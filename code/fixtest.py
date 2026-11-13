@@ -9,10 +9,8 @@ before execution (verified: 0/107,520 rewritten).
 Benchmarks in this harness: random actions J=2.2612 f_s=14.16;
 rule hysteresis (no learning) J=0.3932 f_s=1.84.
 """
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 from hvac import *
 from env import HVACEnv, Rules
 from train import train, eval_policy, agg

@@ -33,10 +33,8 @@ EPW field convention (dry-bulb degC, DNI W/m2, DHI W/m2) plus relative humidity
 for the latent study, 8760 rows, local standard time, hour 1..24 per day.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, json, time, csv, urllib.request, urllib.error
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 
 # Station coordinates, matched to the TMYx files the manuscript already uses so
@@ -48,21 +46,29 @@ SITES = {
     "taif":   dict(lat=21.4833, lon=40.5500, tz="Asia/Riyadh"),
 }
 YEARS = list(range(2009, 2024))          # 15 complete years
-OUT = _ROOT + "/amy"
+OUT = "/home/claude/rbrl/amy"
 VARS = ("temperature_2m", "relative_humidity_2m",
         "direct_normal_irradiance", "diffuse_radiation",
         "shortwave_radiation")
 
 
+MODELS = "era5"                          # pinned (R4 S9): no unpinned Open-Meteo blend
+
+
 def fetch(city, year, retries=4):
+    """One city-year, requested with ONE EXTRA DAY (to 1 Jan of year+1) because the record is
+    re-indexed to the EPW hour-ending convention in tidy() (R4 S5): Open-Meteo stamps hourly
+    radiation with the END of its averaging hour, and the first row is 00:00 on 1 Jan, which
+    belongs to the PREVIOUS year's last interval. The old code wrote that row as EPW hour 1
+    (00:00-01:00), so every ERA5 series was 1 h late (GHI centroid ~ solar noon + 1 h)."""
     s = SITES[city]
     url = ("https://archive-api.open-meteo.com/v1/archive"
            f"?latitude={s['lat']}&longitude={s['lon']}"
-           f"&start_date={year}-01-01&end_date={year}-12-31"
+           f"&start_date={year}-01-01&end_date={year + 1}-01-01"
            f"&hourly={','.join(VARS)}"
+           f"&models={MODELS}"
            # Local STANDARD time, no daylight shift: Saudi Arabia observes none,
-           # so UTC+3 fixed is exactly the EPW convention and no realignment of
-           # the solar geometry against the clock is needed.
+           # so UTC+3 fixed is the EPW clock convention.
            "&timezone=Asia%2FRiyadh&windspeed_unit=ms")
     last = None
     for a in range(retries):
@@ -87,13 +93,23 @@ def tidy(d, city, year):
       * irradiance non-negative, temperature inside a physically possible range
     """
     h = d["hourly"]
-    t = np.array(h["time"])
-    n = len(t)
-    if n not in (8760, 8784):
-        raise ValueError(f"{city} {year}: {n} hours, expected 8760/8784")
+    t_all = np.array(h["time"])
+    n_all = len(t_all)
+    # ERA5 1 h shift (R4 S5, RULING F15). Row j of the API is stamped at the END of its hour
+    # (radiation: mean over [t-1h, t]; temperature/RH: instantaneous at t). EPW hour i (1-based)
+    # is the interval [i-1, i) stamped at its end, so EPW hour i <- API row i (00:00 of 1 Jan is
+    # dropped; 00:00 of 1 Jan year+1 closes the last interval). The interval START of EPW hour i
+    # is API timestamp i-1, which decides the date (and hence the 29 Feb trim) below.
+    if n_all not in (8760 + 24, 8784 + 24):
+        raise ValueError(f"{city} {year}: {n_all} hours, expected 8784/8808 (year + 1 Jan)")
+    n = n_all - 24
+    if not (t_all[0].startswith(f"{year}-01-01T00") and t_all[n].startswith(f"{year + 1}-01-01T00")):
+        raise ValueError(f"{city} {year}: unexpected time axis {t_all[0]} .. {t_all[n]}")
+    t = t_all[:n]                         # interval start of EPW hour 1..n
+    sl = slice(1, n + 1)                  # the hour-ending rows that close those intervals
 
     def arr(k):
-        v = np.array([np.nan if x is None else float(x) for x in h[k]])
+        v = np.array([np.nan if x is None else float(x) for x in h[k][sl]])
         bad = ~np.isfinite(v)
         if bad.any():
             # reject on any long gap; interpolate isolated ones
@@ -129,7 +145,8 @@ def tidy(d, city, year):
     if (dhi > ghi + 25.0).sum() > 50:
         note = "diffuse exceeds global in >50 h"
     return dict(tdb=tdb, rh=rh, dni=dni, dhi=dhi, ghi=ghi, note=note,
-                elevation=d.get("elevation"))
+                elevation=d.get("elevation"), grid_lat=d.get("latitude"),
+                grid_lon=d.get("longitude"), models=MODELS, hour_convention="hour-ending (EPW)")
 
 
 def write_csv(city, year, rec):
@@ -161,7 +178,29 @@ def summarise(city, year, rec):
                 t_jja=round(float(jja), 2), t_max=round(float(tdb.max()), 1),
                 rh_jja=round(float(rec["rh"].reshape(365, 24)[151:243].mean()), 1),
                 ghi_sum_kWh=round(float(rec["ghi"].sum()) / 1000.0, 1),
-                elevation=rec["elevation"], note=rec["note"])
+                elevation=rec["elevation"], grid_lat=rec.get("grid_lat"),
+                grid_lon=rec.get("grid_lon"), models=rec.get("models"),
+                ghi_centroid_dev_h=round(ghi_centroid_dev(rec["ghi"], city), 3),
+                note=rec["note"])
+
+
+def solar_noon_lst(city, n_days=365):
+    """Local standard time (UTC+3, meridian 45 E) of solar noon per day of year (Spencer-type
+    equation of time, minutes; accuracy ~1 min, ample for a 0.5 h acceptance band)."""
+    d = np.arange(1, n_days + 1)
+    B = 2 * np.pi * (d - 81) / 364.0
+    eot = 9.87 * np.sin(2 * B) - 7.53 * np.cos(B) - 1.5 * np.sin(B)
+    return 12.0 - (SITES[city]["lon"] - 45.0) / 15.0 - eot / 60.0
+
+
+def ghi_centroid_dev(ghi, city):
+    """Mean over days of (GHI-weighted centroid of the day's hours - solar noon), in hours.
+    Row k (0-based within the day) is the interval [k, k+1) -> centre k + 0.5, which is the
+    hour vertical_irradiance assigns to it. ~0 for a correctly aligned record (F15 test)."""
+    g = np.asarray(ghi, float)[:8760].reshape(365, 24)
+    c = (g * (np.arange(24) + 0.5)).sum(1) / np.maximum(g.sum(1), 1e-9)
+    ok = g.sum(1) > 0
+    return float(np.mean((c - solar_noon_lst(city))[ok]))
 
 
 if __name__ == "__main__":

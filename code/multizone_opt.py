@@ -39,10 +39,8 @@ Comfort is matched as everywhere else: every arm is held to a mean occupied
 temperature no warmer than the baseline's, in every window.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -274,7 +272,7 @@ if __name__ == "__main__":
               f"{Jd_:9.4f} {sa:8.2f}% {sb:7.2f}% {sb-sa:6.2f} {worst:+9.4f}",
               flush=True)
     if rows:
-        with open(_ROOT + "/results/T20_multizone_opt.csv", "w",
+        with open("/home/claude/rbrl/results/T20_multizone_opt.csv", "w",
                   newline="") as f:
             w_ = csv.DictWriter(f, fieldnames=list(rows[0]))
             w_.writeheader(); w_.writerows(rows)

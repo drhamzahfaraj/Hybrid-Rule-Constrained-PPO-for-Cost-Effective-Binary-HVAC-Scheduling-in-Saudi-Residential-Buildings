@@ -14,17 +14,15 @@ Every number this script prints is measured here. Hardware: see the header it
 emits. There is no GPU in this environment.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, os, csv, time, platform
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 from hvac import HVACModel, Params, read_epw, vertical_irradiance
 from env import HVACEnv, Rules, run_policy, therm
 from train import load_city, agg
 from run_all import cooling_test_starts, write
 
-OUT = _ROOT + "/results"
+OUT = "/home/claude/rbrl/results"
 os.makedirs(OUT, exist_ok=True)
 TOPOS = ["1x1", "1x4", "2x2", "3x3", "4x4"]
 
@@ -51,7 +49,7 @@ def paper_scheme(city, topo, hours=168, c_th=77.2, dt=1.0):
     q_hvac, shgc, a_gl = 2.0, 0.25, 2.0
     t_min, t_max, eps_g = 22.0, 26.0, 0.5
     lat = {"riyadh": 24.7, "jeddah": 21.5}[city]
-    tdb, dni, dhi = read_epw(f"{_ROOT}/{city}.epw")
+    tdb, dni, dhi = read_epw(f"/home/claude/rbrl/{city}.epw")
     ghi = dni * 0.0 + dhi                             # GHI proxy as in the original
     r, c = {"1x1": (1, 1), "1x2": (1, 2), "1x4": (1, 4), "1x6": (1, 6),
             "2x2": (2, 2), "3x3": (3, 3), "4x4": (4, 4)}[topo]

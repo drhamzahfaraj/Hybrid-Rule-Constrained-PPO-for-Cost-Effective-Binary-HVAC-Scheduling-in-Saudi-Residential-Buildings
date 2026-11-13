@@ -43,10 +43,8 @@ Comfort is matched per window, on the same criterion as every other arm: the
 cheapest run that is no warmer than that window's own baseline mean.
 """
 from __future__ import annotations
-import os as _os
-_ROOT = _os.path.dirname(_os.path.abspath(__file__))  # repository-relative paths
 import sys, csv, time
-sys.path.insert(0, _ROOT + "")
+sys.path.insert(0, "/home/claude/rbrl")
 import numpy as np
 import headroom as H
 import setback as S
@@ -210,11 +208,11 @@ if __name__ == "__main__":
                 q = summary[-1]
                 print(f"  --> {tag}: {q['sav']:.2f}+/-{q['sav_sd']:.2f}%  "
                       f"J={q['J']:.4f}  f_s={q['f_s']:.2f}", flush=True)
-    with open(_ROOT + "/results/T16_mpc_ruled.csv", "w",
+    with open("/home/claude/rbrl/results/T16_mpc_ruled.csv", "w",
               newline="") as f:
         w_ = csv.DictWriter(f, fieldnames=list(rows[0]))
         w_.writeheader(); w_.writerows(rows)
-    with open(_ROOT + "/results/T16_mpc_ruled_summary.csv", "w",
+    with open("/home/claude/rbrl/results/T16_mpc_ruled_summary.csv", "w",
               newline="") as f:
         w_ = csv.DictWriter(f, fieldnames=list(summary[0]))
         w_.writeheader(); w_.writerows(summary)
