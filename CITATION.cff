@@ -3,6 +3,11 @@ message: "If you use this software or the accompanying paper, please cite it as 
 type: software
 title: "Optimising Binary HVAC Switching in Saudi Residential Buildings with Model Predictive Control and Rule-Constrained PPO"
 version: "round4"
+doi: 10.5281/zenodo.24199676
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24199676
+    description: "Zenodo archive of release v4.0-round4"
 date-released: "2026-11-13"
 authors:
   - family-names: Faraj

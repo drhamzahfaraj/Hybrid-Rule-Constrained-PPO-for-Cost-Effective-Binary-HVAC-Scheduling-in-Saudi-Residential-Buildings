@@ -2,6 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-green.svg)](https://www.python.org/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24199676.svg)](https://doi.org/10.5281/zenodo.24199676)
 
 **Author:** Hamzah Faraj, Taif University, Saudi Arabia.
 
@@ -10,7 +11,10 @@
 **Keywords:** binary HVAC switching; model predictive control; constrained reinforcement learning;
 Saudi Vision 2030; Green Riyadh; CO2 reduction.
 
-**Archived release (Zenodo DOI):** [to be added on release]
+**Archived release (Zenodo):**
+[doi:10.5281/zenodo.24199676](https://doi.org/10.5281/zenodo.24199676) (release `v4.0-round4`). The trained PPO models
+(29 MB) are not in the archive; they are available from the author on request and can be
+retrained from the code with the stated seeds.
 
 > **Repository name.** The URL still carries the paper's first title. The paper was retitled
 > during revision; everything here is the round-4 study.
