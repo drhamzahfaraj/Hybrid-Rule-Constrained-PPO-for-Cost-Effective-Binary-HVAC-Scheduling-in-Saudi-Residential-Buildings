@@ -82,8 +82,8 @@ Run it from `paper/` (`python3 make_result_figs.py`); with this release's result
 all three files byte for byte.
 
 The map is checked, not typed: `python3 docs/provenance_check.py` reads `results/`, recomputes
-each of the 847 mapped values, compares it with the printed string and checks that the string
-still occurs in the table, figure or section it is attributed to (839 values match; 4 are external
+each of the 851 mapped values, compares it with the printed string and checks that the string
+still occurs in the table, figure or section it is attributed to (843 values match; 4 are external
 figures quoted from cited sources, 2 are weather statistics of the case-study section, and 2 are
 cross-references). The same check runs in GitHub Actions on
 every push (`.github/workflows/ci.yml`). `--write` regenerates the file after a rerun or a
@@ -252,7 +252,7 @@ On a clean copy of this tree with the TMYx files added and the two links of step
   clone of the working repository at p20 so that the tags exist, against these results):
   **4 of 4 pass**.
 * `python3 docs/provenance_check.py`: see the summary at the top of `docs/PROVENANCE.md`
-  (847 entries: 839 OK, 4 external and cited, 2 weather statistics not in a results file,
+  (851 entries: 843 OK, 4 external and cited, 2 weather statistics not in a results file,
   2 cross-references; 0 mismatches, 0 not in the text).
 
 ## Revision history

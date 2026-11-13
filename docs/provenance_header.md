@@ -100,7 +100,7 @@ the result files directly. `tab:layers` and the text values are verified only by
 
 `paper/fig_leap.tex` (Fig. 1) supersedes the caption and layout template of `code/gen_figs.py` (`fig_leap`), which is kept byte-identical to the tagged code of record. The plotted curve and every number in it are unchanged; the manuscript copy differs in: the caption ending ("Corollary … does not depend on this structure; it uses only the bounded widths under constant drift" instead of "This geometry is what Corollary … rests on"), "on-commands" instead of "switch-ons" in the caption, axis width `0.94\linewidth` instead of `\linewidth`, `ymax=24.75` instead of `24.45` (and the dashed markers extended to it), the two dwell-time labels moved above the band (y = 24.38) with the arrow re-anchored, `\allowbreak` in the caption formulas, and `\tiny` x tick labels on the lower axis.
 
-Printed values are also checked against the text: `provenance_check.py` reports a value as NOT IN TEXT when the string it maps no longer occurs in the table, figure or section it is attributed to, so the map cannot silently describe a sentence the paper no longer contains.
+Printed values are also checked against the text: `provenance_check.py` reports a value as NOT IN TEXT when the string it maps no longer occurs in the table, figure or section it is attributed to (for values stated in the running text, the section titles are listed in the map as *stated in*), so the map cannot silently describe a sentence the paper no longer contains.
 
 Before running any generator, follow the README section *Reproducing the results* (weather files,
 the `code/results → ../results` link and the original-path link).

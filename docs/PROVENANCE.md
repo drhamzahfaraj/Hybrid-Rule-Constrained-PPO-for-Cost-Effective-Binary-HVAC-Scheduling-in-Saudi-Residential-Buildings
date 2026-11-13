@@ -100,14 +100,14 @@ the result files directly. `tab:layers` and the text values are verified only by
 
 `paper/fig_leap.tex` (Fig. 1) supersedes the caption and layout template of `code/gen_figs.py` (`fig_leap`), which is kept byte-identical to the tagged code of record. The plotted curve and every number in it are unchanged; the manuscript copy differs in: the caption ending ("Corollary … does not depend on this structure; it uses only the bounded widths under constant drift" instead of "This geometry is what Corollary … rests on"), "on-commands" instead of "switch-ons" in the caption, axis width `0.94\linewidth` instead of `\linewidth`, `ymax=24.75` instead of `24.45` (and the dashed markers extended to it), the two dwell-time labels moved above the band (y = 24.38) with the arrow re-anchored, `\allowbreak` in the caption formulas, and `\tiny` x tick labels on the lower axis.
 
-Printed values are also checked against the text: `provenance_check.py` reports a value as NOT IN TEXT when the string it maps no longer occurs in the table, figure or section it is attributed to, so the map cannot silently describe a sentence the paper no longer contains.
+Printed values are also checked against the text: `provenance_check.py` reports a value as NOT IN TEXT when the string it maps no longer occurs in the table, figure or section it is attributed to (for values stated in the running text, the section titles are listed in the map as *stated in*), so the map cannot silently describe a sentence the paper no longer contains.
 
 Before running any generator, follow the README section *Reproducing the results* (weather files,
 the `code/results → ../results` link and the original-path link).
 
 ## 3. Check result
 
-`python3 docs/provenance_check.py` on this release: **EXTERNAL, CITED** 4, **NOT IN A RESULT FILE** 2, **OK** 839, **n/a** 2 of 847 mapped values.
+`python3 docs/provenance_check.py` on this release: **EXTERNAL, CITED** 4, **NOT IN A RESULT FILE** 2, **OK** 843, **n/a** 2 of 851 mapped values.
 
 Values that are not a plain match (pending, not in a result file, cross-references, or mismatches):
 
@@ -913,7 +913,7 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| rows with s_a <= B_a | 89 | `T17v3_Ba s_le_B` | count of rows (all must be True) | OK |
+| rows with s_a <= B_a *(stated in: Verification and Validity)* | 89 | `T17v3_Ba s_le_B` | count of rows (all must be True) | OK |
 
 ### S5 tab:s-ba
 
@@ -977,94 +977,94 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| TUNED saves 12.5, 13.6, 12.4 | 12.5 | `T1v3_heldout [TUNED, inforce] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
-| Taif MPC with persistence saves 10.8 | 10.8 | `T21v3_pers_taif [24 h] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
-| actual years: transfer range | 10.5 -- 13.4 | `T23v3_amy_spread [kind=TRANSFER] s_pooled_eq` | min..max over 9 city-years | OK |
-| actual years: re-tuned range | 11.5 -- 14.8 | `T23v3_amy_spread [kind=RETUNED, years != TMYx] s_pooled_eq` | min..max | OK |
-| Taif's two milder years: free-float below the band (degC h, typical-year thresholds) | 2.6 -- 6.9 | `T23v3_amy_spread [taif, TRANSFER, 2013 and 2018] deg_h_ff_under` | occupied free-float degree-hours below T_min, 7 windows | OK |
-| facade turned to each cardinal direction | 12.2 -- 13.3 | `T24v3_orientation [riyadh] s_pooled_eq` | min..max over N, E, S, W | OK |
-| TUNED across 2,400--9,600 kJ/K (Riyadh) | -2.8 -- 16.0 | `T1v3_heldout_cth{2400,7200,9600} and T1v3_heldout [riyadh, TUNED] s_pooled_eq` | min..max over capacities | OK |
-| TUNED at the 2027 rates | 11.6 -- 12.7 | `T1v3_heldout [TUNED, tariff=y2027] s_pooled_eq` | min..max over cities | OK |
-| comparator deadband moves the saving by (points) | 35 | `T7v3_deadband [riyadh, 0.5 and 1.25] s_pooled_eq` | difference across the admissible range, unrounded | OK |
-| controller class moves it by (points; guard to MPC-24) | 13 | `T21v3_riyadh [24 h] - T1v3_heldout [guard] s_pooled_eq` | difference, unrounded (12.52, printed as 13) | OK |
-| charge per on-command moves it by (points; 0.025 to 0.114) | 7 | `T5v3_switchcost_tuned [riyadh, c_sw 0.114 and 0.025] s_pooled_eq` | difference, unrounded | OK |
-| 2027 repricing moves it by (points) | 0.9 | `T1v3_heldout [riyadh, TUNED, inforce - y2027] s_pooled_eq` | difference, unrounded | OK |
-| Riyadh cooling-season diurnal swing (K) | 12.7 | `not in a v3 file: computed from the TMYx weather file in the case-study section (Section 6), not from a results file` | weather statistic | NOT IN A RESULT FILE |
-| Jeddah diurnal swing (K) | 8.4 | `not in a v3 file: computed from the TMYx weather file in the case-study section (Section 6), not from a results file` | weather statistic | NOT IN A RESULT FILE |
+| TUNED saves 12.5, 13.6, 12.4 *(stated in: Cost, Energy and On-Commands)* | 12.5 | `T1v3_heldout [TUNED, inforce] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
+| Taif MPC with persistence saves 10.8 *(stated in: Generalisability)* | 10.8 | `T21v3_pers_taif [24 h] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
+| actual years: transfer range *(stated in: Generalisability)* | 10.5 -- 13.4 | `T23v3_amy_spread [kind=TRANSFER] s_pooled_eq` | min..max over 9 city-years | OK |
+| actual years: re-tuned range *(stated in: Generalisability)* | 11.5 -- 14.8 | `T23v3_amy_spread [kind=RETUNED, years != TMYx] s_pooled_eq` | min..max | OK |
+| Taif's two milder years: free-float below the band (degC h, typical-year thresholds) *(stated in: Generalisability)* | 2.6 -- 6.9 | `T23v3_amy_spread [taif, TRANSFER, 2013 and 2018] deg_h_ff_under` | occupied free-float degree-hours below T_min, 7 windows | OK |
+| facade turned to each cardinal direction *(stated in: Generalisability)* | 12.2 -- 13.3 | `T24v3_orientation [riyadh] s_pooled_eq` | min..max over N, E, S, W | OK |
+| TUNED across 2,400--9,600 kJ/K (Riyadh) *(stated in: Generalisability)* | -2.8 -- 16.0 | `T1v3_heldout_cth{2400,7200,9600} and T1v3_heldout [riyadh, TUNED] s_pooled_eq` | min..max over capacities | OK |
+| TUNED at the 2027 rates *(stated in: Cost, Energy and On-Commands)* | 11.6 -- 12.7 | `T1v3_heldout [TUNED, tariff=y2027] s_pooled_eq` | min..max over cities | OK |
+| comparator deadband moves the saving by (points) *(stated in: What Governs the Saving)* | 35 | `T7v3_deadband [riyadh, 0.5 and 1.25] s_pooled_eq` | difference across the admissible range, unrounded | OK |
+| controller class moves it by (points; guard to MPC-24) *(stated in: What Governs the Saving)* | 13 | `T21v3_riyadh [24 h] - T1v3_heldout [guard] s_pooled_eq` | difference, unrounded (12.52, printed as 13) | OK |
+| charge per on-command moves it by (points; 0.025 to 0.114) *(stated in: What Governs the Saving)* | 7 | `T5v3_switchcost_tuned [riyadh, c_sw 0.114 and 0.025] s_pooled_eq` | difference, unrounded | OK |
+| 2027 repricing moves it by (points) *(stated in: What Governs the Saving)* | 0.9 | `T1v3_heldout [riyadh, TUNED, inforce - y2027] s_pooled_eq` | difference, unrounded | OK |
+| Riyadh cooling-season diurnal swing (K) *(stated in: Climate Profiles; Generalisability)* | 12.7 | `not in a v3 file: computed from the TMYx weather file in the case-study section (Section 6), not from a results file` | weather statistic | NOT IN A RESULT FILE |
+| Jeddah diurnal swing (K) *(stated in: Climate Profiles; Generalisability)* | 8.4 | `not in a v3 file: computed from the TMYx weather file in the case-study section (Section 6), not from a results file` | weather statistic | NOT IN A RESULT FILE |
 
 ### abstract + conclusions
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| abstract: best attainable saving about 17--21 % (min CLV raw .. max B*) | 17 -- 21 | `T17v3_<c> clv_s_raw, bound_reported` | min over cities of the clairvoyant saving and max of B*, rounded to integers | OK |
-| fitted deadband R1 - R2 (min..max over cities) | 1.32 -- 1.36 | `T1v3_heldout [TUNED, inforce] params.on - params.off` | TUNED switch points R1 - R2 (degC) | OK |
-| on-commands avoided by TUNED (22--24) | 22 -- 24 | `T1v3_heldout [TUNED, inforce] start_sav_eq` | min..max over cities (21.7 rounds to 22) | OK |
-| TUNED electricity within +/-0.5 % (max |energy_sav_eq|) | 0.5 | `T1v3_heldout [TUNED, inforce] energy_sav_eq` | max over cities of |energy saving| | OK |
-| TUNED SAR/season at 0.025--0.114 (2--19) | 2 -- 19 | `T1v3_perwindow [TUNED, inforce] fs/E` | tab:layers formula, min over cities at 0.025, max at 0.114 | OK |
-| TUNED cost saving 12.4--13.6 | 12.4 -- 13.6 | `T1v3_heldout [TUNED, inforce] s_pooled_eq` | min..max over cities | OK |
-| TUNED against a 1.25 C comparator (Riyadh) | 5.7 | `T7v3_deadband [riyadh, 1.25] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
-| MPC-24 perfect avoids 30--33 % of on-commands | 30 -- 33 | `T21v3_<c> [24 h, perfect] start_sav_eq` | min..max over cities | OK |
-| TUNED at half / twice capacity (Riyadh) | -2.8 -- 15.8 | `T1v3_heldout_cth2400 / _cth9600 [riyadh, TUNED] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
-| MPC margin over TUNED at half / twice capacity (Riyadh) | 15.0 -- 0.4 | `T21v3_riyadh_cth2400/9600 minus T1v3_heldout_cth2400/9600 s_pooled_eq` | difference of unrounded savings | OK |
+| abstract: best attainable saving about 17--21 % (min CLV raw .. max B*) *(stated in: Abstract)* | 17 -- 21 | `T17v3_<c> clv_s_raw, bound_reported` | min over cities of the clairvoyant saving and max of B*, rounded to integers | OK |
+| fitted deadband R1 - R2 (min..max over cities) *(stated in: Conclusions)* | 1.32 -- 1.36 | `T1v3_heldout [TUNED, inforce] params.on - params.off` | TUNED switch points R1 - R2 (degC) | OK |
+| on-commands avoided by TUNED (22--24) *(stated in: Abstract; Conclusions)* | 22 -- 24 | `T1v3_heldout [TUNED, inforce] start_sav_eq` | min..max over cities (21.7 rounds to 22) | OK |
+| TUNED electricity within +/-0.5 % (max |energy_sav_eq|) *(stated in: Conclusions)* | 0.5 | `T1v3_heldout [TUNED, inforce] energy_sav_eq` | max over cities of |energy saving| | OK |
+| TUNED SAR/season at 0.025--0.114 (2--19) *(stated in: Conclusions)* | 2 -- 19 | `T1v3_perwindow [TUNED, inforce] fs/E` | tab:layers formula, min over cities at 0.025, max at 0.114 | OK |
+| TUNED cost saving 12.4--13.6 *(stated in: Abstract)* | 12.4 -- 13.6 | `T1v3_heldout [TUNED, inforce] s_pooled_eq` | min..max over cities | OK |
+| TUNED against a 1.25 C comparator (Riyadh) *(stated in: Conclusions)* | 5.7 | `T7v3_deadband [riyadh, 1.25] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
+| MPC-24 perfect avoids 30--33 % of on-commands *(stated in: Conclusions)* | 30 -- 33 | `T21v3_<c> [24 h, perfect] start_sav_eq` | min..max over cities | OK |
+| TUNED at half / twice capacity (Riyadh) *(stated in: Where the MPC Margin Comes From)* | -2.8 -- 15.8 | `T1v3_heldout_cth2400 / _cth9600 [riyadh, TUNED] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
+| MPC margin over TUNED at half / twice capacity (Riyadh) *(stated in: Conclusions)* | 15.0 -- 0.4 | `T21v3_riyadh_cth2400/9600 minus T1v3_heldout_cth2400/9600 s_pooled_eq` | difference of unrounded savings | OK |
 
 ### main §9 actuation-step text
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| TUNED at 30 min (-1.2 to -1.5) | -1.2 -- -1.5 | `T2v3_timestep [dt30, TUNED] s` | max..min over cities | OK |
-| MPC at 30 min (6.6--11.4) | 6.6 -- 11.4 | `T2v3_timestep [dt30, MPC-24] s` | min..max over cities | OK |
+| TUNED at 30 min (-1.2 to -1.5) *(stated in: Actuation Step)* | -1.2 -- -1.5 | `T2v3_timestep [dt30, TUNED] s` | max..min over cities | OK |
+| MPC at 30 min (6.6--11.4) *(stated in: Actuation Step)* | 6.6 -- 11.4 | `T2v3_timestep [dt30, MPC-24] s` | min..max over cities | OK |
 
 ### main Results text (bracket)
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| bracket Riyadh (CLV raw -- B*) | 18.0 -- 20.0 | `T17v3_riyadh clv_s_raw, bound_reported` | clairvoyant schedule (raw) and relaxed dual bound (V_N) | OK |
-| bracket Jeddah (CLV raw -- B*) | 18.4 -- 19.9 | `T17v3_jeddah clv_s_raw, bound_reported` | clairvoyant schedule (raw) and relaxed dual bound (V_N) | OK |
-| bracket Taif (CLV raw -- B*) | 16.7 -- 21.0 | `T17v3_taif clv_s_raw, bound_reported` | clairvoyant schedule (raw) and relaxed dual bound (V_N) | OK |
+| bracket Riyadh (CLV raw -- B*) *(stated in: What Clairvoyance Is Worth)* | 18.0 -- 20.0 | `T17v3_riyadh clv_s_raw, bound_reported` | clairvoyant schedule (raw) and relaxed dual bound (V_N) | OK |
+| bracket Jeddah (CLV raw -- B*) *(stated in: What Clairvoyance Is Worth)* | 18.4 -- 19.9 | `T17v3_jeddah clv_s_raw, bound_reported` | clairvoyant schedule (raw) and relaxed dual bound (V_N) | OK |
+| bracket Taif (CLV raw -- B*) *(stated in: What Clairvoyance Is Worth)* | 16.7 -- 21.0 | `T17v3_taif clv_s_raw, bound_reported` | clairvoyant schedule (raw) and relaxed dual bound (V_N) | OK |
 
 ### abstract + conclusions
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| multi-zone TUNED 11.7--13.6 (2 and 4 rooms) | 11.7 -- 13.6 | `T31_mz_rules_riyadh_{1x2,2x2,1x4}_lij{12.5,35} [TUNED] s_pooled_eq` | min..max over the six multi-room layouts | OK |
-| electricity per 0.1 K warmer mean (0.9--2.3 %) | 0.9 -- 2.3 | `T32_setpoint_sens [point=+0.1] -energy_pct` | THERM shifted +0.1 K: % change in electricity (sign flipped) | OK |
-| conclusions: on 0.1 C grid avoids 11--15 % | 11 -- 15 | `T1v3_sens [TUNED, hw_0.1K] start_sav_eq` | min..max over cities | OK |
-| conclusions: TUNED attains 62--65 % of the bound at its own mean | 62 -- 65 | `T17v3_Ba [arm=TUNED inforce] 100 s_a / B_a` | ratio of rescored saving to B_a | OK |
-| conclusions: MPC-24 adds 4--6 points (F2 pooled delta) | 4 -- 6 | `T20v3_paired_stats [F2] d_pooled` | min..max over cities | OK |
-| conclusions: guard costs 6.8 and 6.0 points (Riyadh, Jeddah) | 6.8 -- 6.0 | `T20v3_paired_stats [F4] -d_pooled` | TUNED - guard, pooled | OK |
-| conclusions: MPC-24 in training rules over guard (about 6, Riyadh and Jeddah) | 6 -- 6 | `T16v3_r23.8-22.4_<c> [24 h] - T1v3_heldout [guard]` | difference of pooled savings, Riyadh and Jeddah | OK |
-| conclusions: setback raises on-commands avoided to 29--35 % | 29 -- 35 | `T28v3_setback_rule [TUNED-SB] start_sav_eq` | min..max over cities | OK |
-| conclusions: setback cost saving 17--20 % | 17 -- 20 | `T28v3_setback_rule [TUNED-SB] s_pooled_eq` | min..max over cities | OK |
-| conclusions: MPC-MZ in 2- and 4-room dwellings 15.7--16.1 % | 15.7 -- 16.1 | `T31_mz_mpc_riyadh_{1x2,2x2,1x4}_lij{12.5,35}_h24 s_pooled_eq` | min..max over the six multi-room layouts | OK |
-| conclusions: against 18.3 % in the single zone | 18.3 | `T31_mz_mpc_riyadh_1x1_lij12.5_h24 s_pooled_eq` | 1x1 instance = single-zone MPC-24 | OK |
+| multi-zone TUNED 11.7--13.6 (2 and 4 rooms) *(stated in: Conclusions; Multi-Zone Dwellings)* | 11.7 -- 13.6 | `T31_mz_rules_riyadh_{1x2,2x2,1x4}_lij{12.5,35} [TUNED] s_pooled_eq` | min..max over the six multi-room layouts | OK |
+| electricity per 0.1 K warmer mean (0.9--2.3 %) *(stated in: Conclusions)* | 0.9 -- 2.3 | `T32_setpoint_sens [point=+0.1] -energy_pct` | THERM shifted +0.1 K: % change in electricity (sign flipped) | OK |
+| conclusions: on 0.1 C grid avoids 11--15 % *(stated in: Conclusions)* | 11 -- 15 | `T1v3_sens [TUNED, hw_0.1K] start_sav_eq` | min..max over cities | OK |
+| conclusions: TUNED attains 62--65 % of the bound at its own mean *(stated in: Conclusions)* | 62 -- 65 | `T17v3_Ba [arm=TUNED inforce] 100 s_a / B_a` | ratio of rescored saving to B_a | OK |
+| conclusions: MPC-24 adds 4--6 points (F2 pooled delta) *(stated in: Conclusions)* | 4 -- 6 | `T20v3_paired_stats [F2] d_pooled` | min..max over cities | OK |
+| conclusions: guard costs 6.8 and 6.0 points (Riyadh, Jeddah) *(stated in: Conclusions)* | 6.8 -- 6.0 | `T20v3_paired_stats [F4] -d_pooled` | TUNED - guard, pooled | OK |
+| conclusions: MPC-24 in training rules over guard (about 6, Riyadh and Jeddah) *(stated in: Conclusions)* | 6 -- 6 | `T16v3_r23.8-22.4_<c> [24 h] - T1v3_heldout [guard]` | difference of pooled savings, Riyadh and Jeddah | OK |
+| conclusions: setback raises on-commands avoided to 29--35 % *(stated in: Conclusions)* | 29 -- 35 | `T28v3_setback_rule [TUNED-SB] start_sav_eq` | min..max over cities | OK |
+| conclusions: setback cost saving 17--20 % *(stated in: Conclusions)* | 17 -- 20 | `T28v3_setback_rule [TUNED-SB] s_pooled_eq` | min..max over cities | OK |
+| conclusions: MPC-MZ in 2- and 4-room dwellings 15.7--16.1 % *(stated in: Conclusions)* | 15.7 -- 16.1 | `T31_mz_mpc_riyadh_{1x2,2x2,1x4}_lij{12.5,35}_h24 s_pooled_eq` | min..max over the six multi-room layouts | OK |
+| conclusions: against 18.3 % in the single zone *(stated in: Conclusions)* | 18.3 | `T31_mz_mpc_riyadh_1x1_lij12.5_h24 s_pooled_eq` | 1x1 instance = single-zone MPC-24 | OK |
 
 ### main §5 reward subsection, §9.2, Limitations (PPO vs hold, training cost)
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| Taif: seeds below hold on held-out weeks | 4 | `T33_ppo_hold_gap [taif] gap_eval_pct > 0` | count of seeds (seed 43 reproduces hold) | OK |
-| Taif: of those, seeds within 0.05 % of hold on tuning weeks | 3 | `T33_ppo_hold_gap [taif, seeds below hold] |gap_tune_pct| <= 0.05` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks | OK |
-| Taif: the fourth seed's tuning gap (also the 'one Taif seed (1.4 %)' of §9.2 and Limitations) | 1.4 | `T33_ppo_hold_gap [taif, seed 46] gap_tune_pct` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks | OK |
-| Taif: held-out gap of those four seeds | 0.5 -- 2.5 | `T33_ppo_hold_gap [taif, seeds below hold] gap_eval_pct` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks; min..max | OK |
-| Limitations and §9.2: every trained policy within 0.9 % of hold's training cost except one Taif seed | 0.9 | `T33_ppo_hold_gap [all 15 seeds except taif 46] max |gap_tune_pct|` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks | OK |
+| Taif: seeds below hold on held-out weeks (printed in words: 'the other four') *(stated in: Component Ablation and Sensitivity)* | 4 | `T33_ppo_hold_gap [taif] gap_eval_pct > 0` | count of seeds (seed 43 reproduces hold) | OK |
+| Taif: of those, seeds within 0.05 % of hold on tuning weeks (printed in words: 'three of those four') *(stated in: Component Ablation and Sensitivity)* | 3 | `T33_ppo_hold_gap [taif, seeds below hold] |gap_tune_pct| <= 0.05` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks | OK |
+| Taif: the fourth seed's tuning gap (also the 'one Taif seed (1.4 %)' of §9.2 and Limitations) *(stated in: Component Ablation and Sensitivity)* | 1.4 | `T33_ppo_hold_gap [taif, seed 46] gap_tune_pct` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks | OK |
+| Taif: held-out gap of those four seeds *(stated in: Component Ablation and Sensitivity)* | 0.5 -- 2.5 | `T33_ppo_hold_gap [taif, seeds below hold] gap_eval_pct` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks; min..max | OK |
+| Limitations and §9.2: every trained policy within 0.9 % of hold's training cost except one Taif seed *(stated in: Component Ablation and Sensitivity; Limitations)* | 0.9 | `T33_ppo_hold_gap [all 15 seeds except taif 46] max |gap_tune_pct|` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks | OK |
 
 ### Introduction (national context)
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| Saudi Green Initiative emission cut by 2030 (Mt a year) | 278 | `external, cited: \cite{SGI2021} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
-| net-zero year | 2060 | `external, cited: \cite{SGI2021} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
-| Green Riyadh trees (million) | 7.5 | `external, cited: \cite{GreenRiyadh2019} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
-| Green Riyadh air-temperature aim (degC) | 1.5--2 | `external, cited: \cite{GreenRiyadh2019} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+| Saudi Green Initiative emission cut by 2030 (Mt a year) *(stated in: Introduction)* | 278 | `external, cited: \cite{SGI2021} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+| net-zero year *(stated in: Introduction)* | 2060 | `external, cited: \cite{SGI2021} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+| Green Riyadh trees (million) *(stated in: Introduction)* | 7.5 | `external, cited: \cite{GreenRiyadh2019} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+| Green Riyadh air-temperature aim (degC) *(stated in: Introduction)* | 1.5--2 | `external, cited: \cite{GreenRiyadh2019} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
 
 ### §10.3 and Conclusions (Green Riyadh sensitivity)
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| THERM cooling electricity cut at dT_out=-1.5 K (%) | 10.5 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
-| THERM cooling electricity cut at dT_out=-2 K (%) | 13.7 | `T34_greenriyadh_sens [riyadh, dT_out=-2] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
-| TUNED raw saving at dT_out -1.5 .. -2.0 K (%) | 12.8 -- 13.6 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5, -2.0] s_raw_tuned_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity; TUNED vs unshifted THERM in the same cooler weather | OK |
-| Conclusions: electricity cut 10.5--13.7 % for 1.5--2 K cooler air | 10.5 -- 13.7 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5, -2.0] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
+| THERM cooling electricity cut at dT_out=-1.5 K (%) *(stated in: What Governs the Saving)* | 10.5 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
+| THERM cooling electricity cut at dT_out=-2 K (%) *(stated in: What Governs the Saving)* | 13.7 | `T34_greenriyadh_sens [riyadh, dT_out=-2] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
+| TUNED raw saving at dT_out -1.5 .. -2.0 K (%) *(stated in: What Governs the Saving)* | 12.8 -- 13.6 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5, -2.0] s_raw_tuned_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity; TUNED vs unshifted THERM in the same cooler weather | OK |
+| Conclusions: electricity cut 10.5--13.7 % for 1.5--2 K cooler air *(stated in: Conclusions)* | 10.5 -- 13.7 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5, -2.0] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
 
 ### Fig. 3 fig:traces (paper/fig_traces.tex, generated by paper/make_result_figs.py)
 
@@ -1102,15 +1102,19 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 | plotted point Taif TUNED dt15 | 12.4 | `T2v3_timestep [row=dt15, city=taif, arm=TUNED] s` | same values as tab:timestep | OK |
 | plotted point Taif TUNED dt30 | -1.2 | `T2v3_timestep [row=dt30, city=taif, arm=TUNED] s` | same values as tab:timestep | OK |
 | caption: TUNED at 30 min (-1.2 to -1.5) | -1.2 -- -1.5 | `T2v3_timestep [dt30, TUNED] s` | max..min over cities | OK |
+| RBRL reproduces the guard, Riyadh (pooled saving, 3 decimals) *(stated in: Component Ablation and Sensitivity)* | 5.745 | `rbrl_ppo5_v3_riyadh [4 of 5 seeds] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C); equal to the guard's T1v3_heldout value to 1e-5 | OK |
+| RBRL reproduces the guard, Jeddah (pooled saving, 3 decimals) *(stated in: Component Ablation and Sensitivity)* | 7.624 | `rbrl_ppo5_v3_jeddah [4 of 5 seeds] s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C); equal to the guard's T1v3_heldout value to 1e-5 | OK |
+| Taif: the four seeds below the guard save 1.0--2.4 points less *(stated in: Component Ablation and Sensitivity)* | 1.0 -- 2.4 | `T1v3_heldout [taif, guard] - rbrl_ppo5_v3_taif [4 seeds] s_pooled_eq` | differences of unrounded savings, min..max | OK |
+| Taif: fitted ceilings of those four seeds (degC) *(stated in: Component Ablation and Sensitivity)* | 23.84 -- 23.86 | `rbrl_ppo5_v3_taif [seeds 42, 44, 45, 46] cap` | occupied ceiling fitted by Rule A for each seed | OK |
 
 ### main §8.4 (multi-zone)
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
 |---|---|---|---|---|
-| MPC-MZ avoids 28--32 % of on-commands | 28 -- 32 | `T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 start_sav_eq` | min..max | OK |
-| MPC-MZ electricity within +/-0.7 % (max |energy_sav_eq|) | 0.7 | `T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 energy_sav_eq` | max |.| | OK |
-| MPC-MZ occupied over-temperature, 1x4 lij=35 (degC h) | 0.0001 | `T31_mz_mpc_riyadh_1x4_lij35_h24 deg_h_over` | occupied degree-hours above the ceiling, 7 windows | OK |
-| MPC-MZ commanded under-temperature, 2x2 (at most 0.00003) | 0.00003 | `T31_mz_mpc_riyadh_2x2_lij{12.5,35}_h24 deg_h_cmd_under` | max over the two 2x2 runs | OK |
+| MPC-MZ avoids 28--32 % of on-commands *(stated in: Multi-Zone Dwellings)* | 28 -- 32 | `T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 start_sav_eq` | min..max | OK |
+| MPC-MZ electricity within +/-0.7 % (max |energy_sav_eq|) *(stated in: Multi-Zone Dwellings)* | 0.7 | `T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 energy_sav_eq` | max |.| | OK |
+| MPC-MZ occupied over-temperature, 1x4 lij=35 (degC h) *(stated in: Multi-Zone Dwellings)* | 0.0001 | `T31_mz_mpc_riyadh_1x4_lij35_h24 deg_h_over` | occupied degree-hours above the ceiling, 7 windows | OK |
+| MPC-MZ commanded under-temperature, 2x2 (at most 0.00003) *(stated in: Multi-Zone Dwellings)* | 0.00003 | `T31_mz_mpc_riyadh_2x2_lij{12.5,35}_h24 deg_h_cmd_under` | max over the two 2x2 runs | OK |
 
 ## 5. Source files: producer, job, command and code stamp
 

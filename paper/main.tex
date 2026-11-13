@@ -102,7 +102,7 @@ optimisation with hard comfort constraints, an energy cost and a charge per
 on-command, and simulated for Riyadh, Jeddah and Taif on held-out weeks
 against an assumed $1\,^\circ$C-deadband thermostat shifted to each
 controller's mean temperature. Tuning its two switch points widens the
-deadband: it avoids about $22$--$24\%$ of on-commands with
+deadband. The tuned thermostat avoids about $22$--$24\%$ of on-commands with
 electricity almost unchanged and saves $12.4$--$13.6\%$ of cost at a
 reference charge above the range a wear estimate supports; against a
 wider-deadband comparator or on a real thermostat's $0.1\,^\circ$C grid it
@@ -114,7 +114,7 @@ capacity, whose reference value probably favours the tuned thermostat, and on
 the actuation step: the tuned thermostat saves about $25\%$ at $5\,$min and
 nothing resolved at $30\,$min. Proximal policy optimisation inside hard rules
 reproduces the rules' hold policy in Riyadh and Jeddah; in Taif it falls
-below it by an unresolved margin. A clairvoyant schedule and a provable bound
+below that policy by an unresolved margin. A clairvoyant schedule and a provable bound
 place the best attainable saving at about $17$--$21\%$ at that
 charge. In two- and four-room dwellings the tuned thermostat's saving is not
 resolved from the single-zone value. In this model, electricity at matched
@@ -184,16 +184,16 @@ that at matched mean temperature the cost difference is the on-command charge
 alone; and a Riyadh check of whether the single-zone ordering survives in
 dwellings of two and four rooms with independent units.
 
-Section~\ref{sec:litreview} reviews the literature. Sections~\ref{sec:prelim}
+After the literature review of Section~\ref{sec:litreview}, Sections~\ref{sec:prelim}
 and~\ref{sec:schedule} define the thermal and cost models and formalise the
-constrained problem and its optimality conditions; Section~\ref{sec:method}
-sets out the controllers, Section~\ref{sec:casestudy} the three climates and
-Section~\ref{sec:sim} the protocol. Section~\ref{sec:results} reports the
-results, and Section~\ref{sec:analysis} compares them with published figures
-and gives the ablation, sensitivities, actuation step and scalability.
-Section~\ref{sec:discussion} assesses the verification, validity and
-generalisability of the findings, what governs the saving and the limitations, and
-Section~\ref{sec:conclusion} concludes.
+constrained problem and its optimality conditions; the controllers, the three
+climates and the protocol follow in Sections~\ref{sec:method},
+\ref{sec:casestudy} and~\ref{sec:sim}. The results are reported in
+Section~\ref{sec:results} and compared with published figures in
+Section~\ref{sec:analysis}, which also gives the ablation, sensitivities,
+actuation step and scalability. The Discussion (Section~\ref{sec:discussion})
+covers verification and validity, generalisability, what governs the saving
+and the limitations, and Section~\ref{sec:conclusion} concludes.
  
 \section{Literature Review}
 \label{sec:litreview}
@@ -206,10 +206,9 @@ study addresses.
 
 Al-Homoud and Krarti~\cite{AlHomoud2021} attribute the Kingdom's residential
 demand to a hot climate, low energy awareness and a historically subsidised
-tariff. Residential electricity is priced on a step-wise
-schedule: since 2018, $0.18\,\SAR/\kWh$ up to $6{,}000\,\kWh$/month and $0.30$
-above~\cite{SEC2024}, repriced to $0.21$ and $0.33$ from
-January~2027~\cite{SaudiEnergy2027}. Compliance with the 2018 Saudi Building
+tariff. Residential electricity has been priced since 2018 on a two-block
+schedule~\cite{SEC2024}, repriced from January~2027~\cite{SaudiEnergy2027};
+Section~\ref{subsec:costmodels} gives both. Compliance with the 2018 Saudi Building
 Code~\cite{Alayed2021} reduces energy use intensity by up to 20--25\% in
 Climate Zone~2~\cite{Olawale2025}, but leaves plant operation unaddressed, and
 the rebound effect offsets part of the gains from appliance
@@ -289,7 +288,7 @@ paper's: a Riyadh check, with independent per-room units, of whether the
 single-zone ordering survives in two- and four-room dwellings, without an
 optimality reference (Section~\ref{subsec:multizone}).
 
-Neither that paper nor the others in Table~\ref{tab:gap} addresses the following three points, which form the gap this paper addresses: (i)~hard comfort enforcement by construction under the nominal plant model, with the price of that
+No prior study in Table~\ref{tab:gap}, that paper included, covers the following three points, which form the gap this paper addresses: (i)~hard comfort enforcement by construction under the nominal plant model, with the price of that
 guarantee measured; (ii)~a clairvoyant optimality bracket against which a tuned
 rule, a learned policy and MPC are all read; and
 (iii)~evaluation across three Saudi climates under one protocol, in which every
@@ -427,11 +426,10 @@ positive when zone $j$ is warmer. With net load $\Qiz{i}^{(t)}=\sum_j Q_{ij}^{(t
   \label{eq:tiz}
 \end{equation}
 the net inter-zone load simplifies to $\Qiz{i}^{(t)}=\Liz{i}\!\left(\Tiz{i}^{(t)}-T_i^{(t)}\right)$, exactly mirroring the envelope term $\Lambda_i(T_i^{(t)}-\Tout^{(t)})$.
-In a multi-zone instance this variable is the natural state input for anticipating inter-zone heat cascades; the multi-zone MPC of Section~\ref{subsec:multizone} uses its neighbours' planned temperatures in this form, and no learned policy observes it here.
+In a multi-zone instance this variable is the state input from which inter-zone heat cascades can be anticipated; the multi-zone MPC of Section~\ref{subsec:multizone} uses its neighbours' planned temperatures in this form, and no learned policy observes it here.
  
 The RC model serves both as the simulation environment and as the prediction model of MPC (Section~\ref{subsec:compete}); its state is available to the PPO agent through the state vector (Section~\ref{subsec:state}), but the trained policy does not use it to plan.
-Table~\ref{tab:params} states the assembly transmittances and areas from which the conductances are formed. The opaque-wall transmittance is at the SBC~2018 prescriptive maximum~\cite{Alayed2021}, $U_{\mathrm{wall}}=0.45\,\text{W\,m}^{-2}\text{K}^{-1}$, and the window transmittance $U_{\mathrm{win}}=2.8\,\text{W\,m}^{-2}\text{K}^{-1}$ is assumed for double glazing, giving a fabric conductance of $11.90\,\text{W/K}$ per exposed face; Section~\ref{subsec:sbc} relates them to the code. Infiltration is carried explicitly at $0.6$ air changes per hour and evaluated per city from station pressure, contributing $10.77$--$12.72\,\mathrm{W/K}$ (about one face of fabric).
-Compliance is mandatory and enforced through municipal permitting and, since October 2024, the activation of the electricity connection~\cite{SBCgov2024}.
+Table~\ref{tab:params} states the assembly transmittances and areas from which the conductances are formed. The opaque-wall transmittance is at the SBC~2018 prescriptive maximum~\cite{Alayed2021}, $U_{\mathrm{wall}}=0.45\,\text{W\,m}^{-2}\text{K}^{-1}$, and the window transmittance $U_{\mathrm{win}}=2.8\,\text{W\,m}^{-2}\text{K}^{-1}$ is assumed for double glazing, giving a fabric conductance of $11.90\,\text{W/K}$ per exposed face; Section~\ref{subsec:sbc} relates them to the code, compliance with which is mandatory and enforced through municipal permitting and, since October 2024, the activation of the electricity connection~\cite{SBCgov2024}. Infiltration is carried explicitly at $0.6$ air changes per hour and evaluated per city from station pressure, contributing $10.77$--$12.72\,\mathrm{W/K}$ (about one face of fabric).
 
 The occupied comfort band is $[\Tmin,\Tmax]{=}[22,24]\,^\circ$C; its provenance is set out in Section~\ref{subsec:sbc}.
  
@@ -680,30 +678,28 @@ and the extra energy costs. Third, the proposition and its second
 consequence fail under different conditions. The \emph{proposition} fails for any price that is not a function
 of cumulative consumption alone (a demand or capacity charge on coincident
 power, time-of-use and real-time pricing) and, trivially, across a billing
-boundary, since the tiers reset monthly and shifting load between months is a
-genuine arbitrage. The second \emph{consequence}, that pre-cooling is
+boundary, since the tiers reset monthly and shifting load between months is an
+arbitrage. The second \emph{consequence}, that pre-cooling is
 dominated, fails under two further conditions that leave the proposition
 intact: a minimum on- or off-time constraint, which makes the cost of a given
 duty depend on its arrangement, and a temperature-dependent coefficient of
 performance, which is a property of the plant, not of the tariff, and
-which would make cooling genuinely cheaper at night.
+which would make cooling cheaper at night.
 None of these is evaluated here (Section~\ref{subsec:limits}).
 
-Two properties of Model~S matter. First, the marginal price is a non-decreasing step function of cumulative consumption, so the bill is convex and representable in a linear programme; the difficulty lies in the binary actions and the switching term, not the tariff. Second, under Model~S the per-step cost rate depends on the accumulated state $E_{\mathrm{cum}}$, which takes the problem outside the SLHA class of Section~\ref{subsec:slha} and would require $E_{\mathrm{cum}}$ in the agent state; under the tariff in force it does not (Section~\ref{subsec:state}).
+Two properties of Model~S matter. First, the marginal price is a non-decreasing step function of cumulative consumption, so the bill is convex and representable in a linear programme; the difficulty lies in the binary actions and the switching term, not the tariff. Second, under Model~S the per-step cost rate depends on the accumulated state $E_{\mathrm{cum}}$, which takes the problem outside the SLHA class of Section~\ref{subsec:slha} and would require $E_{\mathrm{cum}}$ in the agent state; under the tariff in force it is not needed (Section~\ref{subsec:state}).
 
 \begin{remark}[The tariff currently in force, and what it implies here]
 \label{rem:current_tariff}
-The residential tariff in force from January~2018 to December~2026 is a
-two-block schedule: $0.18\,\SAR/\kWh$ up to $6{,}000\,\kWh$/month and
-$0.30\,\SAR/\kWh$ above~\cite{SEC2024}. From 1~January~2027 the blocks are
-repriced to $0.21$ and $0.33\,\SAR/\kWh$ and a fixed monthly charge of
-$70$--$100\,\SAR$, graded by breaker capacity, replaces the former meter reading, maintenance and billing
-fee~\cite{SaudiEnergy2027}. Both have the single boundary
-of~\eqref{eq:stepwise}. The fixed charge is
-schedule-independent and does not alter the optimal policy, but it enlarges the
-bill; it does not change any percentage here, which is relative to the
-room's cooling energy cost plus on-command charges, and against the household
-bill every saving would be far smaller.
+The tariff in force from January~2018 to December~2026~\cite{SEC2024} and
+the schedule that replaces it on 1~January~2027 share the single boundary
+of~\eqref{eq:stepwise}; with the 2027 repricing, a fixed monthly charge of
+$70$--$100\,\SAR$, graded by breaker capacity, replaces the former meter
+reading, maintenance and billing fee~\cite{SaudiEnergy2027}. The fixed charge
+is schedule-independent and does not alter the optimal policy. It enlarges the
+bill but leaves every percentage here unchanged, since each is taken over the
+room's cooling cost (Section~\ref{sec:sim}); against the household bill every
+saving would be far smaller.
 
 The modelled account consumes ${\approx}884\,\kWh$ per billing
 month (Section~\ref{sec:sim}), far below the boundary, so it stays in the first
@@ -713,14 +709,14 @@ instance: Model~L is specified at $0.12\,\SAR/\kWh$ (no result uses it) against
 a first-block rate of $0.18$ ($0.21$ from 2027). Because $\csw$ is a fixed charge that does not
 scale with the energy price, the ratio $\csw/(p\,\Phvac\,\Delta t)$, which
 determines the optimal switching policy, falls by a third between those rates.
-Every arm is therefore reported at the rate in force, and the tuned
+Every arm is reported at the rate in force, and the tuned
 thermostat (TUNED, Section~\ref{subsec:compete}) and the bound are repeated at
 the announced 2027 rate (Table~\ref{tab:sensitivity}(a); MPC is not). A
 dwelling that crossed the $6{,}000\,\kWh$ boundary would face a higher
 marginal price, which by Proposition~\ref{prop:path} leaves the optimal
 schedule unchanged and lowers the percentage saving.
 
-The saving therefore arises from longer, less frequent on-phases, that is,
+The saving arises from longer, less frequent on-phases, that is,
 from the switching condition (O3 of Section~\ref{subsec:optcond}), not from the
 energy condition (O2).
 \end{remark}
@@ -1418,8 +1414,8 @@ Genetic-algorithm and simulated-annealing schedulers~\cite{ElMakroum2023,Bandarr
 are not run. Both are day-ahead offline solvers, and the bound
 of~\eqref{eq:dual_bound} applies to them as to every other schedule at the
 baseline's mean, so it answers the question they would be introduced to
-answer. No third-party learned comparator (SAC, DQN) is run inside the rule
-layer either. A relaxed bound restricted to the training rule set
+answer. No third-party learned comparator (SAC or a deep Q-network, DQN) is run
+inside the rule layer either. A relaxed bound restricted to the training rule set
 ($14.9$, $15.6$ and $16.2\%$ in Riyadh, Jeddah and Taif) caps what any such
 learner could attain, but whether another learner would come closer to it than
 PPO is untested, as is any learner acting outside R1--R2.
@@ -1472,7 +1468,7 @@ $0.30$.
 \label{subsec:sbc}
  
 SBC~2018 mandates opaque-wall U-value $\le0.45\,\text{W\,m}^{-2}\text{K}^{-1}$ and window SHGC $\le0.25$ in both Climate Zone~A (Jeddah) and Zone~B (Riyadh)~\cite{Alayed2021}. Table~\ref{tab:params} meets both at assembly level: $U_{\mathrm{wall}}=0.45$ and $\mathrm{SHGC}=0.25$ exactly, with $U_{\mathrm{win}}=2.8\,\text{W\,m}^{-2}\text{K}^{-1}$ consistent with double glazing.
-The step-wise tariff follows equation~\eqref{eq:stepwise}; for Models~L and~E, $c_r^{\mathrm{L}}=0.12\,\SAR/\kWh$ is adopted as an illustrative flat rate, below the post-2018 first-block price of $0.18\,\SAR/\kWh$.
+The step-wise tariff follows equation~\eqref{eq:stepwise}; for Models~L and~E, $c_r^{\mathrm{L}}=0.12\,\SAR/\kWh$ is an illustrative flat rate (Remark~\ref{rem:current_tariff}).
 The occupied comfort band $[22,24]\,^\circ$C is consistent with the \emph{thermal} criterion of ASHRAE~55-2023~\cite{ASHRAE55_2023} for mechanically conditioned residential spaces (the standard's humidity criterion is not evaluated here; Section~\ref{subsec:disc_limits}). Bienvenido-Huertas et al.~\cite{Bienvenido2024} validate this use, and its upper limit reflects Saudi practice: Krarti~\cite{Krarti2020occ} recommends $23$--$25\,^\circ$C for Kingdom dwellings and observes setpoints as low as $18\,^\circ$C in the stock.
 Lamsal et al.~\cite{Lamsal2023} review adaptive thermal comfort models and find wider deadbands appropriate for energy-efficient design in hot climates; the narrower band adopted here raises the reported saving through the baseline's cycling (Section~\ref{subsec:disc_band}).
 A fixed band is adopted because Saudi residential buildings are predominantly mechanically cooled; ASHRAE~55 Section~5.3 restricts adaptive comfort to naturally ventilated spaces.
@@ -1846,22 +1842,20 @@ MPC-SB (setback) & $42.3$ & $+0.6$ & $9$--$37$ (49) & $39.7$ & $+2.1$ & $8$--$33
 \end{tabular*}
 \end{table*}
 
-\emph{Three layers.} Every result is read in three layers
-(Table~\ref{tab:layers}). The physical headline is the share of
-on-commands avoided against the comfort-equalised thermostat, which needs no
-price: $22.8$, $24.2$ and $21.7\%$ for TUNED, $29.8$--$33.3\%$ for the $24\,$h
+\emph{Three layers.} The physical headline of Table~\ref{tab:layers} is the
+share of on-commands avoided against the comfort-equalised thermostat, which
+needs no price: $22.8$, $24.2$ and $21.7\%$ for TUNED, $29.8$--$33.3\%$ for the $24\,$h
 MPC with a perfect forecast, and $29.2$--$42.3\%$ with occupancy
 setback; Fig.~\ref{fig:traces} shows where they come from. Beside it, electricity is about unchanged: within $\pm1.2\%$ for
 every arm without setback and up to $+3.3\%$ for MPC with setback, which
-cools the empty house before arrival. At equal mean temperature every arm uses
-the same terminal-priced energy (the identity holds to within $4\times10^{-5}$
-relative). Priced at
+cools the empty house before arrival; at equal mean temperature the identity
+of Remark~\ref{rem:energy_identity} holds to within $4\times10^{-5}$
+relative. Priced at
 the derived $0.025$--$0.114\,\SAR$ per on-command, TUNED is worth $4$--$19$,
 $5$--$19$ and $2$--$10\,\SAR$ per room per cooling season, and the $24\,$h
 MPC $6$--$28$, $6$--$26$ and $4$--$15\,\SAR$ (Table~\ref{tab:layers} adds the
 figures at the $0.15\,\SAR$ reference, which overstates), so the cost
-difference is the on-command charge (Remark~\ref{rem:energy_identity}). The
-pooled cost saving $s$ remains the protocol's ranking metric
+difference is the on-command charge. The pooled cost saving $s$ remains the protocol's ranking metric
 (Table~\ref{tab:main}).
 
 \input{fig_traces}
@@ -1876,9 +1870,9 @@ $1\,^\circ$C deadband to $1.35$, $1.36$ and $1.32\,^\circ$C, above the
 $1.25\,^\circ$C limit for a centred deadband but within the off-centre upper
 limit of~\eqref{eq:deadband_condition} (Remark~\ref{rem:rc}; TUNED is admitted
 empirically by Rule~A), and the share of on-commands avoided is roughly
-$1-\delta_{\mathrm{THERM}}/\delta_{\mathrm{TUNED}}$. The saving is therefore
-a statement about the comparator's assumed $1\,^\circ$C deadband as much as
-about tuning (Section~\ref{subsec:abl_component}). At the charges the wear
+$1-\delta_{\mathrm{THERM}}/\delta_{\mathrm{TUNED}}$, so the saving depends as
+much on the comparator's assumed $1\,^\circ$C deadband as on tuning
+(Section~\ref{subsec:abl_component}). At the charges the wear
 derivation supports, $0.025$ and $0.114\,\SAR$, it saves $3.8$--$11.0\%$,
 $4.3$--$12.0\%$ and $3.9$--$10.9\%$. These switch points are fitted on a
 $0.01\,^\circ$C grid. A real thermostat sets its thresholds in steps of about
@@ -1890,9 +1884,7 @@ in Taif the guard saves more than TUNED, by less than $3$ points, not
 resolved); under a per-window $0.03\,$K admission criterion
 it saves $9.7$, $12.2$ and $4.0\%$, $8.4$ points less in Taif, where the guard
 then exceeds it (Supplementary Table~S2). The headline TUNED figures are
-therefore an upper estimate of what a commissioned thermostat delivers. Any
-claim for a learned or model-based controller is measured against TUNED, not
-THERM.
+therefore an upper estimate of what a commissioned thermostat delivers.
 
 \emph{Taif.} The lower load does not leave less to win in percentage terms:
 TUNED saves $12.4\%$ against a bracket of $16.7$--$21.0\%$, the widest of the
@@ -2001,11 +1993,10 @@ self-score under Rule~C was not computed there, so the small negative savings
 are not resolved from zero. On a heavy plant TUNED captures almost all of what
 MPC does. The ordering and its size therefore depend on the assumed
 capacity, and because the capacity acting over a cycle is probably below the
-reference (Remark~\ref{rem:rc}), the reference results lean towards the end
-favourable to TUNED, and both arms' savings against THERM are probably
-overstated.
+reference (Remark~\ref{rem:rc}), the reference results probably favour TUNED
+and overstate both arms' savings against THERM.
 
-\emph{Robustness of the comfort device.} The fitted multipliers of the $6$ and
+\emph{Sensitivity of the comfort device.} The fitted multipliers of the $6$ and
 $24\,$h perfect-forecast controllers lie at $\lambda/\lambda^\ast=1.002$--$1.024$.
 In the following cells the fitted multiplier lies well above $\lambda^\ast$:
 $\lambda/\lambda^\ast=1.226$ and $4.577$ at $48\,$h in Riyadh and Jeddah,
@@ -2082,9 +2073,10 @@ dwelling, not what coordination is worth.
 \section{State-of-the-Art Comparison and Ablation Study}
 \label{sec:analysis}
 
-This section compares the figures with published ones, ablates the rule layer
-and the learned component, gathers the sensitivities, including the actuation
-step, and states what limits scalability.
+Section~\ref{sec:results} read the controllers against the bound and against
+one another. This section sets the figures beside published ones, ablates the
+rule layer and the learned component, gathers the sensitivities, including the
+actuation step, and states what limits scalability.
 
 \subsection{State-of-the-Art Comparison}
 \label{subsec:sota}
@@ -2151,10 +2143,9 @@ admissibility in this configuration.
 \begin{table*}[t]
 \centering
 \caption{Ablation relative to the tuned thermostat: pooled equalised saving
-$s$ (\%) on the held-out windows, with one component removed or added at a
-time, and $\Delta$, the difference from TUNED in points, computed from
-unrounded values. Values from Table~\ref{tab:main} and this section; ranges
-are over the five PPO seeds. $^{b}$fitted at the pooled $0.10\,$K fallback.
+$s$ (\%) on the held-out windows with one component removed or added per row,
+and its difference $\Delta$ from TUNED in points, computed from unrounded values
+(from Table~\ref{tab:main} and this section; ranges over the five PPO seeds). $^{b}$fitted at the pooled $0.10\,$K fallback.
 Differences under $3$ points are not resolved. E2 (comfort term and forecast;
 Riyadh, three seeds) is not comfort-matched and is not tabulated.}
 \label{tab:ablation}
@@ -2194,10 +2185,11 @@ seeds in each reproduce the guard's pooled saving to $10^{-5}$ ($5.745$ and
 $7.624\%$) and the fifth differs by less than $0.004$ points. In Taif one seed
 equals the guard ($11.0\%$) and the other four, at fitted ceilings of $23.84$
 or $23.86\,^\circ$C, save $1.0$--$2.4$ points less, which is not resolved.
-Scored with the training cost at the training rules, three of those four seeds
-are within $0.05\%$ of the hold policy on the six tuning weeks (the fourth
-$1.4\%$) and $0.5$--$2.5\%$ above it on the held-out weeks, so the shortfall
-appears on weather not seen in training. On the tuning weeks the hold policy
+Scored with the training cost at the training rules on the six tuning weeks,
+every seed is within $0.9\%$ of the hold policy except one Taif seed
+($1.4\%$), and three of those four Taif seeds are within $0.05\%$; on the
+held-out weeks the four are $0.5$--$2.5\%$ above it, so the shortfall appears
+on weather not seen in training. On the tuning weeks the hold policy
 is itself $0.4$, $1.4$ and $2.3\%$ above the in-rule optimum (E1,
 Section~\ref{subsec:reward}), which bounds what a longer run on the same weeks
 could gain; longer training and other hyperparameters were not tested. E2 is
@@ -2208,9 +2200,8 @@ term is flat in comfort, and hold is within $0.4\%$ of the reward's optimum in
 Riyadh, E2 is consistent with, not evidence for, a learning null; its savings
 are not tabulated. D1 in place of the trained policies' rule layer lifts them
 to the latch's level in Riyadh and Jeddah but not in Taif
-(Section~\ref{subsec:ladder}); the level is set by the shield, not by the
-policies, which on their tuning weeks sit within $0.9\%$ of the hold policy's
-training cost except the Taif seed at $1.4\%$.
+(Section~\ref{subsec:ladder}); that level is set by the shield, not by the
+policies.
 
 \emph{The price of the guarantee.} Compared with TUNED, which has no guard
 bands, the guard hysteresis costs $6.8$ and $6.0$ points pooled in Riyadh and
@@ -2381,10 +2372,11 @@ profiles, are in~\cite{Faraj2026} and are not directly comparable.
 \section{Discussion}
 \label{sec:discussion}
 
-This section sets out how far the results can be trusted
-(Section~\ref{subsec:validity}) and how far they extend
-(Section~\ref{subsec:generalisability}), the factors that govern the saving
-(Section~\ref{subsec:disc_band}) and the limitations
+Sections~\ref{sec:results} and~\ref{sec:analysis} report what each
+controller saves under one model. This section asks how far those results can
+be trusted (Section~\ref{subsec:validity}) and how far they extend
+(Section~\ref{subsec:generalisability}), what governs the saving
+(Section~\ref{subsec:disc_band}) and where the study stops
 (Section~\ref{subsec:limits}).
 
 \subsection{Verification and Validity}
@@ -2392,7 +2384,7 @@ This section sets out how far the results can be trusted
 
 \emph{Verification.} The RC step~\eqref{eq:rc_disc} is solved exactly, so no
 result carries integration error (Section~\ref{sec:sim}). Before any table is
-produced, a gate of $188$ numerical invariants in nine classes (physical
+produced, a test suite of $188$ numerical invariants in nine classes (physical
 sanity, bound consistency, accounting identities, parameter provenance,
 monotonicity, decomposition closure, feasibility, the deadband actuation
 condition, and the protocol checks on every results file) exits non-zero on
@@ -2421,17 +2413,15 @@ Guideline~14 fit criteria cannot be computed, no calibration claim is made,
 and no co-simulation or hardware-in-the-loop test was run. The results are
 model-based comparisons under a stated plant, and absolute figures are not
 predictions for a real dwelling. Relative comparisons on one model are not
-immune to a shared bias either: the margin of MPC over TUNED moves with the
-assumed capacity, and TUNED has no resolved saving at half the reference
-capacity (Section~\ref{subsec:ladder}) or at a $30$-min step
-(Section~\ref{subsec:timestep}), so every comparison is to be read with those
-sweeps.
+immune to a shared bias either: they move with the assumed capacity and the
+actuation step (Section~\ref{subsec:generalisability}), so every comparison is
+to be read with those sweeps.
 
 \subsection{Generalisability}
 \label{subsec:generalisability}
 
-\emph{What holds.} TUNED saves $12.5$, $13.6$ and $12.4\%$ in hot-dry Riyadh,
-hot-humid Jeddah and highland Taif. The differences reflect load, diurnal swing
+\emph{What holds.} TUNED saves $12.4$--$13.6\%$ across hot-dry Riyadh,
+hot-humid Jeddah and highland Taif. The differences between the cities reflect load, diurnal swing
 and the baseline's cycling rate more than any algorithm: Riyadh's $12.7\,$K
 swing lets the zone free-float further than Jeddah's $8.4\,$K, and Taif's load
 varies from week to week, which a fixed pair of switch points cannot follow and
@@ -2447,9 +2437,9 @@ four-room dwellings $11.7$--$13.6\%$ (Section~\ref{subsec:multizone}).
 \emph{What moves.} TUNED's Riyadh saving runs from $-2.8$ to $16.0\%$
 across $2{,}400$--$9{,}600\,\text{kJ/K}$ (Section~\ref{subsec:ladder}); across
 actuation steps of $5$--$30\,$min from about $25\%$ to no resolved saving
-(Section~\ref{subsec:timestep}); on a $0.1\,^\circ$C setpoint grid it falls to
-$5.7$--$8.4\%$; and at the 2027 rates it is $11.6$--$12.7\%$ for the same
-on-commands avoided (Section~\ref{subsec:consumption}).
+(Section~\ref{subsec:timestep}); and on a $0.1\,^\circ$C setpoint grid it
+falls to $5.7$--$8.4\%$ (Section~\ref{subsec:consumption}). The tariff and the
+charge per on-command move it as well (Section~\ref{subsec:disc_band}).
 
 \emph{Where the findings stop.} They are established for single-speed on/off
 units with a constant COP, an account that stays inside the first tariff
@@ -2466,8 +2456,8 @@ In Riyadh the comparator's deadband moves the saving by $35$ points across
 its admissible range, the controller class by $13$ (guard $5.7$, TUNED $12.5$,
 $24\,$h MPC $18.3\%$), the charge per on-command by $7$ across the
 derived range and the 2027 repricing by $0.9$ (Table~\ref{tab:sensitivity}).
-Only the controller class is algorithmic. The actuation step moves the saving
-further (Section~\ref{subsec:timestep}).
+Only the controller class is algorithmic; the capacity and the actuation step
+move the saving further (Section~\ref{subsec:generalisability}).
 
 The band acts mainly through the baseline. Narrowing it gives an optimising
 controller \emph{less} room, but THERM, which switches $0.5\,^\circ$C inside
@@ -2483,10 +2473,10 @@ occupied mean) lowers its electricity by about $0.9$, $1.4$ and $2.3\%$ in
 Riyadh, Jeddah and Taif, at the price of a warmer room;
 at matched comfort no switching policy changes it.
 
-The tariff acts through the denominator. At matched mean temperature
-scheduling changes only the number of on-commands, each worth $\csw$, so the
-on-commands TUNED avoids are the same at the 2018 and 2027 rates while the
-percentage falls as the bill grows (Section~\ref{subsec:consumption}). A
+The tariff acts through the denominator: at matched mean temperature
+scheduling changes only the number of on-commands, each worth $\csw$, so a
+higher price leaves them unchanged and lowers the percentage
+(Section~\ref{subsec:consumption}). A
 percentage quoted at one tariff is not comparable with one quoted at another.
 With a constant marginal price (Remark~\ref{rem:current_tariff}) and no
 time-of-use element, the store the dwelling holds ($0.89\,\kWh$ electrical
@@ -2504,34 +2494,33 @@ varies over the day, through a COP that rises at night (the $15$--$20\%$ of
 Section~\ref{subsec:rules}), a time-of-use price, or a multi-speed or
 inverter unit whose part-load efficiency differs from full load. None of these
 is modelled here (Section~\ref{subsec:limits}); a controller that chooses speed and timing jointly across coupled
-rooms under those conditions, with setback in every room, is the natural next
-study.
+rooms under those conditions, with setback in every room, is the study these
+results point to next.
 
 \paragraph{Implications for Saudi Vision~2030 and Green Riyadh.}
-The results separate the levers open to the national programmes. At matched
-comfort the controllers studied here change on-commands, not electricity, so in
+For the national programmes, the paragraphs above separate the levers.
+Because the controllers studied here change on-commands, not electricity, in
 this model they contribute to emission cuts only through an assumed start-up
-loss per on-command (Section~\ref{subsec:limits}). Electricity, and with it
-emissions at a given generation mix, is governed by the comfort target and the
-outdoor air. Two consequences follow. First, setpoint and urban-cooling measures
-are where household electricity savings lie: each $0.1\,$K warmer comfort level
-lowers THERM's cooling electricity by $0.9$--$2.3\%$, and outdoor air $1.5$ and
-$2\,$K cooler, the Green Riyadh aim, lowers it on the held-out weeks by $10.5$
-and $13.7\%$, a quantified energy co-benefit of urban greening for each
+loss per on-command (Section~\ref{subsec:limits}); electricity, and with it
+emissions at a given generation mix, follows the comfort target and the outdoor
+air. Household electricity savings therefore lie in setpoint and urban-cooling
+measures. Besides the comfort target, outdoor air $1.5$ and $2\,$K cooler, the
+Green Riyadh aim, lowers THERM's cooling electricity on the held-out weeks by
+$10.5$ and $13.7\%$, a quantified energy co-benefit of urban greening for each
 dwelling. This is a first-order upper estimate: the shift is uniform over all
 hours of an airport weather year, the plant and thresholds are unchanged, the
 model has no internal gains, and a constant COP omits the efficiency gain in
 cooler air; TUNED's raw saving there ($12.8$--$13.6\%$, thresholds not refitted,
 $0.03$--$0.05\,$K warmer than THERM) leaves open whether a cooler city and
-better switching add. Second, retuning existing thermostats needs no new
-equipment beyond a $15$-min control layer and avoids about a fifth of
+better switching add. Retuning existing thermostats, for its part, needs no
+new equipment beyond a $15$-min control layer and avoids about a fifth of
 on-commands with no loss of comfort at the modelled resolution (fewer on a
 $0.1\,^\circ$C setpoint grid), which bears on equipment life and maintenance
-rather than on the bill. The clairvoyant bracket tells programme designers how
+rather than on the bill. The clairvoyant bracket shows programme designers how
 much any switching controller could add, a saving of at most about
-$17$--$21\%$, so effort on control can be weighed against setpoint, efficiency
-and urban measures, and the open code and data allow the comparison to be
-repeated for other Saudi cities and dwellings.
+$17$--$21\%$, so that effort on control can be weighed against setpoint,
+efficiency and urban measures; the open code and data allow the comparison to
+be repeated for other Saudi cities and dwellings.
 
 \subsection{Limitations}
 \label{subsec:limits}
@@ -2647,21 +2636,21 @@ required before any deployment.
 \section{Conclusions}
 \label{sec:conclusion}
 
-Binary on/off cooling of Saudi residential split units was formulated as a
-constrained optimisation with hard comfort constraints, a charge per
-on-command and an energy cost, and every controller was selected and evaluated
-under one protocol in Riyadh, Jeddah and Taif. Four findings emerge.
+This study treated the switching of Saudi residential split units as a
+constrained optimisation in which comfort limits are hard and on-commands are
+priced, and it selected and evaluated every controller under one protocol in
+Riyadh, Jeddah and Taif. Four findings emerge.
 
 First, commissioning a two-parameter thermostat widens its deadband from the
 assumed $1\,^\circ$C to $1.32$--$1.36\,^\circ$C and avoids $22$--$24\%$ of
-on-commands pooled, and fewer on-commands in every held-out window, with
+on-commands pooled, and fewer in every held-out window, with
 electricity within $\pm0.5\%$; priced at the derived $0.025$--$0.114\,\SAR$ per
 on-command this is worth $2$--$19\,\SAR$ per room per cooling season. The gain
-is a statement about the comparator as much as about tuning: against a
+depends as much on the comparator as on tuning: against a
 $1.25\,^\circ$C deadband the tuned thermostat saves $5.7\%$ in Riyadh instead
-of $12.5\%$, on a $0.1\,^\circ$C setpoint grid it avoids $10.5$--$14.7\%$ of
-on-commands, and at its own mean temperature it attains $62$--$65\%$ of the
-provable bound.
+of $12.5\%$, on a $0.1\,^\circ$C setpoint grid it saves $5.7$--$8.4\%$ and
+avoids $10.5$--$14.7\%$ of on-commands, and at its own mean temperature it
+attains $62$--$65\%$ of the provable bound.
 
 Second, the comparison depends strongly on the plant and the step. A $24\,$h
 MPC avoids $30$--$33\%$ of on-commands and adds
@@ -2675,11 +2664,12 @@ the tuned thermostat. At a $5$-min step the tuned thermostat saves about
 $25\%$ and at $30\,$min it has no resolved saving, so every figure here holds
 for a $15$-min step only.
 
-Third, PPO trained under hard rules reproduces the rules' hold policy in
-Riyadh and Jeddah and falls below it in Taif by a margin that is not resolved,
-and a comfort-aware variant, tested in Riyadh only, stays close to hold.
-Inside the guard's own fitted thresholds neither lookahead nor learning adds a
-resolved margin; an exact one-step shield in place of the rules' fixed margins
+Third, the learned layer adds nothing resolved. Under hard rules PPO
+matches the rules' hold policy in Riyadh and Jeddah, its shortfall from that
+policy in Taif is not resolved, and a comfort-aware variant, tested in Riyadh
+only, stays close to hold. Within the guard's own fitted thresholds,
+neither lookahead nor learning improves on the guard hysteresis by a resolved
+margin; an exact one-step shield in place of the rules' fixed margins
 reaches the tuned thermostat's level on a latch, and inside the wider training
 rules a $24\,$h MPC gains about $6$ points over the guard in Riyadh and Jeddah.
 The guarantee the guards give, which holds for the nominal plant, costs $6.8$
@@ -2691,10 +2681,11 @@ on-commands, assumed to stand for wear. Electricity follows the comfort
 target, each $0.1\,$K warmer mean lowering THERM's by $0.9$--$2.3\%$, and the
 outdoor air: in a first-order sensitivity with no internal gains, a city
 $1.5$--$2\,$K cooler (the Green Riyadh aim) lowers one room's cooling
-electricity by $10.5$--$13.7\%$ in Riyadh. For Saudi Vision~2030 and Green Riyadh, the work
-indicates that household electricity savings come from the comfort target,
-efficient equipment and a cooler city, while tuned switching reduces
-on-commands, and with them wear, at no cost in comfort. The money saved depends on the six
+electricity by $10.5$--$13.7\%$ in Riyadh. For Saudi Vision~2030 and Green
+Riyadh, the work indicates that household electricity savings lie in
+the comfort target, efficient equipment and a cooler city, and that tuned
+switching contributes fewer on-commands, and so less wear, at no cost in
+comfort. The money saved depends on the six
 modelling choices of Section~\ref{subsec:limits} and on the comfort band,
 which was not swept.
 
@@ -2709,8 +2700,7 @@ For this model instance three recommendations follow. (i)~Judge any learner or
 planner against a thermostat whose deadband has been widened to what the band
 and the actuation step admit, not against the factory deadband. In practice
 such commissioning assumes a supervisory $15$-min control layer and thresholds
-resolved to $0.01\,^\circ$C (on a $0.1\,^\circ$C grid the saving is
-$5.7$--$8.4\%$), and no commissioning or hardware cost is set here against the
+resolved to $0.01\,^\circ$C, and no commissioning or hardware cost is set here against the
 $2$--$19\,\SAR$ per season. (ii)~Check both sides of the actuation
 condition~\eqref{eq:deadband_condition} and derive guard bands from the
 per-interval excursion in each direction before trusting any reported saving.
@@ -2743,10 +2733,9 @@ archived on Zenodo at
 are available from the author on request, and can be retrained from the code with
 the stated seeds. The repository comprises
 the thermal model, every controller and oracle, the protocol module that
-applies Rules~A--C to every arm, the statistics, and the scripts that generate
-every table from the results files, each of which records the code version
-that produced it. The invariant gate of
-Section~\ref{subsec:validity} runs before any table is produced. The time-step and capacity comfort records of THERM in
+applies Rules~A--C to every arm, the statistics, the invariant test suite of
+Section~\ref{subsec:validity}, and the scripts that generate every table from
+the results files. The time-step and capacity comfort records of THERM in
 Supplementary Table~S1 come from a separate THERM run on the first held-out
 Riyadh week.
 Code paths that the paper does not report (an outdoor-dependent COP, a

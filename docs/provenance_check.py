@@ -603,8 +603,8 @@ L = "main §5 reward subsection, §9.2, Limitations (PPO vs hold, training cost)
 T33 = "T33_ppo_hold_gap"
 T33_HOW = "gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks"
 taif_below = lambda: [r for r in sel(T33, city="taif") if float(r["gap_eval_pct"]) > 0.01]   # the four Taif seeds below the guard on held-out weeks
-E(L, "Taif: seeds below hold on held-out weeks", "4", f"{T33} [taif] gap_eval_pct > 0", "count of seeds (seed 43 reproduces hold)", lambda: float(len(taif_below())))
-E(L, "Taif: of those, seeds within 0.05 % of hold on tuning weeks", "3", f"{T33} [taif, seeds below hold] |gap_tune_pct| <= 0.05", T33_HOW, lambda: float(sum(abs(float(r["gap_tune_pct"])) <= 0.05 for r in taif_below())))
+E(L, "Taif: seeds below hold on held-out weeks (printed in words: 'the other four')", "4", f"{T33} [taif] gap_eval_pct > 0", "count of seeds (seed 43 reproduces hold)", lambda: float(len(taif_below())))
+E(L, "Taif: of those, seeds within 0.05 % of hold on tuning weeks (printed in words: 'three of those four')", "3", f"{T33} [taif, seeds below hold] |gap_tune_pct| <= 0.05", T33_HOW, lambda: float(sum(abs(float(r["gap_tune_pct"])) <= 0.05 for r in taif_below())))
 E(L, "Taif: the fourth seed's tuning gap (also the 'one Taif seed (1.4 %)' of §9.2 and Limitations)", "1.4", f"{T33} [taif, seed 46] gap_tune_pct", T33_HOW, lambda: max(float(r["gap_tune_pct"]) for r in taif_below()))
 E(L, "Taif: held-out gap of those four seeds", ("0.5", "2.5"), f"{T33} [taif, seeds below hold] gap_eval_pct", T33_HOW + "; min..max",
   lambda: (min(float(r["gap_eval_pct"]) for r in taif_below()), max(float(r["gap_eval_pct"]) for r in taif_below())))
@@ -646,6 +646,14 @@ for (c, arm), pts in {("riyadh", "B*"): ("27.3", "20.0", "10.9"), ("riyadh", "MP
         E(L, f"plotted point {CN[c]} {arm} {rw}", v, f"T2v3_timestep [row={rw}, city={c}, arm={arm}] s", "same values as tab:timestep", lambda rw=rw, c=c, arm=arm: one("T2v3_timestep", "s", row=rw, city=c, arm=arm))
 E(L, "caption: TUNED at 30 min (-1.2 to -1.5)", ("-1.2", "-1.5"), "T2v3_timestep [dt30, TUNED] s", "max..min over cities",
   lambda: (max(one("T2v3_timestep", "s", row="dt30", city=c, arm="TUNED") for c in CITIES), min(one("T2v3_timestep", "s", row="dt30", city=c, arm="TUNED") for c in CITIES)))
+for c, v in (("riyadh", "5.745"), ("jeddah", "7.624")):
+    E(L, f"RBRL reproduces the guard, {CN[c]} (pooled saving, 3 decimals)", v, f"rbrl_ppo5_v3_{c} [4 of 5 seeds] s_pooled_eq", S_HOW + "; equal to the guard's T1v3_heldout value to 1e-5",
+      lambda c=c: sorted(float(r["s_pooled_eq"]) for r in rows(f"rbrl_ppo5_v3_{c}"))[2])
+E(L, "Taif: the four seeds below the guard save 1.0--2.4 points less", ("1.0", "2.4"), "T1v3_heldout [taif, guard] - rbrl_ppo5_v3_taif [4 seeds] s_pooled_eq", "differences of unrounded savings, min..max",
+  lambda: (min(one("T1v3_heldout", "s_pooled_eq", city="taif", arm="guard", tariff="inforce") - float(r["s_pooled_eq"]) for r in rows("rbrl_ppo5_v3_taif") if r["seed"] != "43"),
+           max(one("T1v3_heldout", "s_pooled_eq", city="taif", arm="guard", tariff="inforce") - float(r["s_pooled_eq"]) for r in rows("rbrl_ppo5_v3_taif") if r["seed"] != "43")))
+E(L, "Taif: fitted ceilings of those four seeds (degC)", ("23.84", "23.86"), "rbrl_ppo5_v3_taif [seeds 42, 44, 45, 46] cap", "occupied ceiling fitted by Rule A for each seed",
+  lambda: (min(float(r["cap"]) for r in rows("rbrl_ppo5_v3_taif") if r["seed"] != "43"), max(float(r["cap"]) for r in rows("rbrl_ppo5_v3_taif") if r["seed"] != "43")))
 L = "main §8.4 (multi-zone)"
 E(L, "MPC-MZ avoids 28--32 % of on-commands", ("28", "32"), "T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 start_sav_eq", "min..max", lambda: (min(float(rows(m)[0]["start_sav_eq"]) for m in MZM), max(float(rows(m)[0]["start_sav_eq"]) for m in MZM)))
 E(L, "MPC-MZ electricity within +/-0.7 % (max |energy_sav_eq|)", "0.7", "T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 energy_sav_eq", "max |.|", lambda: max(abs(float(rows(m)[0]["energy_sav_eq"])) for m in MZM))
@@ -708,11 +716,72 @@ def region(loc):
     return main + sup
 
 
+def _subsections(text):
+    """{title: body} for every \\section / \\subsection of the text, plus 'Abstract'."""
+    out = {"Abstract": _section(text, "\\begin{abstract}", "\\end{abstract}")}
+    ms = list(re.finditer(r"\\(?:sub)?section\{([^}]*)\}", text))
+    for i, m in enumerate(ms):
+        b = ms[i + 1].start() if i + 1 < len(ms) else len(text)
+        out[m.group(1)] = out.get(m.group(1), "") + text[m.start():b]
+    return out
+
+
+def sec_region(names):
+    subs = _subsections(_read("main.tex"))
+    got = []
+    for n in names:
+        hits = [v for k, v in subs.items() if k.startswith(n)]
+        if not hits:
+            raise KeyError(f"no section titled {n!r} in main.tex")
+        got += hits
+    return "\n".join(got)
+
+
+# text entries: the section(s) of main.tex that state each value (re-attributed after every text edit)
+SECS = {
+    "TUNED saves 12.5, 13.6, 12.4": ["Cost, Energy and On-Commands"],
+    "Taif MPC with persistence saves 10.8": ["Generalisability"],
+    "actual years: transfer range": ["Generalisability"], "actual years: re-tuned range": ["Generalisability"],
+    "Taif's two milder years": ["Generalisability"], "facade turned": ["Generalisability"],
+    "TUNED across 2,400--9,600": ["Generalisability"],
+    "TUNED at the 2027 rates": ["Cost, Energy and On-Commands"],
+    "comparator deadband moves": ["What Governs the Saving"], "controller class moves": ["What Governs the Saving"],
+    "charge per on-command moves": ["What Governs the Saving"], "2027 repricing moves": ["What Governs the Saving"],
+    "Riyadh cooling-season diurnal swing": ["Climate Profiles", "Generalisability"], "Jeddah diurnal swing": ["Climate Profiles", "Generalisability"],
+    "abstract: best attainable": ["Abstract"], "fitted deadband R1 - R2": ["Conclusions"],
+    "on-commands avoided by TUNED (22--24)": ["Abstract", "Conclusions"], "TUNED electricity within": ["Conclusions"],
+    "TUNED SAR/season": ["Conclusions"], "TUNED cost saving 12.4--13.6": ["Abstract"],
+    "TUNED against a 1.25 C comparator": ["Conclusions"], "MPC-24 perfect avoids 30--33": ["Conclusions"],
+    "TUNED at half / twice capacity": ["Where the MPC Margin Comes From"], "MPC margin over TUNED at half": ["Conclusions"],
+    "multi-zone TUNED 11.7--13.6": ["Conclusions", "Multi-Zone Dwellings"], "electricity per 0.1 K warmer": ["Conclusions"],
+    "conclusions: ": ["Conclusions"],
+    "Taif: seeds below hold": ["Component Ablation and Sensitivity"], "Taif: of those": ["Component Ablation and Sensitivity"],
+    "Taif: the fourth seed": ["Component Ablation and Sensitivity"], "Taif: held-out gap": ["Component Ablation and Sensitivity"],
+    "Limitations and §9.2": ["Component Ablation and Sensitivity", "Limitations"],
+    "THERM cooling electricity cut": ["What Governs the Saving"], "TUNED raw saving at dT_out": ["What Governs the Saving"],
+    "Conclusions: electricity cut": ["Conclusions"],
+    "MPC-MZ avoids": ["Multi-Zone Dwellings"], "MPC-MZ electricity": ["Multi-Zone Dwellings"], "MPC-MZ occupied": ["Multi-Zone Dwellings"],
+    "MPC-MZ commanded": ["Multi-Zone Dwellings"], "TUNED at 30 min": ["Actuation Step"], "MPC at 30 min": ["Actuation Step"],
+    "bracket ": ["What Clairvoyance Is Worth"], "rows with s_a <= B_a": ["Verification and Validity"],
+    "Saudi Green": ["Introduction"], "net-zero": ["Introduction"], "Green Riyadh trees": ["Introduction"], "Green Riyadh air-temp": ["Introduction"],
+    "RBRL reproduces the guard": ["Component Ablation and Sensitivity"], "Taif: the four seeds below": ["Component Ablation and Sensitivity"],
+    "Taif: fitted ceilings": ["Component Ablation and Sensitivity"],
+}
+
+
+def secs_of(e):
+    for k, v in SECS.items():
+        if e["item"].startswith(k):
+            return v
+    return None
+
+
 def present(e):
     p = e["printed"]
     if p in ("(pending)", "(cross-references)", "(repeat tab:main)") or e.get("words"):
         return True
-    t = _norm(region(e["loc"]))
+    sec = secs_of(e)
+    t = _norm(sec_region(sec) if sec else region(e["loc"]))
     parts = list(p) if isinstance(p, tuple) else (p.split() if " " in p else [p])
     for q in parts:
         q = q.replace("<=", "<=")
@@ -844,7 +913,9 @@ def write_md(res, n):
         if e["loc"] != loc:
             loc = e["loc"]
             L.append(f"\n### {loc}\n\n| Item | Printed | Source: file [row filter] column | How it is computed | Check |\n|---|---|---|---|---|")
-        L.append(f"| {e['item']} | {pr(e['printed'])} | `{e['src']}` | {e['how']} | {st} |")
+        sec = secs_of(e)
+        item = e["item"] + (f" *(stated in: {'; '.join(sec)})*" if sec else "")
+        L.append(f"| {item} | {pr(e['printed'])} | `{e['src']}` | {e['how']} | {st} |")
     L.append("\n## 5. Source files: producer, job, command and code stamp\n")
     L.append("Every file cited above, with the stamp in its `.meta.json` (code sha → tag of the working repository), "
              "the exact command and `RBRL_*` environment it ran with, and the job that ran it (job lists: `code/jobs/`, "

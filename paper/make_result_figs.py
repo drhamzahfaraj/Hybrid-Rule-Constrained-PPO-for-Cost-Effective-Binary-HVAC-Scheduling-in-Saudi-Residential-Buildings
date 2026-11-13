@@ -169,7 +169,7 @@ def traces():
         f"{on2['therm']}, {on2['tuned']} and {on2['mpc']} on-commands over the two days and "
         f"{week['therm']}, {week['tuned']} and {week['mpc']} over the week. TUNED's switch "
         f"points ({t_on}/{t_off}$\\,^\\circ$C) widen THERM's $1\\,^\\circ$C deadband, so "
-        "it cycles less; MPC uses the full band "
+        "TUNED cycles less; MPC uses the full band "
         f"({fmt(min(T['mpc']),2)}--{fmt(max(T['mpc']),2)}$\\,^\\circ$C).}}\n")
     out.append(cap)
     out.append("\\label{fig:traces}\n\\end{figure*}\n")
@@ -385,7 +385,7 @@ def ladder():
         "exceeds the rounding. $^{b}$fitted at the pooled $0.10\\,$K fallback. The "
         "$24\\,$h MPC's pooled margin over TUNED, "
         f"{rng(mp)} points with a perfect forecast, becomes {rng(ms)} with a persistence "
-        "forecast (not resolved); RBRL stays at the guard hysteresis' level in Riyadh and "
+        "forecast (not resolved); RBRL stays at the level of the guard hysteresis in Riyadh and "
         f"Jeddah, and in Taif its seeds reach down to ${f1(taif_lo)}\\%$ against the "
         f"guard's ${f1(D['taif']['guard'][0])}\\%$, a difference under $3$ points "
         "that is not resolved.}\n")
