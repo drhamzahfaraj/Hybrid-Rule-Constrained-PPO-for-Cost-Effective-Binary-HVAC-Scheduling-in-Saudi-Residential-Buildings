@@ -2491,22 +2491,31 @@ is modelled here (Section~\ref{subsec:limits}); a controller that chooses speed 
 rooms under those conditions, with setback in every room, is the natural next
 study.
 
-The same distinction governs what the work offers the national targets. At
-matched comfort the controllers studied here change on-commands, not
-electricity, so in this model they make no contribution to emission cuts beyond
-an assumed start-up loss per on-command (Section~\ref{subsec:limits}).
-Electricity, and with it emissions at a given generation mix, moves with the
-comfort target and with the outdoor air: lowering Riyadh's outdoor temperature
-by $1.5$ and $2\,$K, the Green Riyadh aim, cuts THERM's cooling electricity on
-the held-out weeks by $10.5$ and $13.7\%$. This is a first-order sensitivity
-and an upper estimate: the shift is uniform over all hours of an airport
-weather year, the plant and thresholds are unchanged, and because the model has
-no internal gains the cut is the envelope term over a load made of envelope
-and solar gains alone, whereas a constant COP omits the efficiency gain in
-cooler air. TUNED's raw saving there, with the thresholds not refitted and no
-Rule~C equalisation, is $12.8$--$13.6\%$ ($12.9\%$ unshifted), but it runs
-$0.03$--$0.05\,$K warmer than THERM, so whether a cooler city and better
-switching add is not resolved.
+\paragraph{Implications for Saudi Vision~2030 and Green Riyadh.}
+The results separate the levers open to the national programmes. At matched
+comfort the controllers studied here change on-commands, not electricity, so in
+this model they contribute to emission cuts only through an assumed start-up
+loss per on-command (Section~\ref{subsec:limits}). Electricity, and with it
+emissions at a given generation mix, is governed by the comfort target and the
+outdoor air. Two consequences follow. First, setpoint and urban-cooling measures
+are where household electricity savings lie: each $0.1\,$K warmer comfort level
+lowers THERM's cooling electricity by $0.9$--$2.3\%$, and outdoor air $1.5$ and
+$2\,$K cooler, the Green Riyadh aim, lowers it on the held-out weeks by $10.5$
+and $13.7\%$, a quantified energy co-benefit of urban greening for each
+dwelling. This is a first-order upper estimate: the shift is uniform over all
+hours of an airport weather year, the plant and thresholds are unchanged, the
+model has no internal gains, and a constant COP omits the efficiency gain in
+cooler air; TUNED's raw saving there ($12.8$--$13.6\%$, thresholds not refitted,
+$0.03$--$0.05\,$K warmer than THERM) leaves open whether a cooler city and
+better switching add. Second, retuning existing thermostats needs no new
+equipment beyond a $15$-min control layer and avoids about a fifth of
+on-commands with no loss of comfort at the modelled resolution (fewer on a
+$0.1\,^\circ$C setpoint grid), which bears on equipment life and maintenance
+rather than on the bill. The clairvoyant bracket tells programme designers how
+much any switching controller could add, a saving of at most about
+$17$--$21\%$, so effort on control can be weighed against setpoint, efficiency
+and urban measures, and the open code and data allow the comparison to be
+repeated for other Saudi cities and dwellings.
 
 \subsection{Limitations}
 \label{subsec:limits}
@@ -2666,7 +2675,10 @@ on-commands, assumed to stand for wear. Electricity follows the comfort
 target, each $0.1\,$K warmer mean lowering THERM's by $0.9$--$2.3\%$, and the
 outdoor air: in a first-order sensitivity with no internal gains, a city
 $1.5$--$2\,$K cooler (the Green Riyadh aim) lowers one room's cooling
-electricity by $10.5$--$13.7\%$ in Riyadh. The money saved depends on the six
+electricity by $10.5$--$13.7\%$ in Riyadh. For Saudi Vision~2030 and Green Riyadh, the work
+indicates that household electricity savings come from the comfort target,
+efficient equipment and a cooler city, while tuned switching reduces
+on-commands, and with them wear, at no cost in comfort. The money saved depends on the six
 modelling choices of Section~\ref{subsec:limits} and on the comfort band,
 which was not swept.
 
