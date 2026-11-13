@@ -122,7 +122,7 @@ $0.9$--$2.3\%$.}
  
 Buildings consume approximately 40\% of global final energy, with HVAC systems accounting for roughly half that figure \citep{PerezLombard2008}.
 In Saudi Arabia the share is larger: residential buildings alone consume $\approx$50\% of national electricity, and air conditioning represents up to 70\% of residential demand \citep{AlHomoud2021,Krarti2020}.
-Better operation of residential air conditioning is therefore one route to the efficiency targets of Saudi Vision~2030 \citep{Belaid2025}.
+Better operation of residential air conditioning is therefore one route to the efficiency targets of Saudi Vision~2030 \citep{Belaid2025}, whose Saudi Green Initiative commits to cutting emissions by more than $278\,$Mt a year by 2030 and to net zero by 2060 \citep{SGI2021}; in the capital, the Green Riyadh programme of more than $7.5$ million trees aims to lower the air temperature by $1.5$--$2\,^\circ$C \citep{GreenRiyadh2019}. Section~\ref{subsec:disc_band} separates what switching control and what the comfort target and a cooler city each contribute to those aims.
  
 \subsection{Motivation}
  
@@ -2431,6 +2431,18 @@ flat tariff; a controller that chooses speed and timing jointly across coupled
 rooms under those conditions, with setback in every room, is the natural next
 study.
 
+The same distinction governs what the work offers the national targets. At
+matched comfort the controllers studied here change on-commands, not
+electricity, so their contribution to emission cuts is indirect, through fewer
+compressor cycles. Electricity, and with it emissions at a given generation mix,
+moves with the comfort target and with the outdoor air: lowering Riyadh's
+outdoor temperature by $1.5$ and $2\,$K, the Green Riyadh aim, cuts THERM's
+cooling electricity on the held-out weeks by $10.5$ and $13.7\%$, while TUNED's
+raw saving stays at $12.8$--$13.6\%$, so a cooler city and better switching add
+rather than compete. The shift is applied to an airport weather year with the
+plant and thresholds unchanged; it is a first-order sensitivity, not a model of
+the urban heat island.
+
 \subsection{Limitations}
 \label{subsec:limits}
 \label{subsec:disc_limits}
@@ -2590,7 +2602,9 @@ guarantee the guards give costs $6.8$ and $6.0$ points in Riyadh and Jeddah.
 Fourth, at matched mean temperature every arm uses about the same electricity,
 by an identity of the model, so the cost difference is a charge on avoided
 on-commands, assumed to stand for wear; electricity follows the comfort
-target, each $0.1\,$K warmer mean lowering THERM's by $0.9$--$2.3\%$. The money
+target, each $0.1\,$K warmer mean lowering THERM's by $0.9$--$2.3\%$, and with
+the outdoor air, which $1.5$--$2\,$K cooler (the Green Riyadh aim) lowers it
+by $10.5$--$13.7\%$ in Riyadh. The money
 saved depends on the six modelling choices of Section~\ref{subsec:limits} and
 on the comfort band, which was not swept. Occupancy setback raises the on-commands the tuned rule
 avoids to $29$--$35\%$ and its cost saving to $17$--$20\%$. In Riyadh

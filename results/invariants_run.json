@@ -1,7 +1,7 @@
 {
  "_provenance": {
-  "code_sha": "e4d7eb184ea5",
-  "code_sha_at_write": "e4d7eb184ea5",
+  "code_sha": "c57127b9bfe3",
+  "code_sha_at_write": "c57127b9bfe3",
   "code_changed_during_run": false,
   "git": null,
   "impl": "invariants.py",
@@ -60,8 +60,8 @@
   "python": "3.13.18",
   "numpy": "2.5.3",
   "host": "vm",
-  "pid": 2475,
-  "utc": "2026-11-13T05:19:08Z"
+  "pid": 4868,
+  "utc": "2026-11-13T05:37:36Z"
  },
  "classes": "ABCDEFGHP",
  "full_gate": true,

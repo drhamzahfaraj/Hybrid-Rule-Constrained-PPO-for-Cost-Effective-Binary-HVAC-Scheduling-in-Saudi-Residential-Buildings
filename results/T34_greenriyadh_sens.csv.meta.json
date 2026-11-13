@@ -1,0 +1,17 @@
+{
+ "code_sha": "c57127b9bfe3",
+ "code_sha_at_write": "c57127b9bfe3",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "greenriyadh_sens.py",
+ "argv": "greenriyadh_sens.py",
+ "env": {},
+ "inputs": {
+  "results/tuned_params_v2.json": "018af48fb56ba521"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 4860,
+ "utc": "2026-11-13T05:36:32Z"
+}

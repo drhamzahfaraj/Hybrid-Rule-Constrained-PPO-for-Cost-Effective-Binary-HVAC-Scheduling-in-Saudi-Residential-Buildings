@@ -101,7 +101,7 @@ the `code/results → ../results` link and the original-path link).
 
 ## 3. Check result
 
-`python3 docs/provenance_check.py` on this release: **OK** 773, **n/a** 2 of 775 mapped values.
+`python3 docs/provenance_check.py` on this release: **EXTERNAL, CITED** 4, **OK** 777, **n/a** 2 of 783 mapped values.
 
 Values that are not a plain match (pending, not in a result file, cross-references, or mismatches):
 
@@ -109,6 +109,10 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 |---|---|---|---|---|
 | S6 tab:s-bias | other cells | (cross-references) | — | n/a |
 | S7 tab:s-ablation | other rows | (repeat tab:main) | — | n/a |
+| Introduction (national context) | Saudi Green Initiative emission cut by 2030 (Mt a year) | 278 | — | EXTERNAL, CITED |
+| Introduction (national context) | net-zero year | 2060 | — | EXTERNAL, CITED |
+| Introduction (national context) | Green Riyadh trees (million) | 7.5 | — | EXTERNAL, CITED |
+| Introduction (national context) | Green Riyadh air-temperature aim (degC) | 1.5--2 | — | EXTERNAL, CITED |
 
 ## 4. Value map
 
@@ -969,6 +973,24 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 | Taif: held-out gap of those four seeds | 0.5 -- 2.5 | `T33_ppo_hold_gap [taif, seeds below hold] gap_eval_pct` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks; min..max | OK |
 | Limitations and §9.2: every trained policy within 0.9 % of hold's training cost except one Taif seed | 0.9 | `T33_ppo_hold_gap [all 15 seeds except taif 46] max |gap_tune_pct|` | gap = 100 (J_PPO / J_hold - 1) with the TRAINING cost (no lambda term) at the training rules; tune = six tuning weeks, eval = held-out weeks | OK |
 
+### Introduction (national context)
+
+| Item | Printed | Source: file [row filter] column | How it is computed | Check |
+|---|---|---|---|---|
+| Saudi Green Initiative emission cut by 2030 (Mt a year) | 278 | `external, cited: \cite{SGI2021} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+| net-zero year | 2060 | `external, cited: \cite{SGI2021} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+| Green Riyadh trees (million) | 7.5 | `external, cited: \cite{GreenRiyadh2019} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+| Green Riyadh air-temperature aim (degC) | 1.5--2 | `external, cited: \cite{GreenRiyadh2019} (references.bib)` | quoted from the cited source; not computed here | EXTERNAL, CITED |
+
+### §10.3 and Conclusions (Green Riyadh sensitivity)
+
+| Item | Printed | Source: file [row filter] column | How it is computed | Check |
+|---|---|---|---|---|
+| THERM cooling electricity cut at dT_out=-1.5 K (%) | 10.5 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
+| THERM cooling electricity cut at dT_out=-2 K (%) | 13.7 | `T34_greenriyadh_sens [riyadh, dT_out=-2] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
+| TUNED raw saving at dT_out -1.5 .. -2.0 K (%) | 12.8 -- 13.6 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5, -2.0] s_raw_tuned_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity; TUNED vs unshifted THERM in the same cooler weather | OK |
+| Conclusions: electricity cut 10.5--13.7 % for 1.5--2 K cooler air | 10.5 -- 13.7 | `T34_greenriyadh_sens [riyadh, dT_out=-1.5, -2.0] -dE_therm_pct` | outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity | OK |
+
 ### main §8.4 (multi-zone)
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
@@ -1149,7 +1171,8 @@ Every file cited above, with the stamp in its `.meta.json` (code sha → tag of 
 | `T23v3_amy_spread.csv` | `amy_spread.py`: __main__ -> protocol() / evaluate_rule() -> t1_v2.evaluate() | `amy_spread.py` | `{}` | `746846849b97` → p9 (9ce9142) | 2026-11-12T15:46:55Z | docs/jobs/p6_round4.jsonl:J16_amy, docs/jobs/p9_round4.jsonl:J16_amy |
 | `rbrl_norules5_v3.csv` | `rbrl_ppo.py`: evaluate() (policy rollout) -> t1_v2.evaluate() | `rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 46` | `{}` | `5020e03ec6ca` → p6 (c5c2fdb) | 2026-11-12T12:56:15Z | docs/jobs/p6_round4.jsonl:J18_norules_taif_46 |
 | `rbrl_norules5_v3_perwindow.csv` | `rbrl_ppo.py`: evaluate() (policy rollout) -> t1_v2.evaluate() | `rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 46` | `{}` | `5020e03ec6ca` → p6 (c5c2fdb) | 2026-11-12T12:56:15Z | docs/jobs/p6_round4.jsonl:J18_norules_taif_46 |
-| `T17v3_Ba.csv` | `bound_at.py`: main() -> v3_names.B_a / r3_dp.certificate_margin | `bound_at.py` | `{}` | `e4d7eb184ea5` → p16 (3021d83) | 2026-11-13T05:18:04Z | code/jobs/r21.jsonl:R21_bound_at, docs/jobs/p10_r21_final.jsonl:R21_bound_at, docs/jobs/p12_p12.jsonl:P12_bound_at |
+| `T17v3_Ba.csv` | `bound_at.py`: main() -> v3_names.B_a / r3_dp.certificate_margin | `bound_at.py` | `{}` | `c57127b9bfe3` → p19 (c7c3404) | 2026-11-13T05:36:34Z | code/jobs/r21.jsonl:R21_bound_at, docs/jobs/p10_r21_final.jsonl:R21_bound_at, docs/jobs/p12_p12.jsonl:P12_bound_at |
 | `T25v3_cycling_energy.csv` | `cycling_energy.py`: main() -> from_summary() | `cycling_energy.py` | `{}` | `5020e03ec6ca` → p6 (c5c2fdb) | 2026-11-12T14:02:58Z | docs/jobs/p6_round4.jsonl:J23_cycling |
-| `T32_setpoint_sens.csv` | `setpoint_sens.py`: main() (THERM shifted on its own Rule C curve) | `setpoint_sens.py` | `{}` | `e4d7eb184ea5` → p16 (3021d83) | 2026-11-13T05:18:04Z | docs/jobs/p12_p12.jsonl:P13_setpoint |
-| `T33_ppo_hold_gap.csv` | `ppo_hold_gap.py`: main() (saved PPO models vs hold, training cost) | `ppo_hold_gap.py` | `{}` | `e4d7eb184ea5` → p16 (3021d83) | 2026-11-13T05:18:09Z | docs/jobs/p12_p12.jsonl:P16_hold_gap |
+| `T32_setpoint_sens.csv` | `setpoint_sens.py`: main() (THERM shifted on its own Rule C curve) | `setpoint_sens.py` | `{}` | `c57127b9bfe3` → p19 (c7c3404) | 2026-11-13T05:36:33Z | docs/jobs/p12_p12.jsonl:P13_setpoint |
+| `T33_ppo_hold_gap.csv` | `ppo_hold_gap.py`: main() (saved PPO models vs hold, training cost) | `ppo_hold_gap.py` | `{}` | `c57127b9bfe3` → p19 (c7c3404) | 2026-11-13T05:36:39Z | docs/jobs/p12_p12.jsonl:P16_hold_gap |
+| `T34_greenriyadh_sens.csv` | `greenriyadh_sens.py`: main() (outdoor dry-bulb shifted, thresholds fixed) | `greenriyadh_sens.py` | `{}` | `c57127b9bfe3` → p19 (c7c3404) | 2026-11-13T05:36:32Z | docs/jobs/p12_p12.jsonl:P19_greenriyadh |

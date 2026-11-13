@@ -24,7 +24,7 @@ CN = {"riyadh": "Riyadh", "jeddah": "Jeddah", "taif": "Taif"}
 
 # code sha (rbrl_io.code_sha_now over code/*.py) of each tag of the private working repository;
 # results are stamped with the sha of the code that produced them. code/ in this release = p13.
-TAG_OF_SHA = {"e2edc1977534": "p18 (1807829)", "e4d7eb184ea5": "p16 (3021d83)", "efbca8c69379": "p15 (d9d14a1)", "4456d5d606cb": "p13 (ad73590)", "0dfeff39fa25": "p12 (280f533)",
+TAG_OF_SHA = {"c57127b9bfe3": "p19 (c7c3404)", "e2edc1977534": "p18 (1807829)", "e4d7eb184ea5": "p16 (3021d83)", "efbca8c69379": "p15 (d9d14a1)", "4456d5d606cb": "p13 (ad73590)", "0dfeff39fa25": "p12 (280f533)",
               "f8fb2cd89384": "p11 (d9b327f)", "5ca2e0ff7e9d": "p10 (818f270)",
               "746846849b97": "p9 (9ce9142)", "b64c08d6b645": "p8 (d837b4a)",
               "ba2229db8d46": "p7 (989b324)", "5020e03ec6ca": "p6 (c5c2fdb)",
@@ -571,6 +571,19 @@ E(L, "Taif: held-out gap of those four seeds", ("0.5", "2.5"), f"{T33} [taif, se
   lambda: (min(float(r["gap_eval_pct"]) for r in taif_below()), max(float(r["gap_eval_pct"]) for r in taif_below())))
 E(L, "Limitations and §9.2: every trained policy within 0.9 % of hold's training cost except one Taif seed", "0.9", f"{T33} [all 15 seeds except taif 46] max |gap_tune_pct|", T33_HOW,
   lambda: max(abs(float(r["gap_tune_pct"])) for r in rows(T33) if not (r["city"] == "taif" and r["seed"] == "46")))
+L = "Introduction (national context)"
+for item, v, ref in (("Saudi Green Initiative emission cut by 2030 (Mt a year)", "278", "SGI2021"), ("net-zero year", "2060", "SGI2021"),
+                     ("Green Riyadh trees (million)", "7.5", "GreenRiyadh2019"), ("Green Riyadh air-temperature aim (degC)", "1.5--2", "GreenRiyadh2019")):
+    E(L, item, v, f"external, cited: \\cite{{{ref}}} (references.bib)", "quoted from the cited source; not computed here", None)
+L = "§10.3 and Conclusions (Green Riyadh sensitivity)"
+T34 = "T34_greenriyadh_sens"
+T34_HOW = "outdoor dry-bulb lowered by |dT_out| K at every step of the held-out windows, plant, band, tariff and TUNED thresholds unchanged; first-order sensitivity"
+for d, v in ((-1.5, "10.5"), (-2.0, "13.7")):
+    E(L, f"THERM cooling electricity cut at dT_out={d:g} K (%)", v, f"{T34} [riyadh, dT_out={d:g}] -dE_therm_pct", T34_HOW, lambda d=d: -one(T34, "dE_therm_pct", dT_out=d))
+E(L, "TUNED raw saving at dT_out -1.5 .. -2.0 K (%)", ("12.8", "13.6"), f"{T34} [riyadh, dT_out=-1.5, -2.0] s_raw_tuned_pct", T34_HOW + "; TUNED vs unshifted THERM in the same cooler weather",
+  lambda: (one(T34, "s_raw_tuned_pct", dT_out=-1.5), one(T34, "s_raw_tuned_pct", dT_out=-2.0)))
+E(L, "Conclusions: electricity cut 10.5--13.7 % for 1.5--2 K cooler air", ("10.5", "13.7"), f"{T34} [riyadh, dT_out=-1.5, -2.0] -dE_therm_pct", T34_HOW,
+  lambda: (-one(T34, "dE_therm_pct", dT_out=-1.5), -one(T34, "dE_therm_pct", dT_out=-2.0)))
 L = "main §8.4 (multi-zone)"
 E(L, "MPC-MZ avoids 28--32 % of on-commands", ("28", "32"), "T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 start_sav_eq", "min..max", lambda: (min(float(rows(m)[0]["start_sav_eq"]) for m in MZM), max(float(rows(m)[0]["start_sav_eq"]) for m in MZM)))
 E(L, "MPC-MZ electricity within +/-0.7 % (max |energy_sav_eq|)", "0.7", "T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 energy_sav_eq", "max |.|", lambda: max(abs(float(rows(m)[0]["energy_sav_eq"])) for m in MZM))
@@ -581,6 +594,8 @@ E(L, "MPC-MZ commanded under-temperature, 2x2 (at most 0.00003)", "0.00003", "T3
 
 # ================================================================== evaluation
 def check(e):
+    if e["fn"] is None and e["src"].startswith("external"):
+        return "EXTERNAL, CITED", ""
     if e["fn"] is None:
         return "NOT IN A RESULT FILE" if "not in a v3 file" in e["src"] else "n/a", ""
     try:
@@ -653,7 +668,7 @@ JOBS = jobs()
 # t1_v2.evaluate / final_tables.equalise / final_tables.pooled_saving unless stated)
 FUNC = {"t1_v2.py": "run_t1 / run_t7 / run_csw -> evaluate()", "mpc_lambda.py": "main -> fit_lambda() (Rule A) -> t1_v2.evaluate()",
         "bound_v2.py": "main(mode) -> config() (bound, CLV via r3_dp.clv_fit)", "bound_at.py": "main() -> v3_names.B_a / r3_dp.certificate_margin",
-        "shield.py": "main() (latch / ppo) -> t1_v2.evaluate()", "rbrl_ppo.py": "evaluate() (policy rollout) -> t1_v2.evaluate()", "ppo_hold_gap.py": "main() (saved PPO models vs hold, training cost)",
+        "shield.py": "main() (latch / ppo) -> t1_v2.evaluate()", "rbrl_ppo.py": "evaluate() (policy rollout) -> t1_v2.evaluate()", "ppo_hold_gap.py": "main() (saved PPO models vs hold, training cost)", "greenriyadh_sens.py": "main() (outdoor dry-bulb shifted, thresholds fixed)",
         "stats_v3.py": "main() (HL, Wilcoxon, sign, Holm)", "setback_arms.py": "main_rule() / main_mpc() -> evaluate_sb() (setback Rule C)",
         "t1_sens.py": "main() -> t1_v2.evaluate()", "timestep_table.py": "main() (collects tagged runs)",
         "mz_r3.py": "main_rules() (dwelling-mean Rule C)", "mz_mpc.py": "main() -> mpc_lambda.fit_lambda()",

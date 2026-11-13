@@ -31,7 +31,10 @@ its margin over the tuned thermostat is not resolved. **Second, electricity is a
 (within ±0.5 % for the tuned thermostat and within ±1.2 % for every arm without setback at
 matched comfort),
 so the benefit is reduced cycling and wear, not a lower bill; the setpoint is what moves
-electricity (each 0.1 K warmer mean lowers THERM's by 0.9–2.3 %). **Third, money as a range:** the
+electricity (each 0.1 K warmer mean lowers THERM's by 0.9–2.3 %), and so does the outdoor air: as a
+first-order sensitivity, lowering Riyadh's outdoor temperature by 1.5–2 K (the Green Riyadh aim)
+cuts THERM's cooling electricity by 10.5–13.7 % while the tuned thermostat's raw saving stays at
+12.8–13.6 %. **Third, money as a range:** the
 avoided on-commands are worth 2–19 SAR per room per cooling season at the 0.025–0.114 SAR per
 on-command that a wear estimate supports. As a cost-saving percentage at the 0.15 SAR reference
 charge, the tuned thermostat saves 12.4–13.6 %, rule-constrained PPO reproduces the rules' hold
@@ -44,7 +47,7 @@ and the assumed 1 °C comparator; the paper reports how each moves the result.
 
 | Path | Contents |
 |---|---|
-| `code/` | The code of record: `code/` is tag p18 (commit `1807829`, code sha `e2edc1977534`, the algorithm of `rbrl_io.code_sha_now`), byte-identical to the tag; result files are stamped by the lineage p6–p16 listed in `docs/PROVENANCE.md`. Includes `tests/`, `jobs/` (job lists for `jobq2.py`), `rbrl_io.py`, `jobq2.py`, `invariants.py`, every producer, and `amy/` (ERA5 actual-year weather, redistributable). The TMYx `.epw` files are **not** included. |
+| `code/` | The code of record: `code/` is tag p19 (commit `c7c3404`, code sha `c57127b9bfe3`, the algorithm of `rbrl_io.code_sha_now`), byte-identical to the tag; result files are stamped by the lineage p6–p19 listed in `docs/PROVENANCE.md`. Includes `tests/`, `jobs/` (job lists for `jobq2.py`), `rbrl_io.py`, `jobq2.py`, `invariants.py`, every producer, and `amy/` (ERA5 actual-year weather, redistributable). The TMYx `.epw` files are **not** included. |
 | `results/` | Final result files of the round-4 reruns: every CSV and JSON with its `.meta.json` provenance record, the gate log `gate_p12.log`, and `archive_r3/` (round-3 files kept for the record). |
 | `paper/` | `main.tex` (Elsevier layout), `main_sn.tex` (Springer Nature layout), `supplement.tex`, `references.bib`, `tables/`, the figure source the manuscript inputs (`fig_leap.tex`), the class/style files, and the PDFs `main.pdf`, `main_sn.pdf`, `supplement.pdf`. `paper/repository-figures/` holds the figures the manuscript places "in the repository": the guard-band diagram (`fig_guards.tex`), the admissibility sweeps (`fig_admiss.tex`), the SLHA automaton state diagram (`fig_slha_withdrawn.tex`) and the monthly and diurnal climate profiles (`fig_climate_withdrawn.tex`; "withdrawn" = moved out of the paper body), and the tariff figure no longer printed (`fig_tariff.tex`). |
 | `docs/` | `PROVENANCE.md` (value-by-value map), `METHODS_NOTES.md` (column definitions), `provenance_check.py` (rebuilds and checks the map), `jobs/` (job lists of earlier stages), `revision-round4/` (decision record). |
@@ -63,8 +66,8 @@ version stamped in the file. It also states the rounding rule and summarises the
 equalisation and admissibility protocol, including what each `fit_status` value means.
 
 The map is checked, not typed: `python3 docs/provenance_check.py` reads `results/`, recomputes
-each of the 775 mapped values and compares it with the printed string (773 checkable values;
-any value that does not match is listed at the top of the file). The same check runs in GitHub Actions on
+each of the 783 mapped values and compares it with the printed string (777 checkable values, all
+matching; 4 are external figures quoted from cited sources and 2 are cross-references). The same check runs in GitHub Actions on
 every push (`.github/workflows/ci.yml`). `--write` regenerates the file after a rerun or a
 text change. Column names are defined in [`docs/METHODS_NOTES.md`](docs/METHODS_NOTES.md).
 
@@ -188,15 +191,17 @@ Python and numpy versions, host, whether the code changed during the run, refuse
 
 The results were produced in stages, so the stamps name the code version of each stage: p6
 (`5020e03ec6ca`), p9 (`746846849b97`), p10 (`5ca2e0ff7e9d`), p11 (`f8fb2cd89384`, multi-zone MPC)
-and p16 (`e4d7eb184ea5`: `T33_ppo_hold_gap`, `T17v3_Ba`, `T32_setpoint_sens` and the gate). This
-tag lineage p6, p9, p10, p11, p13, p16 is the code of record of the results (RULING_round4 records what each tag changed and why
+and p19 (`c57127b9bfe3`: `T34_greenriyadh_sens`, and the reruns of `T33_ppo_hold_gap`,
+`T17v3_Ba`, `T32_setpoint_sens` and the gate). The tag lineage p6, p9, p10, p11, p13, p16, p19
+(`build_registry.GATE_TAGS`) is the code of record of the results; p13 and p16 stamped files that
+were later rerun at p19 (RULING_round4 records what each tag changed and why
 the earlier outputs stay valid). `build_registry.py` and `tests/test_gate_provenance.py` accept a
 cited file only if every row and its `.meta.json` carry exactly one of these shas and the code
-did not change during the run; `VALUES_REGISTRY.md` reports **149 cited files CURRENT and 1
+did not change during the run; `VALUES_REGISTRY.md` reports **150 cited files CURRENT and 1
 FROZEN** (`T4_tariff.csv`, read only by the unprinted tariff figure). p14, p15, p17 and p18
 change only tests, the gate logic, the lineage list and a label in `build_registry.py`, and
 produce no results. The registry and the provenance gate need the tags, i.e. a clone of the
-working repository; the archived `code/` is p18 itself.
+working repository; the archived `code/` is p19 itself.
 
 ## Weather data and licences
 
@@ -222,10 +227,10 @@ On a clean copy of this tree with the TMYx files added and the two links of step
 * `python3 -I invariants.py`: **GATE PASSED – all 188 invariants hold.**
 * Fast test suite (`-m "not slow"`): 188 passed, 5 skipped.
 * Provenance gate (`tests/test_gate_provenance.py`, including the `slow`/`gate` test, run in a
-  clone of the working repository at p18 so that the tags exist, against these results):
+  clone of the working repository at p19 so that the tags exist, against these results):
   **4 of 4 pass**.
 * `python3 docs/provenance_check.py`: see the summary at the top of `docs/PROVENANCE.md`
-  (775 entries, 773 checkable).
+  (783 entries: 777 OK, 4 external and cited, 2 cross-references).
 
 ## Revision history
 
