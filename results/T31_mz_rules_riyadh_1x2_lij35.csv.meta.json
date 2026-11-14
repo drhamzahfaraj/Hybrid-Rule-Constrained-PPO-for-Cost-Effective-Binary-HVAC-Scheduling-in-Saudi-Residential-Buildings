@@ -1,0 +1,17 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "mz_r3.py",
+ "argv": "mz_r3.py rules riyadh 1x2 --lam-ij 35",
+ "env": {},
+ "inputs": {
+  "riyadh.epw": "a2e88409591c158f"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 10194,
+ "utc": "2026-11-12T14:05:48Z"
+}

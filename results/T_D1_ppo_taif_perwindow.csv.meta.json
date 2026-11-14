@@ -1,0 +1,22 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "shield.py",
+ "argv": "shield.py ppo taif",
+ "env": {},
+ "inputs": {
+  "taif.epw": "dc35449564eea0ae",
+  "results/models/rbrl_ppo5_v2_taif_taif_42.zip": "8a4f7f1729ac3f7c",
+  "results/models/rbrl_ppo5_v2_taif_taif_43.zip": "d3579ec2354a93c4",
+  "results/models/rbrl_ppo5_v2_taif_taif_44.zip": "9178f560fb1ed45d",
+  "results/models/rbrl_ppo5_v2_taif_taif_45.zip": "4667cebab28b213a",
+  "results/models/rbrl_ppo5_v2_taif_taif_46.zip": "79be01292bf3695e"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 15128,
+ "utc": "2026-11-12T15:47:30Z"
+}

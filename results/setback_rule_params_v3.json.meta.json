@@ -1,0 +1,20 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "setback_arms.py",
+ "argv": "setback_arms.py rule",
+ "env": {},
+ "inputs": {
+  "results/T1v3_perwindow.csv": "27e00f4d857b8569",
+  "riyadh.epw": "a2e88409591c158f",
+  "jeddah.epw": "690cae887558f09e",
+  "taif.epw": "dc35449564eea0ae"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 9405,
+ "utc": "2026-11-12T12:55:32Z"
+}

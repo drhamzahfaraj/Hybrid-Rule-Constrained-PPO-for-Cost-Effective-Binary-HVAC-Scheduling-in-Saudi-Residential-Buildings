@@ -1,0 +1,18 @@
+# Round-4 follow-ups on p9 (ruling §18)
+{"id": "J3_mpc_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 0.25,1,2,6,24,48", "env": {}, "after": []}
+{"id": "J3_mpc_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 0.25,1,2,6,24,48", "env": {}, "after": []}
+{"id": "J3_mpc_taif", "cmd": "python3 mpc_lambda.py --city taif --horizons 0.25,1,2,6,24,48", "env": {}, "after": []}
+{"id": "J4_pers_jeddah", "cmd": "python3 mpc_lambda.py --city jeddah --horizons 6,24 --forecast persistence", "env": {}, "after": []}
+{"id": "J13_t1_cth2400", "cmd": "python3 t1_v2.py t1 --cth 2400", "env": {"RBRL_TAG": "_cth2400"}, "after": []}
+{"id": "J13_mpc_cth2400_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 1,24 --cth 2400", "env": {"RBRL_TAG": "_cth2400"}, "after": ["J13_t1_cth2400"]}
+{"id": "J13_t1_cth9600", "cmd": "python3 t1_v2.py t1 --cth 9600", "env": {"RBRL_TAG": "_cth9600"}, "after": []}
+{"id": "J13_mpc_cth9600_riyadh", "cmd": "python3 mpc_lambda.py --city riyadh --horizons 1,24 --cth 9600", "env": {"RBRL_TAG": "_cth9600"}, "after": ["J13_t1_cth9600"]}
+{"id": "J16_amy", "cmd": "python3 amy_spread.py", "env": {}, "after": []}
+{"id": "J16_orient", "cmd": "python3 orientation.py riyadh", "env": {}, "after": []}
+{"id": "JMZ_mpc_1x1", "cmd": "python3 mz_mpc.py riyadh 1x1", "env": {}, "after": []}
+{"id": "JMZ_mpc_1x2", "cmd": "python3 mz_mpc.py riyadh 1x2", "env": {}, "after": []}
+{"id": "JMZ_mpc_2x2", "cmd": "python3 mz_mpc.py riyadh 2x2", "env": {}, "after": []}
+{"id": "JMZ_mpc_1x4", "cmd": "python3 mz_mpc.py riyadh 1x4", "env": {}, "after": []}
+{"id": "JMZ_mpc_2x2_lij35", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 35", "env": {}, "after": []}
+{"id": "JMZ_mpc_1x2_lij35", "cmd": "python3 mz_mpc.py riyadh 1x2 --lam-ij 35", "env": {}, "after": []}
+{"id": "JMZ_mpc_1x4_lij35", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 35", "env": {}, "after": []}

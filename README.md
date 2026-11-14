@@ -1,156 +1,277 @@
-# Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings
+# Optimising Binary HVAC Switching in Saudi Residential Buildings with Model Predictive Control and Rule-Constrained PPO
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.11](https://img.shields.io/badge/Python-3.11-green.svg)](https://www.python.org/)
-[![PyTorch 2.1](https://img.shields.io/badge/PyTorch-2.1.0-orange.svg)](https://pytorch.org/)
+[![Python 3.13](https://img.shields.io/badge/Python-3.13-green.svg)](https://www.python.org/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24199676.svg)](https://doi.org/10.5281/zenodo.24199676)
 
-**Journal:** Journal of King Saud University – Engineering Sciences (JKSUES)
+**Author:** Hamzah Faraj, Taif University, Saudi Arabia.
 
-## Author
+**Journal:** Journal of King Saud University – Engineering Sciences (JKSU-ES), revision round 4.
 
-**Hamzah Faraj**
-Department of Science and Technology, Ranyah College, Taif University
-Taif 21944, Saudi Arabia — [email removed]
+**Keywords:** binary HVAC switching; model predictive control; constrained reinforcement learning;
+Saudi Vision 2030; Green Riyadh; energy efficiency.
 
-## Abstract
+**Archived release (Zenodo):**
+[doi:10.5281/zenodo.24199676](https://doi.org/10.5281/zenodo.24199676) (release `v4.0-round4`). The trained PPO models
+(29 MB) are not in the archive; they are available from the author on request and can be
+retrained from the code with the stated seeds.
 
-Residential buildings in Saudi Arabia account for approximately half of national
-electricity consumption, with HVAC responsible for up to 70 % of residential
-demand. This paper formulates binary HVAC scheduling as a constrained
-optimisation over an infinite time horizon under a step-wise electricity tariff.
-The single-zone constant-tariff subproblem is identified as a Simple Linear
-Hybrid Automaton (SLHA), for which the infinite-horizon optimum is reachable in
-LogSpace; multi-zone extensions with non-convex tariffs inherit NP-hardness.
+> **Repository name.** The URL still carries the paper's first title. The paper was retitled
+> during revision; everything here is the round-4 study.
+>
+> **History was rewritten** for this release: the TMYx weather files (`*.epw`) were removed from
+> every commit because their source does not permit redistribution (see
+> [Weather data and licences](#weather-data-and-licences)). Clones made before the rewrite
+> should be re-cloned.
 
-A hybrid Rule-Based Reinforcement Learning (RBRL) framework combines hard
-constraint rules with PPO. Under Model S, RBRL demonstrates in simulation
-monthly per-zone cost reductions of **18.2 % (Riyadh)** and **16.8 % (Jeddah)**
-relative to the unoptimised thermostat, with **zero comfort violations**.
+## The study in one paragraph
 
-## Repository structure
+On/off cooling of a split unit in a code-compliant single room is scheduled in Riyadh, Jeddah
+and Taif, every controller selected on tuning weeks and scored on seven held-out weeks against a
+1 °C-deadband thermostat (THERM) shifted to the controller's own mean temperature. The results
+are reported in three layers. **First, compressor on-commands avoided:** commissioning the
+thermostat's two switch points avoids 22–24 % of on-commands, and a 24 h receding-horizon
+controller (MPC) with a perfect in-horizon forecast avoids 30–33 %; with a persistence forecast
+its margin over the tuned thermostat is not resolved. **Second, electricity is about unchanged**
+(within ±0.5 % for the tuned thermostat and within ±1.2 % for every arm without setback at
+matched comfort),
+so the benefit is reduced cycling and wear, not a lower bill; the setpoint is what moves
+electricity (each 0.1 K warmer mean lowers THERM's by 0.9–2.3 %), and so does the outdoor air: as a
+first-order sensitivity, lowering Riyadh's outdoor temperature by 1.5–2 K (the Green Riyadh aim)
+cuts THERM's cooling electricity by 10.5–13.7 % while the tuned thermostat's raw saving stays at
+12.8–13.6 %. **Third, money as a range:** the
+avoided on-commands are worth 2–19 SAR per room per cooling season at the 0.025–0.114 SAR per
+on-command that a wear estimate supports. As a cost-saving percentage at the 0.15 SAR reference
+charge, the tuned thermostat saves 12.4–13.6 %, rule-constrained PPO reproduces the rules' hold
+policy in two cities and falls below it in Taif, and a clairvoyant schedule and a provable
+Lagrangian bound bracket the best attainable saving at 18.0–20.0 % (Riyadh), 18.4–19.9 % (Jeddah)
+and 16.7–21.0 % (Taif). Every figure holds for a 15-min actuation step, the reference capacity
+and the assumed 1 °C comparator; the paper reports how each moves the result.
 
-```
-.
-├── README.md                     This file
-├── LICENSE                       MIT
-├── CITATION.cff                  Citation metadata
-├── .gitignore                    Excludes checkpoints, build products, caches
-├── requirements.txt              Python dependencies
-├── main.tex / references.bib / main.pdf     Paper source and compiled PDF
-├── src/                          Package that produced the reported results
-│   ├── __init__.py
-│   ├── rbrl_optimizer.py         PPO wrapper, training, monthly schedule extraction
-│   └── MISSING_MODULES.md        *** modules still to be added — read this ***
-├── metadata.json                 Machine-readable study metadata
-├── pyproject.toml                Package metadata and tool configuration
-├── Makefile                      make paper | verify | validate | test | reference-check
-├── .editorconfig                 Editor conventions
-├── .github/workflows/ci.yml      CI: table verification and manuscript build
-├── tests/test_tables.py          Consistency tests for the published tables
-├── configs/
-│   ├── riyadh_4x4.yaml           Riyadh 4x4 run configuration
-│   └── jeddah_4x4.yaml           Jeddah 4x4 run configuration
-├── results/
-│   ├── tables/*.csv              Every table in the paper, machine-readable
-│   ├── tables/SCHEMA.md          Column definitions, units, provenance
-│   ├── load_tables.py            Re-verifies the tables reproduce (CI-usable)
-│   └── plot_results.py           Regenerates the summary figures
-├── figures/*.png                 Summary figures built from the CSVs
-├── simulation/                   Weather profiles and hourly rollouts (see its README
-│                                 for how these differ from the manuscript's setup)
-├── reference_implementation/     Independent single-file reimplementation (see its README)
-├── data/                         EPW dataset instructions
-├── results/                      Reported results summary
-├── energyplus/                   Planned co-simulation protocol
-└── figures/                      Figure notes
-```
+## Repository layout
 
-> **Important.** `src/` is the code that produced the results in the paper.
-> `reference_implementation/` is a *separate, independent* reimplementation used
-> for cross-checking; it did **not** generate any number in the manuscript. Do not
-> mix the two when reproducing results.
+| Path | Contents |
+|---|---|
+| `code/` | The code of record: `code/` is tag p22 (commit `7bae2aa`, code sha `34d014b49635`, the algorithm of `rbrl_io.code_sha_now`), byte-identical to the tag; result files are stamped by the lineage p6–p22 listed in `docs/PROVENANCE.md`. Includes `tests/`, `jobs/` (job lists for `jobq2.py`), `rbrl_io.py`, `jobq2.py`, `invariants.py`, every producer, and `amy/` (ERA5 actual-year weather, redistributable). The TMYx `.epw` files are **not** included. |
+| `results/` | Final result files of the round-4 reruns: every CSV and JSON with its `.meta.json` provenance record, the gate log `gate_p12.log`, and `archive_r3/` (round-3 files kept for the record). |
+| `paper/` | `main.tex` (Elsevier layout), `main_sn.tex` (Springer Nature layout), `supplement.tex`, `references.bib`, `tables/`, the figure sources the manuscript inputs (`fig_leap.tex`, and the result figures `fig_traces.tex`, `fig_timestep.tex` and `fig_ladder.tex` with their generator `make_result_figs.py`), `to_springer.py` (main.tex → main_sn.tex) and `make_blind.py` (anonymised review copies; their output is not published), the class/style files, and the PDFs `main.pdf`, `main_sn.pdf`, `supplement.pdf`. `paper/repository-figures/` holds the figures the manuscript places "in the repository": the guard-band diagram (`fig_guards.tex`), the admissibility sweeps (`fig_admiss.tex`), the SLHA automaton state diagram (`fig_slha_withdrawn.tex`) and the monthly and diurnal climate profiles (`fig_climate_withdrawn.tex`; "withdrawn" = moved out of the paper body), and the tariff figure no longer printed (`fig_tariff.tex`). |
+| `docs/` | `PROVENANCE.md` (value-by-value map), `METHODS_NOTES.md` (column definitions), `invariant-suite.md` (the nine gate classes and what each checks), `MOVED_FROM_MANUSCRIPT.md` (passages moved from the paper to these docs), `provenance_check.py` (rebuilds and checks the map), `jobs/` (job lists of earlier stages), `revision-round4/` (decision record). |
+| `VALUES_REGISTRY.md` | Generated by `code/build_registry.py`: headline values read from the files, and the provenance status of every cited file. |
+| `archive/withdrawn-pipeline/` | An earlier exploratory pipeline, kept for transparency only. It is not the source of any number or figure in the paper. |
+| `figures/` | Summary figures of that earlier pipeline (round 1–2); not used by the current paper. |
 
-## Reported results (Model S)
+## Where does a number come from?
 
-| Metric                     | Riyadh | Jeddah |
-|---------------------------|--------|--------|
-| Monthly saving vs THERM   | 18.2 % | 16.8 % |
-| Weekly saving vs THERM    | 18.2 % | 16.6 % |
-| Comfort violations        | 0 %    | 0 %    |
-| Training time (4x4)       | 3.1 h  | 3.1 h  |
-| Inference latency         | 0.52 ms| 0.52 ms|
+Start at **[`docs/PROVENANCE.md`](docs/PROVENANCE.md)**. For every table of the manuscript
+(`tab:main`, `tab:layers`, `tab:sota`, `tab:ablation`, `tab:sensitivity`, `tab:timestep`, Supplementary
+Tables S1–S7 and S-MZ, and the result figures Fig. 3 `fig:traces`, Fig. 4 `fig:ladder` and Fig. 5 `fig:timestep`) and for every number in the abstract and conclusions it gives:
+printed value → results file, column and row filter → how the value is computed → the producer
+script and function → the job and exact command (with its `RBRL_*` environment) → the code
+version stamped in the file. It also states the rounding rule and summarises the comfort
+equalisation and admissibility protocol, including what each `fit_status` value means.
 
-Two evaluation horizons are reported and should not be conflated: weekly
-(168-hour) rollouts and the monthly (720-hour) billing horizon. They differ by up
-to ~1.5 percentage points for the smaller topologies because only over a full
-billing month does cumulative consumption traverse the tariff tiers. See
-Section "Robustness of the reported results" in the paper.
+`paper/fig_leap.tex` (Fig. 1) supersedes the caption and layout template of `code/gen_figs.py` (`fig_leap`), which is kept byte-identical to the tagged code of record. The plotted curve and every number in it are unchanged; the manuscript copy differs in: the caption ending ("Corollary … does not depend on this structure; it uses only the bounded widths under constant drift" instead of "This geometry is what Corollary … rests on"), "on-commands" instead of "switch-ons" in the caption, axis width `0.94\linewidth` instead of `\linewidth`, `ymax=24.75` instead of `24.45` (and the dashed markers extended to it), the two dwell-time labels moved above the band (y = 24.38) with the arrow re-anchored, `\allowbreak` in the caption formulas, and `\tiny` x tick labels on the lower axis.
 
-## Run configuration (as used for the reported results)
+The result figures are generated, not drawn: `paper/make_result_figs.py` (standard library
+only) writes `paper/fig_traces.tex` (Fig. 3, a two-day operating trace of THERM, TUNED and the
+24 h controller, from `results/T35_day_traces.csv`, written by `code/fig_day_traces.py`) and
+`paper/fig_timestep.tex` (Fig. 5, saving against actuation step in three panels, from
+`results/T2v3_timestep.csv`) and `paper/fig_ladder.tex` (Fig. 4, from the files behind `tab:main`,
+checked against the printed table), reading every plotted point and caption number from the CSVs.
+Run it from `paper/` (`python3 make_result_figs.py`); with this release's results it reproduces
+all three files byte for byte.
 
-    c_th 77.2 kJ/K   lambda_ext 20.5 W/K   lambda_win 12.5 W/K   lambda_iz 12.5 W/K
-    q_hvac 2.0 kW    p_hvac 0.67 kW        c_sw 0.15 SAR         dt 1.0 h
-    comfort band [22, 26] C                horizon 168 h (weekly) / 720 h (monthly)
-    E_base 800 kWh/month  (non-HVAC household load: lighting, appliances, water heating)
+The map is checked, not typed: `python3 docs/provenance_check.py` reads `results/`, recomputes
+each of the 858 mapped values, compares it with the printed string and checks that the string
+still occurs in the table, figure or section it is attributed to (850 values match; 4 are external
+figures quoted from cited sources, 2 are weather statistics of the case-study section, and 2 are
+cross-references). The same check runs in GitHub Actions on
+every push (`.github/workflows/ci.yml`). `--write` regenerates the file after a rerun or a
+text change. Column names are defined in [`docs/METHODS_NOTES.md`](docs/METHODS_NOTES.md).
 
-The cumulative-energy state is initialised with the non-HVAC base load because the
-Saudi tariff is levied on the whole customer account. For Riyadh 4x4 this gives
-~1,910 kWh/month of HVAC plus 800 kWh base = ~2,710 kWh, crossing the first tier
-boundary (2,000 kWh) around day 22 of the billing month; the 4,000 and 6,000 kWh
-boundaries are not reached by a villa of this size.
+### Manuscript tables and their result files
 
-Total envelope conductance Lambda = 33 W/K, matching the running example in the
-paper. Note the paper's Table 2 presents the same total with a different
-opaque/window split (25.0 + 8.0); the dynamics depend only on the total.
+| Manuscript | Result files (`results/`) | Producer (`code/`) |
+|---|---|---|
+| `tab:main` (held-out results) | `T1v3_heldout`, `T21v3_<city>`, `T21v3_pers_<city>`, `T16v3_r23.8-22.4_<city>`, `T16v3_r<guard>_<city>`, `rbrl_ppo5_v3_<city>`, `T_D1_latch_<city>`, `T_D1_ppo_<city>`, `T17v3_<city>`, `T17v3_ruled_<city>`, `T17v2_<city>` (energy-only B\*) | `t1_v2.py`, `mpc_lambda.py`, `rbrl_ppo.py`, `shield.py`, `bound_v2.py` |
+| `tab:layers` (three layers) | the per-window files of the arms above, `T28v3_setback_rule`, `T28v3_setback_mpc_<city>` | `setback_arms.py`; money column computed from the per-window files (formula in the table note) |
+| Supplementary Table S7 `tab:s-stats` (formerly main `tab:stats`) | `T20v3_paired_stats` | `stats_v3.py` → `gen_tables_v3.py --only stats` (`paper/tables/tab_stats.tex`, now inlined in `supplement.tex`) |
+| Fig. 3 `fig:traces` (two-day operating trace) | `T35_day_traces` | `fig_day_traces.py` → `paper/make_result_figs.py` |
+| Fig. 5 `fig:timestep` (saving vs actuation step) | `T2v3_timestep` | `timestep_table.py` → `paper/make_result_figs.py` |
+| Fig. 4 `fig:ladder` | the files of `tab:main` | `paper/make_result_figs.py` (checks every point against the printed `tab:main`) |
+| `tab:ablation` (main text; formerly Supplementary Table S7) | the files of `tab:main`, `rbrl_norules5_v3` | differences from TUNED computed from unrounded savings |
+| `tab:sensitivity` | `T1v3_heldout` (tariffs), `T5v3_switchcost_tuned`, `T7v3_deadband`, `T4v3_bound`, `T5v3_bound`, `T21v3_csw<x>_riyadh`, `T1v3_heldout_cth<x>`, `T21v3_riyadh_cth<x>`, `T17v3_riyadh_cth7200` | `t1_v2.py`, `mpc_lambda.py`, `bound_v2.py` |
+| `tab:timestep`, S1 | `T2v3_timestep` (collects the `_dt5`, `_dt30`, `_cth7200` runs); THERM's degree-hours and the per-step excursions of Table S1 (and Remark 1's centred 1.5 K deadband) from `T37_therm_leak_tl<dt>_<cth>` (over + under, seven held-out Riyadh windows) | `timestep_table.py`, `therm_leak.py` |
+| Scalability subsection: MPC decision time (4.8 / 8.9 ms at 6 / 24 h) | `T36_decision_time` | `decision_time.py` |
+| S2 (protocol and device sensitivity) | `T1v3_sens`, `T21v3_ls<x>_<city>`, `T21v3_conv_<city>`, `T_D1_latch_<city>`, `T16v3_r<guard>_<city>` | `t1_sens.py`, `mpc_lambda.py`, `shield.py` |
+| S3 (CLV per window) | `T17v3_<city>_perwindow` | `bound_v2.py` |
+| S-MZ (multi-zone) | `T31_mz_rules_riyadh_<layout>_lij<x>`, `T31_mz_mpc_riyadh_<layout>_lij<x>_h24` | `mz_r3.py`, `mz_mpc.py` |
+| S4 (commanded under-temperature) | `deg_h_cmd_under` of the files above plus `T23v3_amy_spread`, `T24v3_orientation`, `rbrl_norules5_v3` | as above, `amy_spread.py`, `orientation.py` |
+| S5 (B_a) | `T17v3_Ba` | `bound_at.py` |
+| S6, S7 | cross-references; `T23v3_amy_spread`, `T25v3_cycling_energy`, `rbrl_norules5_v3` | `amy_spread.py`, `cycling_energy.py`, `rbrl_ppo.py` |
 
-## Reproducing
+The full list of cited files is `code/tests/cited_tables.txt`; the producer and job of each are in
+`docs/PROVENANCE.md` §5. The commands that regenerate the files in `paper/tables/` (and the
+inlined table bodies) are in `docs/PROVENANCE.md` §2.
+
+## Reproducing the results
+
+### 1. Environment
 
 ```bash
-make install          # or: pip install -r requirements.txt
-make verify           # re-verify the published tables reproduce
-make validate         # RC model validation and integration stability
-make paper            # compile main.pdf
+pip install -r requirements.txt        # exact versions; Python 3.13.18 was used
 ```
 
-Training and evaluation entry points (`src/train.py`, `src/evaluate.py`) are not
-yet included in this repository; see `src/MISSING_MODULES.md` for what remains to
-be added before the pipeline can be run end to end. Everything else above runs
-today.
+No GPU is needed. The gate and the fast tests run in a few minutes on a laptop CPU; the
+studies themselves (PPO training, MPC sweeps, bounds) take hours to days on two cores.
 
-Training runs for a fixed budget with no early stopping and no intermediate
-checkpoint selection; the saved policy is the final one. Hyperparameters were
-selected on a held-out 2x2 validation configuration, so the 30 test weeks are
-used exactly once, at the end.
+### 2. Weather files
 
-Seeds {42, 43, 44, 45, 46}; all reported figures are the mean +/- std over all
-five, with no seed discarded and no best-of-n selection.
+**TMYx (headline study).** Not redistributed. Download the SRC-TMYx EPW of each station from
+<https://climate.onebuilding.org> (WMO Region 2 – Asia → Saudi Arabia), as named in
+`code/fetch_weather.py`:
 
-## Dataset
+| Save as | WMO | Station file |
+|---|---|---|
+| `code/riyadh.epw` | 404380 | Riyadh.AB (SRC-TMYx, 2009–2022, 12 years of data) |
+| `code/jeddah.epw` | 410240 | Jeddah-Abdulaziz.Intl.AP (SRC-TMYx, 2009–2023) |
+| `code/taif.epw` | 410360 | Taif.Intl.AP (SRC-TMYx, 2009–2023) |
 
-IWEC typical-year EPW files from https://energyplus.net/weather:
+Then run `cd code && python3 fetch_weather.py`: it prints `OK` for each file whose SHA-256 equals
+the file the paper used, and exits non-zero otherwise. Cite: Lawrie, L.K. and Crawley, D.B.,
+*Development of Global Typical Meteorological Years (TMYx)*, climate.onebuilding.org.
 
-- `SAU_Riyadh.404380_IWEC.epw` (WMO 404380, BWh, CDD ~ 3,400)
-- `SAU_Jeddah.410240_IWEC.epw` (WMO 410240, BSh, CDD ~ 2,900)
+**ERA5 actual years (inter-annual spread study).** Included in `code/amy/` (45 city-years,
+2009–2023, plus `amy_summary.csv` and `amy_selected.json`). They were fetched by
+`code/amy_fetch.py` (gaps retried by `code/amy_retry.py`) from the Open-Meteo archive API,
+`https://archive-api.open-meteo.com/v1/archive`, with `models=era5`, hourly
+`temperature_2m, relative_humidity_2m, direct_normal_irradiance, diffuse_radiation,
+shortwave_radiation`, `timezone=Asia/Riyadh`, at the station coordinates listed in `amy_fetch.py`.
 
-Building parameters follow SBC 2018; comfort band [22, 26] C per ASHRAE 55-2023.
+### 3. Paths
 
-## License
+The code of record is kept byte-identical to the tagged version so that its code sha matches the
+stamps in `results/`. Two consequences:
 
-MIT — see [LICENSE](LICENSE).
+* Many modules still name the original working directory, `/home/claude/rbrl`, for weather files
+  and imports, and expect results in `code/results/`. Make both point at this checkout:
 
-## Acknowledgments
+  ```bash
+  ln -s ../results code/results                     # results next to the code, as the scripts expect
+  sudo mkdir -p /home/claude && sudo ln -s "$PWD/code" /home/claude/rbrl
+  ```
 
-The author acknowledges the Deanship of Graduate Studies and Scientific Research,
-Taif University, for funding this work.
+  `rbrl_io.py`, the tests, `mz_mpc.py` and `shield.py` also honour `RBRL_ROOT` (code directory)
+  and `RBRL_RESULTS` (results directory); the other scripts do not. With the two links above
+  the gate and the test suite were run on a clean copy of this release with `/home/claude/rbrl`
+  absent before linking (see *Verification of this release*).
+* Run scripts from `code/` with `python3 -I` (isolated mode), as the job runner does.
+
+### 4. The invariant gate and the tests
+
+```bash
+cd code
+python3 -I invariants.py                  # 188 invariants in 9 classes (A–H, P); exits non-zero on any failure
+OMP_NUM_THREADS=1 python3 -I -m pytest -q tests -m "not slow"     # fast suite
+python3 -I -m pytest -q tests -m slow     # long equivalence tests (hours)
+python3 -I verify_numbers.py              # re-derives every summary value from its per-window rows
+python3 -I build_registry.py              # rebuilds VALUES_REGISTRY.md (written into code/; the release copy is at the root)
+```
+
+The gate classes are A physical sanity, B bound consistency, C accounting identities,
+D parameter provenance, E monotonicity, F decomposition closure, G feasibility, H the deadband
+actuation condition, and P the protocol checks on every v3 result file. The gate of record is
+`results/gate_p12.log`: **188 invariants, 9 classes, all pass**.
+
+### 5. Running the studies (`jobq2.py`)
+
+Every round-4 result was produced by a job of the dependency-aware runner `code/jobq2.py`:
+
+```bash
+cd code
+nohup python3 -I jobq2.py jobs/r21.jsonl > logs_jobq2.txt 2>&1 &
+```
+
+A job file has one JSON object per line: `id`, `cmd` (run with `bash -c` from `code/`, under
+`nice -n 10`), `env` (applied after every `RBRL_*` variable of the launching shell is scrubbed;
+BLAS/torch threads forced to 1), `outputs` (the job is DONE only if it exits 0 and every output
+is newer than its start), and `after` (dependencies). State lives in `code/.jobq/`, logs in
+`code/logs_<id>.txt`; a job reruns when its command, environment or code sha changes. The job
+lists of the code of record are `code/jobs/r21.jsonl` (bounds, shield, sensitivity, time step),
+`code/jobs/j24.jsonl` and `code/jobs/mz_final.jsonl` (multi-zone MPC); the lists of the earlier
+stages that produced the remaining files are in `docs/jobs/` (`p6_round4.jsonl`,
+`p9_round4.jsonl`, `p10_r21*.jsonl`, `p12_p12.jsonl`). The full catalogue of which job wrote
+which file is `docs/PROVENANCE.md` §5.
+
+### 6. Provenance stamping
+
+All results are written through `code/rbrl_io.py`: atomically (temp file, fsync, rename) under a
+lock, and stamped. Every CSV row carries `prov_code_sha` (sha256 over the names and bytes of every
+top-level `code/*.py`, first 12 hex digits), `prov_impl`, `prov_env` (`RBRL_*` only),
+`prov_inputs` (sha of every input read) and `prov_utc`; the full record (argv, git revision,
+Python and numpy versions, host, whether the code changed during the run, refused rows) is in
+`<file>.meta.json`. Rows with `fit_status = none` are refused and listed in the `.meta.json`.
+
+The results were produced in stages, so the stamps name the code version of each stage: p6
+(`5020e03ec6ca`), p9 (`746846849b97`), p10 (`5ca2e0ff7e9d`), p11 (`f8fb2cd89384`, multi-zone MPC)
+p20 (`5e8bc69a807c`: `T35_day_traces`, `T33_ppo_hold_gap` and the gate run), p21
+(`30ec35b0a020`: the reruns of `T17v3_Ba`, `T32_setpoint_sens` and `T34_greenriyadh_sens`) and p22
+(`34d014b49635`: `T36_decision_time` and the ten `T37_therm_leak_*` files). The tag lineage p6,
+p9, p10, p11, p13, p16, p19, p20, p21, p22 (`build_registry.GATE_TAGS`) is the code of record of
+the results; p13, p16 and p19 stamped files that were later rerun (RULING_round4 records what each tag changed and why
+the earlier outputs stay valid). `build_registry.py` and `tests/test_gate_provenance.py` accept a
+cited file only if every row and its `.meta.json` carry exactly one of these shas and the code
+did not change during the run; `VALUES_REGISTRY.md` reports **162 cited files CURRENT and 1
+FROZEN** (`T4_tariff.csv`, read only by the unprinted tariff figure). p14, p15, p17 and p18
+change only tests, the gate logic, the lineage list and a label in `build_registry.py`, and
+produce no results. The registry and the provenance gate need the tags, i.e. a clone of the
+working repository; the archived `code/` is p22 itself.
+
+## Weather data and licences
+
+* **TMYx (climate.onebuilding.org):** "Copyright © 2014–2026 Climate.OneBuilding. All Rights
+  Reserved", with no redistribution licence. The three `.epw` files used by the paper were
+  therefore removed from the whole history of this repository before archiving, and are not
+  included in the Zenodo record. Obtain them as described above; `fetch_weather.py` verifies them
+  by SHA-256.
+* **ERA5 via Open-Meteo:** the API data are licensed under CC BY 4.0 and are redistributed in
+  `code/amy/` with attribution: *Weather data by Open-Meteo.com
+  (<https://open-meteo.com/>), licensed under CC BY 4.0; contains modified Copernicus Climate
+  Change Service information (ERA5, Hersbach et al. 2020).* The series were re-indexed to the EPW
+  hour-ending convention (`amy_fetch.tidy`).
+* The archived withdrawn pipeline keeps two daily weather summaries and two one-week simulated
+  trajectories that include outdoor temperature (`archive/withdrawn-pipeline/simulation/`); they
+  are derived outputs, not weather files.
+* Code and everything else: MIT (see [`LICENSE`](LICENSE)).
+
+## Verification of this release
+
+On a clean copy of this tree with the TMYx files added and the two links of step 3:
+
+* `python3 -I invariants.py`: **GATE PASSED – all 188 invariants hold.**
+* Fast test suite (`-m "not slow"`): 188 passed, 5 skipped.
+* Provenance gate (`tests/test_gate_provenance.py`, including the `slow`/`gate` test, run in a
+  clone of the working repository at p22 so that the tags exist, against these results):
+  **4 of 4 pass**.
+* `python3 docs/provenance_check.py`: see the summary at the top of `docs/PROVENANCE.md`
+  (858 entries: 850 OK, 4 external and cited, 2 weather statistics not in a results file,
+  2 cross-references; 0 mismatches, 0 not in the text).
+
+## Revision history
+
+The record of every decision taken in round 4, and why, is in
+[`docs/revision-round4/`](docs/revision-round4/): the binding ruling
+(`RULING_round4.md`, including the author's decisions in §10 and the gate result in §28), the
+validation log (`VALIDATION_LOG.md`), the seven reports of the first final verification panel
+(`final_panel/`), the seven reports of the second panel (`final_panel2/`, whose fixes are §42 of
+the ruling) and its synthesis (`REVIEWERS_REPORT_round4_final.md`). Verbatim quotations of the journal's reviewer comments in these documents were
+replaced by "[journal comment N — text withheld]"; the response letter is not included.
 
 ## Citation
 
-```bibtex
-@article{Faraj2026RBRL,
-  author  = {Faraj, Hamzah},
-  title   = {Hybrid Rule-Constrained {PPO} for Cost-Effective Binary {HVAC}
-             Scheduling in Saudi Residential Buildings},
-  journal = {Journal of King Saud University -- Engineering Sciences},
-  year    = {2026}
-}
-```
+See [`CITATION.cff`](CITATION.cff). The multi-zone and inter-zone coupling results for this
+setting are in Faraj (2026), *JKSU-ES* 38:58, doi:10.1007/s44444-026-00131-0.
+
+## License
+
+MIT — see [`LICENSE`](LICENSE). Weather data: see above.

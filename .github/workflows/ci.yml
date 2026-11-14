@@ -1,51 +1,31 @@
 name: CI
 
+# What runs here, and what does not
+# ---------------------------------
+# The invariant gate (code/invariants.py) and the test suite (code/tests) simulate the plant on the
+# TMYx weather files, which climate.onebuilding.org does not allow us to redistribute, so they are
+# not in this repository and cannot run on a hosted runner. Run them locally after downloading the
+# files as described in README.md ("Reproducing the results").
+#
+# This workflow runs the one check that needs only the committed results and the manuscript:
+# docs/provenance_check.py recomputes every mapped manuscript value from results/ and compares it
+# with the value printed in the manuscript (recorded in the script and in docs/PROVENANCE.md),
+# and checks that the printed string still occurs in paper/*.tex where it is attributed
+# (Python standard library only; it never writes to results/).
+
 on:
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
 jobs:
-  verify-tables:
-    name: Verify published tables reproduce
+  provenance:
+    name: Manuscript values match the result files
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-      - name: Install test dependencies
-        run: pip install pyyaml pytest
-      - name: Run table consistency tests
-        run: python -m pytest tests/ -v
-      - name: Re-verify reported percentages
-        run: python results/load_tables.py
-
-  build-paper:
-    name: Compile manuscript
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install TeX Live
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            texlive-latex-recommended texlive-latex-extra \
-            texlive-publishers texlive-science texlive-pictures \
-            texlive-fonts-recommended biber
-      - name: Build PDF
-        run: |
-          pdflatex -interaction=nonstopmode main.tex
-          bibtex main
-          pdflatex -interaction=nonstopmode main.tex
-          pdflatex -interaction=nonstopmode main.tex
-      - name: Check for undefined references
-        run: |
-          if grep -q "undefined" main.log; then
-            echo "Undefined references found"; grep -i undefined main.log; exit 1
-          fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: manuscript
-          path: main.pdf
+          python-version: "3.13"
+      - name: Check every mapped value (docs/PROVENANCE.md)
+        run: python3 docs/provenance_check.py

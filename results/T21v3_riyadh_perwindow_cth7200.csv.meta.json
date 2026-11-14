@@ -1,0 +1,23 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "mpc_lambda.py",
+ "argv": "mpc_lambda.py --city riyadh --horizons 24 --ngrid 1601",
+ "env": {
+  "RBRL_CTH": "7200",
+  "RBRL_TAG": "_cth7200"
+ },
+ "inputs": {
+  "results/tuned_params_v2_cth7200.json": "e4288a4d28d9198e",
+  "riyadh.epw": "a2e88409591c158f",
+  "jeddah.epw": "690cae887558f09e",
+  "taif.epw": "dc35449564eea0ae"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 19894,
+ "utc": "2026-11-12T21:52:28Z"
+}

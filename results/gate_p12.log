@@ -1,0 +1,213 @@
+========================================================================
+INVARIANT GATE - run before any number is reported
+========================================================================
+
+A. PHYSICAL SANITY
+  [PASS] solar: south exceeds north on an ANNUAL basis: annual south 159.2 vs north 76.3 W/m2
+  [PASS] solar: north exceeds south in July at this latitude (high sun): July north 106.7 vs south 93.9 W/m2
+  [PASS] solar: east and west exceed south in July: July east 155.4, west 172.8, south 93.9
+  [PASS] solar: west exceeds east in July (afternoon bias): July west 172.8 vs east 155.4 W/m2
+  [PASS] energy decreases as mean zone temperature rises: E(mean 23.94C)=2.800 > E(mean 24.94C)=2.489
+  [PASS] energy rises with exposed-face count: 1 face 2.656 < 2 faces 3.996 kWh/zone/day
+
+B. BOUND CONSISTENCY
+  [PASS] riyadh: DP forward rollout agrees with backward value: J=0.6544 vs V_bwd=0.6566 (0.34%)
+  [PASS] riyadh: no rule beats the DP bound: best rule 0.6766 vs bound 0.6544 (+3.39%)
+  [PASS] jeddah: DP forward rollout agrees with backward value: J=0.5461 vs V_bwd=0.5465 (0.07%)
+  [PASS] jeddah: no rule beats the DP bound: best rule 0.5518 vs bound 0.5461 (+1.05%)
+  [PASS] taif: DP forward rollout agrees with backward value: J=0.3476 vs V_bwd=0.3472 (0.11%)
+  [PASS] taif: no rule beats the DP bound: best rule 0.3549 vs bound 0.3476 (+2.08%)
+
+C. ACCOUNTING IDENTITY
+  [PASS] uncorrected cost equals c_sw*f_s + price*E: reconstructed 0.713819 vs reported 0.713819
+  [PASS] terminal correction is reported, not hidden: corr=+0.01353 SAR/day, T_end=25.18C
+  [PASS] corrected cost equals uncorrected plus the stated correction: 0.727345 = 0.713819 + +0.013526
+  [PASS] no infinite or sentinel value reaches a reported figure: all reported fields finite
+
+D. PARAMETER PROVENANCE
+  [PASS] per-face conductance derives from the parameter table, not a literal: U_wall*A_wall + U_win*A_gl = 11.90 W/K = PER_FACE
+  [PASS] infiltration conductance differs by city (station pressure): riyadh 11.851, jeddah 12.718, taif 10.770 W/K
+  [PASS] latitude differs by city: riyadh 24.7, jeddah 21.5, taif 21.483
+  [PASS] conductance is not the withdrawn 33.0 W/K literal: Lambda(1 face, riyadh) = 23.75 W/K
+
+E. MONOTONICITY
+  [PASS] switching frequency falls as the deadband widens: 1K 4.29 > 2K 2.14 > 3K 1.57
+  [PASS] switching frequency falls as capacity rises: 1200 5.43 > 2400 2.86 > 4800 1.57
+  [PASS] tuned optimum is not beaten by a local perturbation: (22.3,25.9) is locally optimal
+
+F. DECOMPOSITION CLOSURE (tuned rule vs DP, Riyadh)
+  [PASS] components sum to the total within 2%: switching +0.0214, mean temperature +0.0008, residual -0.0000 = +0.0222 vs total +0.0222
+
+G. FEASIBILITY
+  [PASS] Q*dt/C_th within the band at C_th=450: 4.000 K against a 4.0 K band
+  [PASS] Q*dt/C_th within the band at C_th=1200: 1.500 K against a 4.0 K band
+  [PASS] Q*dt/C_th within the band at C_th=4800: 0.375 K against a 4.0 K band
+  [PASS] riyadh: band is holdable with zero degree-hours: degree-hours 0.0000
+  [PASS] jeddah: band is holdable with zero degree-hours: degree-hours 0.0000
+  [PASS] taif: band is holdable with zero degree-hours: degree-hours 0.0000
+
+H. DEADBAND ACTUATION CONDITION (necessary AND sufficient form)
+  [PASS] dt=15min: condition (0.375<=1.00) predicts feasibility and the baseline agrees: condition holds, baseline deg-h 0.000
+  [PASS] dt=60min: condition (1.500<=1.00) predicts feasibility and the baseline agrees: condition fails, baseline deg-h 10.949
+
+P. ROUND-4 PROTOCOL ON THE v3 FILES (fit_status, Rule C, §2.1, B_a, CLV, convergence)
+  [PASS] P1 T1v3_heldout: every row carries an admissible fit_status: 12 rows
+  [PASS] P1 T7v3_deadband: every row carries an admissible fit_status: 12 rows
+  [PASS] P1 T5v3_switchcost_tuned: every row carries an admissible fit_status: 27 rows
+  [PASS] P1 T21v3_riyadh: every row carries an admissible fit_status: 6 rows
+  [PASS] P1 T21v3_pers_riyadh: every row carries an admissible fit_status: 2 rows
+  [PASS] P1 T16v3_r23.8-22.4_riyadh: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 T16v3_r23.6-22.4_riyadh: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 rbrl_ppo5_v3_riyadh: every row carries an admissible fit_status: 5 rows
+  [PASS] P1 T_D1_latch_riyadh: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 T17v3_riyadh: every row carries an admissible fit_status: 1 rows
+  [PASS] P1 T21v3_jeddah: every row carries an admissible fit_status: 6 rows
+  [PASS] P1 T21v3_pers_jeddah: every row carries an admissible fit_status: 1 rows
+  [PASS] P1 T16v3_r23.8-22.4_jeddah: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 T16v3_r23.62-22.4_jeddah: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 rbrl_ppo5_v3_jeddah: every row carries an admissible fit_status: 5 rows
+  [PASS] P1 T_D1_latch_jeddah: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 T17v3_jeddah: every row carries an admissible fit_status: 1 rows
+  [PASS] P1 T21v3_taif: every row carries an admissible fit_status: 6 rows
+  [PASS] P1 T21v3_pers_taif: every row carries an admissible fit_status: 2 rows
+  [PASS] P1 T16v3_r23.8-22.4_taif: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 T16v3_r23.66-22.4_taif: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 rbrl_ppo5_v3_taif: every row carries an admissible fit_status: 5 rows
+  [PASS] P1 T_D1_latch_taif: every row carries an admissible fit_status: 3 rows
+  [PASS] P1 T17v3_taif: every row carries an admissible fit_status: 1 rows
+  [PASS] P2 riyadh: Rule C comparator bracketed in every window of every arm (no eq_clipped): 22 arms; max bracket_gap 0.0742 K; clipped []
+  [PASS] P3 riyadh TUNED: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh guard: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPC0.25: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPC1: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPC2: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPC6: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPC24: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPC48: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPCp6: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPCp24: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPCr1: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPCr6: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh MPCr24: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh RBRL s42: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh RBRL s43: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh RBRL s44: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh RBRL s45: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh RBRL s46: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh D1: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh E2 s42: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh E2 s43: §2.1 metrics present in every window: missing []
+  [PASS] P3 riyadh E2 s44: §2.1 metrics present in every window: missing []
+  [PASS] P4 riyadh MPC0.25: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPC1: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPC2: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPC6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPC24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPC48: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPCp6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0006, fallback_steps 0
+  [PASS] P4 riyadh MPCp24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPCr1: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPCr6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 riyadh MPCr24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P10 riyadh: every causal arm s_a <= B_a (bound at its own clipped mean): 22 arms; violations []
+  [PASS] P7 riyadh: relaxed bound >= unrelaxed (saving) at every common grid: 12801: 19.958 vs 19.490, 1601: 21.270 vs 19.451, 3201: 20.598 vs 19.482
+  [PASS] P8 riyadh: CLV below the relaxed bound in every window (per-window certificate): True
+  [PASS] P9 riyadh: CLV <= B* pooled: CLV 18.274 vs B* 20.0
+  [PASS] P9b riyadh: CLV no warmer than THERM (pooled dT <= 0): -0.0359 K
+  [PASS] P9c riyadh: raw CLV saving <= B*: raw 18.023 vs B* 20.0
+  [PASS] P9d riyadh: Rule C CLV saving <= B_CLV: 18.274 vs B_CLV 19.582
+  [PASS] P11 riyadh MPC 24 h: headline vs convergence grid |ds| <= 0.5 point: 18.264 vs 18.161
+  [PASS] P2 jeddah: Rule C comparator bracketed in every window of every arm (no eq_clipped): 18 arms; max bracket_gap 0.0380 K; clipped []
+  [PASS] P3 jeddah TUNED: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah guard: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPC0.25: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPC1: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPC2: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPC6: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPC24: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPC48: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPCp24: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPCr1: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPCr6: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah MPCr24: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah RBRL s42: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah RBRL s43: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah RBRL s44: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah RBRL s45: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah RBRL s46: §2.1 metrics present in every window: missing []
+  [PASS] P3 jeddah D1: §2.1 metrics present in every window: missing []
+  [PASS] P4 jeddah MPC0.25: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPC1: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPC2: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPC6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPC24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPC48: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPCp24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPCr1: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPCr6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 jeddah MPCr24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P10 jeddah: every causal arm s_a <= B_a (bound at its own clipped mean): 18 arms; violations []
+  [PASS] P7 jeddah: relaxed bound >= unrelaxed (saving) at every common grid: 12801: 19.827 vs 19.407, 1601: 21.175 vs 19.150, 3201: 20.476 vs 19.261
+  [PASS] P8 jeddah: CLV below the relaxed bound in every window (per-window certificate): True
+  [PASS] P9 jeddah: CLV <= B* pooled: CLV 18.514 vs B* 19.9
+  [PASS] P9b jeddah: CLV no warmer than THERM (pooled dT <= 0): -0.0184 K
+  [PASS] P9c jeddah: raw CLV saving <= B*: raw 18.410 vs B* 19.9
+  [PASS] P9d jeddah: Rule C CLV saving <= B_CLV: 18.514 vs B_CLV 19.411
+  [PASS] P11 jeddah MPC 24 h: headline vs convergence grid |ds| <= 0.5 point: 18.058 vs 18.504
+  [PASS] P2 taif: Rule C comparator bracketed in every window of every arm (no eq_clipped): 19 arms; max bracket_gap 0.1040 K; clipped []
+  [PASS] P3 taif TUNED: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif guard: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPC0.25: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPC1: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPC2: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPC6: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPC24: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPC48: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPCp6: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPCp24: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPCr1: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPCr6: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif MPCr24: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif RBRL s42: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif RBRL s43: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif RBRL s44: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif RBRL s45: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif RBRL s46: §2.1 metrics present in every window: missing []
+  [PASS] P3 taif D1: §2.1 metrics present in every window: missing []
+  [PASS] P4 taif MPC0.25: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPC1: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPC2: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPC6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPC24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPC48: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPCp6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPCp24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPCr1: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPCr6: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P4 taif MPCr24: optimiser keeps both constraints and never falls back: deg_h_over 0.0000, deg_h_cmd_under 0.0000, fallback_steps 0
+  [PASS] P10 taif: every causal arm s_a <= B_a (bound at its own clipped mean): 19 arms; violations []
+  [PASS] P7 taif: relaxed bound >= unrelaxed (saving) at every common grid: 12801: 20.924 vs 20.170, 1601: 23.844 vs 19.896, 3201: 22.225 vs 20.013
+  [PASS] P8 taif: CLV below the relaxed bound in every window (per-window certificate): True
+  [PASS] P9 taif: CLV <= B* pooled: CLV 16.506 vs B* 21.0
+  [PASS] P9b taif: CLV no warmer than THERM (pooled dT <= 0): -0.0250 K
+  [PASS] P9c taif: raw CLV saving <= B*: raw 16.688 vs B* 21.0
+  [PASS] P9d taif: Rule C CLV saving <= B_CLV: 16.506 vs B_CLV 20.227
+  [PASS] P11 taif MPC 24 h: headline vs convergence grid |ds| <= 0.5 point: 16.943 vs 16.650
+  [PASS] P12 stats ('F1', 'riyadh'): re-derives from the per-window files; CI contains HL; p >= floor: HL +12.64 [+11.40,+13.77] p_adj 0.0469
+  [PASS] P12 stats ('F1', 'jeddah'): re-derives from the per-window files; CI contains HL; p >= floor: HL +13.71 [+12.28,+15.25] p_adj 0.0469
+  [PASS] P12 stats ('F1', 'taif'): re-derives from the per-window files; CI contains HL; p >= floor: HL +11.84 [+10.64,+14.41] p_adj 0.0469
+  [PASS] P12 stats ('F2', 'riyadh'): re-derives from the per-window files; CI contains HL; p >= floor: HL +6.00 [+3.83,+7.48] p_adj 0.0469
+  [PASS] P12 stats ('F2', 'jeddah'): re-derives from the per-window files; CI contains HL; p >= floor: HL +4.21 [+3.82,+5.31] p_adj 0.0469
+  [PASS] P12 stats ('F2', 'taif'): re-derives from the per-window files; CI contains HL; p >= floor: HL +4.56 [+2.03,+7.98] p_adj 0.0469
+  [PASS] P12 stats ('F3', 'riyadh'): re-derives from the per-window files; CI contains HL; p >= floor: HL -0.09 [-2.93,+2.70] p_adj 0.8125
+  [PASS] P12 stats ('F3', 'jeddah'): re-derives from the per-window files; CI contains HL; p >= floor: HL +0.92 [-0.04,+1.95] p_adj 0.4375
+  [PASS] P12 stats ('F3', 'taif'): re-derives from the per-window files; CI contains HL; p >= floor: HL -1.90 [-5.78,+1.26] p_adj 0.3281
+  [PASS] P12 stats ('F4', 'riyadh'): re-derives from the per-window files; CI contains HL; p >= floor: HL -6.65 [-7.74,-5.58] p_adj 0.0469
+  [PASS] P12 stats ('F4', 'jeddah'): re-derives from the per-window files; CI contains HL; p >= floor: HL -6.01 [-6.75,-5.21] p_adj 0.0469
+  [PASS] P12 stats ('F4', 'taif'): re-derives from the per-window files; CI contains HL; p >= floor: HL +0.00 [-3.00,+0.06] p_adj 0.9375
+  [PASS] P12 stats ('F5', 'riyadh'): re-derives from the per-window files; CI contains HL; p >= floor: HL +7.44 [+3.84,+8.58] p_adj 0.0156
+  [PASS] P12 stats: families F1-F4 present for all three cities: 13 rows
+
+========================================================================
+-> results/invariants_run.json  [code 5e8bc69a807c, env {}]
+GATE PASSED - all 188 invariants hold.

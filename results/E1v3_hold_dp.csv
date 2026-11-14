@@ -1,0 +1,4 @@
+city,windows,n_grid,rule_on,rule_off,J_hold,J_dp,L_relaxed,ratio_hold_dp,ratio_hold_bound,hold_is_optimum,fit_status,prov_code_sha,prov_impl,prov_env,prov_inputs,prov_utc
+riyadh,TUNE_W,3201,23.8,22.4,0.945278,0.941264,0.933403,1.004264,1.012722,True,fixed,5020e03ec6ca,rbrl_ppo.py,{},"{""jeddah.epw"": ""690cae887558f09e"", ""riyadh.epw"": ""a2e88409591c158f"", ""taif.epw"": ""dc35449564eea0ae""}",2026-11-12T14:05:33Z
+jeddah,TUNE_W,3201,23.8,22.4,0.835196,0.823975,0.817399,1.013618,1.021772,False,fixed,5020e03ec6ca,rbrl_ppo.py,{},"{""jeddah.epw"": ""690cae887558f09e"", ""riyadh.epw"": ""a2e88409591c158f"", ""taif.epw"": ""dc35449564eea0ae""}",2026-11-12T14:05:33Z
+taif,TUNE_W,3201,23.8,22.4,0.551409,0.538842,0.528036,1.023322,1.044263,False,fixed,5020e03ec6ca,rbrl_ppo.py,{},"{""jeddah.epw"": ""690cae887558f09e"", ""riyadh.epw"": ""a2e88409591c158f"", ""taif.epw"": ""dc35449564eea0ae""}",2026-11-12T14:05:33Z

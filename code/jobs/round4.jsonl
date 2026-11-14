@@ -1,0 +1,20 @@
+# Round-4 job list for jobq2.py (RULING_round4 §3 F1, §4). One JSON object per non-comment line.
+# Lines starting with '#' and blank lines are ignored.
+#
+# Fields
+#   id       (str, required)  unique; state lives in .jobq/<id>.json, log in logs_<id>.txt
+#   cmd      (str, required)  run with `bash -c` from /home/claude/rbrl, under nice -n 10
+#   env      (obj, optional)  applied AFTER every RBRL_* variable of the launching shell is scrubbed;
+#                             OMP/OPENBLAS/MKL/NUMEXPR/TORCH threads are forced to 1
+#   outputs  (list, optional) paths relative to the repo; the job is DONE only if rc == 0 AND every
+#                             output exists with mtime >= job start (otherwise FAIL)
+#   after    (list, optional) ids that must be DONE first; a FAILed dependency marks this job BLOCKED
+#   code_sensitive (bool, default true) include the code sha in the DONE key (code change => rerun)
+#
+# Example (do not uncomment until Gate T0 is passed and the code is tagged p4):
+# {"id":"t1_main","cmd":"python3 t1_v2.py t1","env":{},"outputs":["results/T1v2_heldout.csv","results/tuned_params_v2.json"]}
+# {"id":"sbrule_main","cmd":"python3 setback_arms.py rule","env":{},"outputs":["results/setback_rule_params.json"],"after":["t1_main"]}
+# {"id":"mpc_riyadh","cmd":"python3 mpc_lambda.py --city riyadh --horizons 24","env":{},"outputs":["results/T21v2_riyadh.csv"],"after":["t1_main"]}
+#
+# Launch:  cd /home/claude/rbrl && nohup python3 -I jobq2.py jobs/round4.jsonl > logs_jobq2.txt 2>&1 &
+# Admission control: MAXJ (default 2) minus CPU-bound python jobs this runner does not own.

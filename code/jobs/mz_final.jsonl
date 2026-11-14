@@ -1,0 +1,43 @@
+# MPC-MZ final runs (V-res-5: the shared lambda selection of mpc_lambda.fit_lambda, 1601 nodes). jobq2
+# format; DO NOT START until the coordinator says so. Reads the final p6 T31_mz_rules_* / mz_tuned_* files.
+#   cd <tree> && nohup python3 -I jobq2.py jobs/mz_final.jsonl > logs_jobq2_mz.txt 2>&1 &
+# Cost (measured on this box under load ~3.5 on 2 cores; unloaded ~0.6x): one tuning-window MPC-24 at 1601
+# nodes costs about a + b L seconds for a batch of L lambdas, 1x1: a = 21, b = 14.5; 2x2 (4 rooms): x3.3
+# (1x4 the same; 1x2 ~x2). A fit is typically 3 batches per window (25-value scan + 2 x 8 refinement) on 6
+# tuning windows plus 7 held-out runs (more if bisection or the §16 back-off knob is needed):
+#   1x1 ~70 min, 1x2 ~2.3 h, 2x2 / 1x4 ~3.8 h (loaded; up to ~2x with bisection / back-off).
+# jobq2 hard-kills at 2 h, so every cell is a CHAIN of budgeted jobs: `--budget-min 80` stops (rc 0) before
+# starting a new window batch after 80 min (one 2x2 batch <= ~21 min, so every job ends < ~105 min),
+# saving every computed row in results/mz_cache/<name>.pkl (keyed by the run and the code sha); the next
+# job replays the deterministic selection from the cache and continues. Non-final jobs declare the chain
+# marker results/mz_cache/<name>.progress; the last job (--final) must finish and declares the CSVs
+# (a chain that runs out is a visible FAIL, never a silent partial table). Chain lengths: 1x1 2, 1x2 3,
+# 2x2 / 1x4 5 jobs (a chain that finishes early: the remaining jobs replay from the cache in seconds).
+{"id": "JMZ_mpc_1x1_lij12.5_c1", "cmd": "python3 mz_mpc.py riyadh 1x1 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x1_lij12.5_h24.progress"]}
+{"id": "JMZ_mpc_1x1_lij12.5_c2", "cmd": "python3 mz_mpc.py riyadh 1x1 --lam-ij 12.5 --horizon 24 --budget-min 80 --final", "env": {}, "outputs": ["results/T31_mz_mpc_riyadh_1x1_lij12.5_h24.csv", "results/T31_mz_mpc_riyadh_1x1_lij12.5_h24_perwindow.csv"], "after": ["JMZ_mpc_1x1_lij12.5_c1"]}
+{"id": "JMZ_mpc_1x2_lij12.5_c1", "cmd": "python3 mz_mpc.py riyadh 1x2 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x2_lij12.5_h24.progress"]}
+{"id": "JMZ_mpc_1x2_lij12.5_c2", "cmd": "python3 mz_mpc.py riyadh 1x2 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x2_lij12.5_h24.progress"], "after": ["JMZ_mpc_1x2_lij12.5_c1"]}
+{"id": "JMZ_mpc_1x2_lij12.5_c3", "cmd": "python3 mz_mpc.py riyadh 1x2 --lam-ij 12.5 --horizon 24 --budget-min 80 --final", "env": {}, "outputs": ["results/T31_mz_mpc_riyadh_1x2_lij12.5_h24.csv", "results/T31_mz_mpc_riyadh_1x2_lij12.5_h24_perwindow.csv"], "after": ["JMZ_mpc_1x2_lij12.5_c2"]}
+{"id": "JMZ_mpc_2x2_lij12.5_c1", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij12.5_h24.progress"]}
+{"id": "JMZ_mpc_2x2_lij12.5_c2", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij12.5_h24.progress"], "after": ["JMZ_mpc_2x2_lij12.5_c1"]}
+{"id": "JMZ_mpc_2x2_lij12.5_c3", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij12.5_h24.progress"], "after": ["JMZ_mpc_2x2_lij12.5_c2"]}
+{"id": "JMZ_mpc_2x2_lij12.5_c4", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij12.5_h24.progress"], "after": ["JMZ_mpc_2x2_lij12.5_c3"]}
+{"id": "JMZ_mpc_2x2_lij12.5_c5", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 12.5 --horizon 24 --budget-min 80 --final", "env": {}, "outputs": ["results/T31_mz_mpc_riyadh_2x2_lij12.5_h24.csv", "results/T31_mz_mpc_riyadh_2x2_lij12.5_h24_perwindow.csv"], "after": ["JMZ_mpc_2x2_lij12.5_c4"]}
+{"id": "JMZ_mpc_1x4_lij12.5_c1", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij12.5_h24.progress"]}
+{"id": "JMZ_mpc_1x4_lij12.5_c2", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij12.5_h24.progress"], "after": ["JMZ_mpc_1x4_lij12.5_c1"]}
+{"id": "JMZ_mpc_1x4_lij12.5_c3", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij12.5_h24.progress"], "after": ["JMZ_mpc_1x4_lij12.5_c2"]}
+{"id": "JMZ_mpc_1x4_lij12.5_c4", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 12.5 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij12.5_h24.progress"], "after": ["JMZ_mpc_1x4_lij12.5_c3"]}
+{"id": "JMZ_mpc_1x4_lij12.5_c5", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 12.5 --horizon 24 --budget-min 80 --final", "env": {}, "outputs": ["results/T31_mz_mpc_riyadh_1x4_lij12.5_h24.csv", "results/T31_mz_mpc_riyadh_1x4_lij12.5_h24_perwindow.csv"], "after": ["JMZ_mpc_1x4_lij12.5_c4"]}
+{"id": "JMZ_mpc_1x2_lij35_c1", "cmd": "python3 mz_mpc.py riyadh 1x2 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x2_lij35_h24.progress"]}
+{"id": "JMZ_mpc_1x2_lij35_c2", "cmd": "python3 mz_mpc.py riyadh 1x2 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x2_lij35_h24.progress"], "after": ["JMZ_mpc_1x2_lij35_c1"]}
+{"id": "JMZ_mpc_1x2_lij35_c3", "cmd": "python3 mz_mpc.py riyadh 1x2 --lam-ij 35 --horizon 24 --budget-min 80 --final", "env": {}, "outputs": ["results/T31_mz_mpc_riyadh_1x2_lij35_h24.csv", "results/T31_mz_mpc_riyadh_1x2_lij35_h24_perwindow.csv"], "after": ["JMZ_mpc_1x2_lij35_c2"]}
+{"id": "JMZ_mpc_2x2_lij35_c1", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij35_h24.progress"]}
+{"id": "JMZ_mpc_2x2_lij35_c2", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij35_h24.progress"], "after": ["JMZ_mpc_2x2_lij35_c1"]}
+{"id": "JMZ_mpc_2x2_lij35_c3", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij35_h24.progress"], "after": ["JMZ_mpc_2x2_lij35_c2"]}
+{"id": "JMZ_mpc_2x2_lij35_c4", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_2x2_lij35_h24.progress"], "after": ["JMZ_mpc_2x2_lij35_c3"]}
+{"id": "JMZ_mpc_2x2_lij35_c5", "cmd": "python3 mz_mpc.py riyadh 2x2 --lam-ij 35 --horizon 24 --budget-min 80 --final", "env": {}, "outputs": ["results/T31_mz_mpc_riyadh_2x2_lij35_h24.csv", "results/T31_mz_mpc_riyadh_2x2_lij35_h24_perwindow.csv"], "after": ["JMZ_mpc_2x2_lij35_c4"]}
+{"id": "JMZ_mpc_1x4_lij35_c1", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij35_h24.progress"]}
+{"id": "JMZ_mpc_1x4_lij35_c2", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij35_h24.progress"], "after": ["JMZ_mpc_1x4_lij35_c1"]}
+{"id": "JMZ_mpc_1x4_lij35_c3", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij35_h24.progress"], "after": ["JMZ_mpc_1x4_lij35_c2"]}
+{"id": "JMZ_mpc_1x4_lij35_c4", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 35 --horizon 24 --budget-min 80", "env": {}, "outputs": ["results/mz_cache/T31_mz_mpc_riyadh_1x4_lij35_h24.progress"], "after": ["JMZ_mpc_1x4_lij35_c3"]}
+{"id": "JMZ_mpc_1x4_lij35_c5", "cmd": "python3 mz_mpc.py riyadh 1x4 --lam-ij 35 --horizon 24 --budget-min 80 --final", "env": {}, "outputs": ["results/T31_mz_mpc_riyadh_1x4_lij35_h24.csv", "results/T31_mz_mpc_riyadh_1x4_lij35_h24_perwindow.csv"], "after": ["JMZ_mpc_1x4_lij35_c4"]}

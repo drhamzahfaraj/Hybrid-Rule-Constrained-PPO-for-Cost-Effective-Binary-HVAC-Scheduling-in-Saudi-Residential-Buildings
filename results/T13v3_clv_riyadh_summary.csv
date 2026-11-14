@@ -1,0 +1,2 @@
+city,setback,fit_status,clv_s_pooled,clv_n_tol_met,clv_B_a,clv_le_B_a,clv_cert_min_margin,prov_code_sha,prov_impl,prov_env,prov_inputs,prov_utc
+riyadh,False,oracle,18.274469138096038,2,19.581965569640857,True,0.007267144703461792,5ca2e0ff7e9d,clv_refine.py,{},"{""results/T17v3_riyadh_dualcurves.json"": ""dabd90e2a013606c"", ""results/T17v3_riyadh_perwindow.csv"": ""d97698f7a4c25fd8""}",2026-11-12T16:05:59Z

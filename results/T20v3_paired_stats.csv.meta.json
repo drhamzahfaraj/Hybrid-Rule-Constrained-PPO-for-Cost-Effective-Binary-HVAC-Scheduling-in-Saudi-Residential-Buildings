@@ -1,0 +1,24 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "stats_v3.py",
+ "argv": "stats_v3.py",
+ "env": {},
+ "inputs": {
+  "results/T1v3_perwindow.csv": "27e00f4d857b8569",
+  "results/T21v3_riyadh_perwindow.csv": "8187b6d17b521be6",
+  "results/T21v3_jeddah_perwindow.csv": "8a015880693b79b6",
+  "results/T21v3_taif_perwindow.csv": "e96ef0d1a2c99067",
+  "results/T21v3_pers_riyadh_perwindow.csv": "7b7452d1f2ce9662",
+  "results/T21v3_pers_jeddah_perwindow.csv": "7a6d9c962d46d887",
+  "results/T21v3_pers_taif_perwindow.csv": "b6370229c4f6a873",
+  "results/rbrl_e2_v3_riyadh_perwindow.csv": "0ae31958c80c4044"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 10733,
+ "utc": "2026-11-12T14:34:20Z"
+}

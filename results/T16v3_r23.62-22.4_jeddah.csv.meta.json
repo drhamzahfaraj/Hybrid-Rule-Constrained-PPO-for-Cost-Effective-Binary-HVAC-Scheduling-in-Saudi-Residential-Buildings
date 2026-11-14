@@ -1,0 +1,20 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "mpc_lambda.py",
+ "argv": "mpc_lambda.py --city jeddah --horizons 1,6,24 --rule-on 23.62 --rule-off 22.4",
+ "env": {},
+ "inputs": {
+  "results/tuned_params_v2.json": "018af48fb56ba521",
+  "riyadh.epw": "a2e88409591c158f",
+  "jeddah.epw": "690cae887558f09e",
+  "taif.epw": "dc35449564eea0ae"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 15063,
+ "utc": "2026-11-12T15:50:58Z"
+}

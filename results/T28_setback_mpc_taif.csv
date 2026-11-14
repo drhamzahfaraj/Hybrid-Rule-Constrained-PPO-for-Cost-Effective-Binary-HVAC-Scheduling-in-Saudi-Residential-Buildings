@@ -1,0 +1,2 @@
+city,arm,horizon_h,lam,relaxed_pooled,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,start_sav_eq,energy_sav_eq,deg_h_over,deg_h_under
+taif,MPC-SB,24.0,0.41364,True,7,TUNE_W,23.116203,23.105385,-0.002719,39.473684,2.022837,0.0,0.0

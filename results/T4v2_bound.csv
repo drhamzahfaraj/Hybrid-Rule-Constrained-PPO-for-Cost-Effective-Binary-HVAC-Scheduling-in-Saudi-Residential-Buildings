@@ -1,0 +1,3 @@
+city,price,c_sw,setback,therm_J,target,bound_rel12801,lam_rel12801,bound_reported,bound_reported_grid,clv_s_pooled,clv_dT_pooled,clv_start_sav,clv_le_bound_all_windows,clv_le_bound_pooled
+riyadh,0.05,0.15,False,0.755025,22.935568,29.554394,1.033627,29.6,12801,27.107955,-0.044554,33.333333,True,True
+riyadh,0.21,0.15,False,1.202126,22.935568,18.588069,1.214215,18.6,12801,16.884019,-0.052758,33.333333,True,True
