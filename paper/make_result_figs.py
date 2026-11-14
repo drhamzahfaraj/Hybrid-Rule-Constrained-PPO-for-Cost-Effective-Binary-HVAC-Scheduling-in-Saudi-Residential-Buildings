@@ -239,14 +239,18 @@ def timestep():
     out.append(
         "\\begin{groupplot}[\n"
         "  group style={group size=3 by 1, horizontal sep=0.35cm, y descriptions at=edge left},\n"
-        "  width=0.37\\textwidth, height=4.2cm,\n"
+        "  width=0.37\\textwidth, height=3.9cm,\n"
         f"  xmin=2, xmax=33, ymin={YMIN}, ymax={YMAX}, ytick={{0,10,20,30}},\n"
         "  xtick={5,15,30}, xlabel={$\\Delta t$ (min)}, ylabel={Saving $s$ (\\%)},\n"
         "  axis on top, tick label style={font=\\scriptsize}, label style={font=\\small},\n"
         "  title style={font=\\small, yshift=-1ex},\n"
+        "  legend columns=3,\n"
+        "  legend style={font=\\scriptsize, draw=none, /tikz/every even column/.append style={column sep=8pt}},\n"
+        "  legend cell align=left,\n"
         "]\n")
     for i, ci in enumerate(cities):
-        out.append(f"\\nextgroupplot[title={{{CITY[ci]}}}]\n")
+        opt = ", legend to name=fig5leg" if i == 0 else ""
+        out.append(f"\\nextgroupplot[title={{{CITY[ci]}}}{opt}]\n")
         # resolution band around zero
         out.append(f"\\fill[black!8] (axis cs:2,-3) rectangle (axis cs:33,3);\n")
         out.append("\\draw[black!45, thin] (axis cs:2,0) -- (axis cs:33,0);\n")
@@ -255,7 +259,7 @@ def timestep():
         poly = "".join(f"(axis cs:{d:g},{s:.1f})" for d, s in bp)
         out.append(f"\\fill[oiPurple!22] {poly.replace(')(', ') -- (')} -- "
                    f"(axis cs:{bp[-1][0]:g},{YMAX}) -- (axis cs:{bp[0][0]:g},{YMAX}) -- cycle;\n")
-        out.append(f"\\addplot[oiPurple, thick, densely dashed, mark=none] coordinates{{{c(bp, 0)}}};\n")
+        out.append(f"\\addplot[oiPurple, thick, densely dashed, mark=none, forget plot] coordinates{{{c(bp, 0)}}};\n")
         # resolved margin MPC - TUNED (>= 3 points) shaded segment by segment
         mp, tp = dict(R(ci, "MPC-24")), dict(R(ci, "TUNED"))
         ds = [d for d in dts if d in mp]
@@ -263,29 +267,25 @@ def timestep():
             if mp[d0] - tp[d0] >= 3 and mp[d1] - tp[d1] >= 3:
                 out.append(f"\\fill[oiVerm!18] (axis cs:{d0:g},{tp[d0]:.1f}) -- (axis cs:{d1:g},{tp[d1]:.1f}) -- "
                            f"(axis cs:{d1:g},{mp[d1]:.1f}) -- (axis cs:{d0:g},{mp[d0]:.1f}) -- cycle;\n")
-        out.append(f"\\addplot[oiVerm, thick, mark=*, mark size=1.4pt] coordinates{{{c(R(ci, 'MPC-24'), 0)}}};\n")
-        out.append(f"\\addplot[oiBlue, thick, mark=square*, mark size=1.3pt] coordinates{{{c(R(ci, 'TUNED'), 0)}}};\n")
-        if i == 0:   # direct labels, first panel only
-            out.append(                       "\\node[font=\\scriptsize, oiVerm, anchor=south west] at (axis cs:15.5,18.6) {MPC $24\\,$h};\n"
-                       "\\node[font=\\scriptsize, oiBlue, anchor=north east] at (axis cs:14.5,11.5) {TUNED};\n"
-                       "")
-        if i == 1:
-            out.append("\\node[font=\\scriptsize, oiVerm!80!black, anchor=center] at (axis cs:24.5,9.6) "
-                       "{$\\ge3$\\,pt};\n")
-        if i == 2:
-            out.append("\\node[font=\\scriptsize, oiPurple!80!black, anchor=center, align=center] at (axis cs:23,25.3) "
-                       "{above $B^\\ast$:\\\\unreachable};\n"
-                       "\\node[font=\\scriptsize, black!65, anchor=west] at (axis cs:2.6,-1.4) "
-                       "{$|s|<3$: not resolved};\n")
-    out.append("\\end{groupplot}\n\\end{tikzpicture}\n")
+        out.append(f"\\addplot[oiVerm, thick, mark=*, mark size=1.4pt, forget plot] coordinates{{{c(R(ci, 'MPC-24'), 0)}}};\n")
+        out.append(f"\\addplot[oiBlue, thick, mark=square*, mark size=1.3pt, forget plot] coordinates{{{c(R(ci, 'TUNED'), 0)}}};\n")
+        if i == 0:   # one shared legend, typeset below the three panels
+            out.append(
+                "\\addlegendimage{oiBlue, thick, mark=square*, mark size=1.3pt}\\addlegendentry{TUNED}\n"
+                "\\addlegendimage{oiVerm, thick, mark=*, mark size=1.4pt}\\addlegendentry{MPC $24\\,$h}\n"
+                "\\addlegendimage{oiPurple, thick, densely dashed}\\addlegendentry{bound $B^\\ast$}\n"
+                "\\addlegendimage{area legend, draw=none, fill=oiPurple!22}\\addlegendentry{above $B^\\ast$: unreachable}\n"
+                "\\addlegendimage{area legend, draw=none, fill=oiVerm!18}\\addlegendentry{gap $\\ge3\\,$pt: resolved}\n"
+                "\\addlegendimage{area legend, draw=none, fill=black!8}\\addlegendentry{$|s|<3\\,$pt: not resolved}\n")
+    out.append("\\end{groupplot}\n"
+               "\\node[anchor=north] at ($(group c2r1.south)+(0,-0.85cm)$) {\\pgfplotslegendfromname{fig5leg}};\n"
+               "\\end{tikzpicture}\n")
     rng = lambda xs: f"${fmt(min(xs))}$--${fmt(max(xs))}$"
     out.append(
         "\\caption{Pooled equalised saving against actuation step, one panel per city "
-        "(values of Table~\\ref{tab:timestep}): TUNED (blue squares), the $24\\,$h MPC with a "
-        "perfect forecast (vermillion circles) and the bound $B^\\ast$ ($V_N$, rounded up; "
-        "dashed), with the region above the bound shaded. The gap between MPC and TUNED is "
-        "shaded where it is resolved under the $3$-point rule, and the grey band marks "
-        "savings within $3$ points of zero. MPC and $B^\\ast$ at $5\\,$min were run for "
+        "(values of Table~\\ref{tab:timestep}): TUNED, the $24\\,$h MPC with a "
+        "perfect forecast and the bound $B^\\ast$ ($V_N$, rounded up); shading follows the "
+        "$3$-point rule. MPC and $B^\\ast$ at $5\\,$min were run for "
         "Riyadh only; that MPC ran on $801$ grid nodes at the pooled $0.10\\,$K fallback, and "
         "the Riyadh MPC at $30\\,$min is the conservative protocol value of note~$c$ there. "
         f"At $5\\,$min TUNED (${fmt(U('riyadh', 'TUNED', 5))}\\%$) and the Riyadh MPC "
