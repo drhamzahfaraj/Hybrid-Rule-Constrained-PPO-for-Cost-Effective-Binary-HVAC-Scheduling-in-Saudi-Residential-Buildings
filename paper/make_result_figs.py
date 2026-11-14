@@ -228,51 +228,72 @@ def timestep():
     assert all(abs(m) < 3 for m in marg[5])
     assert all(m >= 3 for m in marg[15]) and all(m >= 3 for m in marg[30])
     assert all(abs(t) < 3 for t in tuned[30])
-    out = [HEADER, COLDEF, "\\begin{figure}[t]\n\\centering\n\\begin{tikzpicture}\n"]
+    # Small multiples (one panel per city, shared y axis), after Spiegelhalter's advice to
+    # put compared quantities side by side, label directly and show what is resolved:
+    #   * B* drawn as the ceiling: the region above it is shaded (no schedule reaches it);
+    #   * TUNED blue, MPC 24 h vermillion (the arm colours of Figs traces/ladder);
+    #   * the gap between them is shaded only where it is resolved (>= 3 points);
+    #   * a grey band at 0 +/- 3 points marks savings not resolved from zero.
+    YMIN, YMAX = -5, 30
+    out = [HEADER, COLDEF, "\\begin{figure*}[t]\n\\centering\n\\begin{tikzpicture}\n"]
     out.append(
-        "\\begin{axis}[\n"
-        "  width={min(0.96*\\columnwidth,9.5cm)}, height=5.2cm,\n"
-        "  xmin=2, xmax=33, ymin=-4, ymax=30, ytick={0,10,20,30},\n"
-        "  xtick={5,15,30}, xlabel={Actuation step $\\Delta t$ (min)},\n"
-        "  ylabel={Saving $s$ (\\%)},\n"
-        "  grid=major, grid style={dotted,gray!40},\n"
-        "  tick label style={font=\\scriptsize}, label style={font=\\small},\n"
-        "  legend style={font=\\scriptsize, at={(0.5,-0.30)}, anchor=north,\n"
-        "    legend columns=3, draw=none, fill=none,\n"
-        "    /tikz/every even column/.append style={column sep=8pt}},\n"
-        "  legend cell align=left,\n"
+        "\\begin{groupplot}[\n"
+        "  group style={group size=3 by 1, horizontal sep=0.35cm, y descriptions at=edge left},\n"
+        "  width=0.37\\textwidth, height=4.2cm,\n"
+        f"  xmin=2, xmax=33, ymin={YMIN}, ymax={YMAX}, ytick={{0,10,20,30}},\n"
+        "  xtick={5,15,30}, xlabel={$\\Delta t$ (min)}, ylabel={Saving $s$ (\\%)},\n"
+        "  axis on top, tick label style={font=\\scriptsize}, label style={font=\\small},\n"
+        "  title style={font=\\small, yshift=-1ex},\n"
         "]\n")
-    out.append("\\addplot[gray!70, thin, forget plot] coordinates{(2,0)(33,0)};\n")
-    for a in ["B*", "MPC-24", "TUNED"]:
-        for ci in cities:
-            pts = R(ci, a)
-            out.append(f"\\addplot[{colour[ci]}, thick, {dash[a]}, mark=*, mark size=1.3pt, "
-                       f"mark options={{solid}}, forget plot] coordinates{{{c(pts, off[ci])}}};\n")
-    # legend: cities by colour (row 1), arms by line style (row 2)
-    for ci in cities:
-        out.append(f"\\addlegendimage{{{colour[ci]}, thick, solid, mark=*, mark size=1.3pt}}"
-                   f"\\addlegendentry{{{CITY[ci]}}}\n")
-    for a, name in [("TUNED", "TUNED"), ("MPC-24", "MPC $24\\,$h"), ("B*", "bound $B^\\ast$")]:
-        out.append(f"\\addlegendimage{{black!60, thick, {dash[a]}}}\\addlegendentry{{{name}}}\n")
-    out.append("\\end{axis}\n\\end{tikzpicture}\n")
-    rt = R("riyadh", "TUNED")
+    for i, ci in enumerate(cities):
+        out.append(f"\\nextgroupplot[title={{{CITY[ci]}}}]\n")
+        # resolution band around zero
+        out.append(f"\\fill[black!8] (axis cs:2,-3) rectangle (axis cs:33,3);\n")
+        out.append("\\draw[black!45, thin] (axis cs:2,0) -- (axis cs:33,0);\n")
+        # bound as ceiling
+        bp = R(ci, "B*")
+        poly = "".join(f"(axis cs:{d:g},{s:.1f})" for d, s in bp)
+        out.append(f"\\fill[oiPurple!22] {poly.replace(')(', ') -- (')} -- "
+                   f"(axis cs:{bp[-1][0]:g},{YMAX}) -- (axis cs:{bp[0][0]:g},{YMAX}) -- cycle;\n")
+        out.append(f"\\addplot[oiPurple, thick, densely dashed, mark=none] coordinates{{{c(bp, 0)}}};\n")
+        # resolved margin MPC - TUNED (>= 3 points) shaded segment by segment
+        mp, tp = dict(R(ci, "MPC-24")), dict(R(ci, "TUNED"))
+        ds = [d for d in dts if d in mp]
+        for d0, d1 in zip(ds, ds[1:]):
+            if mp[d0] - tp[d0] >= 3 and mp[d1] - tp[d1] >= 3:
+                out.append(f"\\fill[oiVerm!18] (axis cs:{d0:g},{tp[d0]:.1f}) -- (axis cs:{d1:g},{tp[d1]:.1f}) -- "
+                           f"(axis cs:{d1:g},{mp[d1]:.1f}) -- (axis cs:{d0:g},{mp[d0]:.1f}) -- cycle;\n")
+        out.append(f"\\addplot[oiVerm, thick, mark=*, mark size=1.4pt] coordinates{{{c(R(ci, 'MPC-24'), 0)}}};\n")
+        out.append(f"\\addplot[oiBlue, thick, mark=square*, mark size=1.3pt] coordinates{{{c(R(ci, 'TUNED'), 0)}}};\n")
+        if i == 0:   # direct labels, first panel only
+            out.append(                       "\\node[font=\\scriptsize, oiVerm, anchor=south west] at (axis cs:15.5,18.6) {MPC $24\\,$h};\n"
+                       "\\node[font=\\scriptsize, oiBlue, anchor=north east] at (axis cs:14.5,11.5) {TUNED};\n"
+                       "")
+        if i == 1:
+            out.append("\\node[font=\\scriptsize, oiVerm!80!black, anchor=center] at (axis cs:24.5,9.6) "
+                       "{$\\ge3$\\,pt};\n")
+        if i == 2:
+            out.append("\\node[font=\\scriptsize, oiPurple!80!black, anchor=center, align=center] at (axis cs:23,25.3) "
+                       "{above $B^\\ast$:\\\\unreachable};\n"
+                       "\\node[font=\\scriptsize, black!65, anchor=west] at (axis cs:2.6,-1.4) "
+                       "{$|s|<3$: not resolved};\n")
+    out.append("\\end{groupplot}\n\\end{tikzpicture}\n")
     rng = lambda xs: f"${fmt(min(xs))}$--${fmt(max(xs))}$"
     out.append(
-        "\\caption{Pooled equalised saving against actuation step, as in "
-        "Table~\\ref{tab:timestep}: TUNED (solid), the $24\\,$h MPC with a perfect "
-        "forecast (dash-dot) and the bound $B^\\ast$ (dashed, $V_N$, rounded up); colour "
-        "marks the city, and Jeddah and Taif are drawn $0.7\\,$min either side of each "
-        "step for legibility. MPC and $B^\\ast$ at $5\\,$min were run for Riyadh only, "
-        "and that MPC ran on $801$ grid nodes at the pooled $0.10\\,$K fallback; the "
-        "Riyadh MPC at $30\\,$min is the conservative protocol value of note~$c$ there. Under "
-        "the $3$-point rule, TUNED "
-        f"(${fmt(U('riyadh', 'TUNED', 5))}\\%$) and the Riyadh MPC "
-        f"(${fmt(U('riyadh', 'MPC-24', 5))}\\%$) are not resolved at $5\\,$min; the "
-        f"MPC's margin over TUNED, {rng(marg[15])} points at $15\\,$min and "
-        f"{rng(marg[30])} at $30\\,$min, is resolved; and TUNED's "
-        f"${fmt(max(tuned[30]))}$ to ${fmt(min(tuned[30]))}\\%$ at $30\\,$min is not "
-        "resolved from zero.}\n")
-    out.append("\\label{fig:timestep}\n\\end{figure}\n")
+        "\\caption{Pooled equalised saving against actuation step, one panel per city "
+        "(values of Table~\\ref{tab:timestep}): TUNED (blue squares), the $24\\,$h MPC with a "
+        "perfect forecast (vermillion circles) and the bound $B^\\ast$ ($V_N$, rounded up; "
+        "dashed), with the region above the bound shaded. The gap between MPC and TUNED is "
+        "shaded where it is resolved under the $3$-point rule, and the grey band marks "
+        "savings within $3$ points of zero. MPC and $B^\\ast$ at $5\\,$min were run for "
+        "Riyadh only; that MPC ran on $801$ grid nodes at the pooled $0.10\\,$K fallback, and "
+        "the Riyadh MPC at $30\\,$min is the conservative protocol value of note~$c$ there. "
+        f"At $5\\,$min TUNED (${fmt(U('riyadh', 'TUNED', 5))}\\%$) and the Riyadh MPC "
+        f"(${fmt(U('riyadh', 'MPC-24', 5))}\\%$) are not resolved; the MPC's margin, "
+        f"{rng(marg[15])} points at $15\\,$min and {rng(marg[30])} at $30\\,$min, is "
+        f"resolved; TUNED's ${fmt(max(tuned[30]))}$ to ${fmt(min(tuned[30]))}\\%$ at "
+        "$30\\,$min is not resolved from zero.}\n")
+    out.append("\\label{fig:timestep}\n\\end{figure*}\n")
     open(os.path.join(HERE, "fig_timestep.tex"), "w").write("".join(out))
     return {k: round(v, 2) for k, v in sorted(val.items())}, marg
 

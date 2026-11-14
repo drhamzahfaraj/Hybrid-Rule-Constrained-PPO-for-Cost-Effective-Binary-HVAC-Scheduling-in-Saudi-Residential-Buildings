@@ -64,7 +64,7 @@ and the assumed 1 °C comparator; the paper reports how each moves the result.
 
 Start at **[`docs/PROVENANCE.md`](docs/PROVENANCE.md)**. For every table of the manuscript
 (`tab:main`, `tab:layers`, `tab:sota`, `tab:ablation`, `tab:sensitivity`, `tab:timestep`, Supplementary
-Tables S1–S7 and S-MZ, and the result figures Fig. 3 `fig:traces`, Fig. 4 `fig:timestep` and Fig. 5 `fig:ladder`) and for every number in the abstract and conclusions it gives:
+Tables S1–S7 and S-MZ, and the result figures Fig. 3 `fig:traces`, Fig. 4 `fig:ladder` and Fig. 5 `fig:timestep`) and for every number in the abstract and conclusions it gives:
 printed value → results file, column and row filter → how the value is computed → the producer
 script and function → the job and exact command (with its `RBRL_*` environment) → the code
 version stamped in the file. It also states the rounding rule and summarises the comfort
@@ -75,8 +75,8 @@ equalisation and admissibility protocol, including what each `fit_status` value 
 The result figures are generated, not drawn: `paper/make_result_figs.py` (standard library
 only) writes `paper/fig_traces.tex` (Fig. 3, a two-day operating trace of THERM, TUNED and the
 24 h controller, from `results/T35_day_traces.csv`, written by `code/fig_day_traces.py`) and
-`paper/fig_timestep.tex` (Fig. 4, saving against actuation step, from
-`results/T2v3_timestep.csv`) and `paper/fig_ladder.tex` (Fig. 5, from the files behind `tab:main`,
+`paper/fig_timestep.tex` (Fig. 5, saving against actuation step in three panels, from
+`results/T2v3_timestep.csv`) and `paper/fig_ladder.tex` (Fig. 4, from the files behind `tab:main`,
 checked against the printed table), reading every plotted point and caption number from the CSVs.
 Run it from `paper/` (`python3 make_result_figs.py`); with this release's results it reproduces
 all three files byte for byte.
@@ -97,8 +97,8 @@ text change. Column names are defined in [`docs/METHODS_NOTES.md`](docs/METHODS_
 | `tab:layers` (three layers) | the per-window files of the arms above, `T28v3_setback_rule`, `T28v3_setback_mpc_<city>` | `setback_arms.py`; money column computed from the per-window files (formula in the table note) |
 | Supplementary Table S7 `tab:s-stats` (formerly main `tab:stats`) | `T20v3_paired_stats` | `stats_v3.py` → `gen_tables_v3.py --only stats` (`paper/tables/tab_stats.tex`, now inlined in `supplement.tex`) |
 | Fig. 3 `fig:traces` (two-day operating trace) | `T35_day_traces` | `fig_day_traces.py` → `paper/make_result_figs.py` |
-| Fig. 4 `fig:timestep` (saving vs actuation step) | `T2v3_timestep` | `timestep_table.py` → `paper/make_result_figs.py` |
-| Fig. 5 `fig:ladder` | the files of `tab:main` | `paper/make_result_figs.py` (checks every point against the printed `tab:main`) |
+| Fig. 5 `fig:timestep` (saving vs actuation step) | `T2v3_timestep` | `timestep_table.py` → `paper/make_result_figs.py` |
+| Fig. 4 `fig:ladder` | the files of `tab:main` | `paper/make_result_figs.py` (checks every point against the printed `tab:main`) |
 | `tab:ablation` (main text; formerly Supplementary Table S7) | the files of `tab:main`, `rbrl_norules5_v3` | differences from TUNED computed from unrounded savings |
 | `tab:sensitivity` | `T1v3_heldout` (tariffs), `T5v3_switchcost_tuned`, `T7v3_deadband`, `T4v3_bound`, `T5v3_bound`, `T21v3_csw<x>_riyadh`, `T1v3_heldout_cth<x>`, `T21v3_riyadh_cth<x>`, `T17v3_riyadh_cth7200` | `t1_v2.py`, `mpc_lambda.py`, `bound_v2.py` |
 | `tab:timestep`, S1 | `T2v3_timestep` (collects the `_dt5`, `_dt30`, `_cth7200` runs); THERM's degree-hours and the per-step excursions of Table S1 (and Remark 1's centred 1.5 K deadband) from `T37_therm_leak_tl<dt>_<cth>` (over + under, seven held-out Riyadh windows) | `timestep_table.py`, `therm_leak.py` |
