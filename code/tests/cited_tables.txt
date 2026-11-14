@@ -203,3 +203,6 @@ T4_tariff.csv frozen round-3 output read only by fig_tariff.tex, which main.tex 
 T33_ppo_hold_gap.csv
 T34_greenriyadh_sens.csv
 T35_day_traces.csv
+T36_decision_time.csv
+# J47  THERM comfort leak per actuation interval and capacity (ruling §46; therm_leak.py, RBRL_TAG _tl<dt>_<cth>)
+T37_therm_leak_*.csv

@@ -24,7 +24,7 @@ CN = {"riyadh": "Riyadh", "jeddah": "Jeddah", "taif": "Taif"}
 
 # code sha (rbrl_io.code_sha_now over code/*.py) of each tag of the private working repository;
 # results are stamped with the sha of the code that produced them. code/ in this release = p13.
-TAG_OF_SHA = {"5e8bc69a807c": "p20 (f430287)", "c57127b9bfe3": "p19 (c7c3404)", "e2edc1977534": "p18 (1807829)", "e4d7eb184ea5": "p16 (3021d83)", "efbca8c69379": "p15 (d9d14a1)", "4456d5d606cb": "p13 (ad73590)", "0dfeff39fa25": "p12 (280f533)",
+TAG_OF_SHA = {"34d014b49635": "p22 (7bae2aa)", "30ec35b0a020": "p21 (30604b9)", "5e8bc69a807c": "p20 (f430287)", "c57127b9bfe3": "p19 (c7c3404)", "e2edc1977534": "p18 (1807829)", "e4d7eb184ea5": "p16 (3021d83)", "efbca8c69379": "p15 (d9d14a1)", "4456d5d606cb": "p13 (ad73590)", "0dfeff39fa25": "p12 (280f533)",
               "f8fb2cd89384": "p11 (d9b327f)", "5ca2e0ff7e9d": "p10 (818f270)",
               "746846849b97": "p9 (9ce9142)", "b64c08d6b645": "p8 (d837b4a)",
               "ba2229db8d46": "p7 (989b324)", "5020e03ec6ca": "p6 (c5c2fdb)",
@@ -190,9 +190,7 @@ for c, vals in zip(CITIES, (["18.0", "-0.036", "-31.1"], ["18.4", "-0.018", "-31
     E(L, f"CLV raw, {CN[c]}: s", vals[0], f"T17v3_{c} clv_s_raw", "clairvoyant schedule vs UNSHIFTED THERM, O4 terminal V_N", lambda c=c: one(f"T17v3_{c}", "clv_s_raw"))
     E(L, f"CLV raw, {CN[c]}: dT~", vals[1], f"T17v3_{c} clv_dT_pooled", DT_HOW, lambda c=c: one(f"T17v3_{c}", "clv_dT_pooled"))
     E(L, f"CLV raw, {CN[c]}: on", vals[2], f"T17v3_{c} clv_start_sav", "-clv_start_sav (on-commands vs equalised THERM)", lambda c=c: -one(f"T17v3_{c}", "clv_start_sav"))
-for c, pe, pv in (("riyadh", "<=20.0", "<=20.0"), ("jeddah", "<=20.1", "<=19.9")):
-    E(L, f"B* energy-only terminal, {CN[c]}", pe, f"T17v2_{c} [setback=False] bound_reported (unstamped file)",
-      "relaxed Lagrangian dual bound, simulator (energy-only) terminal, rounded up to 0.1", lambda c=c: one(f"T17v2_{c}", "bound_reported", setback="False"))
+for c, pv in (("riyadh", "<=20.0"), ("jeddah", "<=19.9")):
     E(L, f"B* V_N terminal, {CN[c]}", pv, f"T17v3_{c} bound_reported", "relaxed dual bound under the O4 terminal V_N, min over relaxed grids, rounded up to 0.1",
       lambda c=c: one(f"T17v3_{c}", "bound_reported"))
 E(L, "B* V_N terminal, Taif", "<=21.0", "T17v3_taif bound_reported", "as above", lambda: one("T17v3_taif", "bound_reported"))
@@ -350,13 +348,17 @@ for c, v in zip(CITIES, ("0.033", "0.040", "0.121")):
 L = "S1 tab:s-timestep"
 for rw, v in (("dt5", "0.125"), ("dt15", "0.375"), ("dt30", "0.750"), ("cth7200", "0.250")):
     E(L, f"Q dt / C_th ({rw})", v, f"T2v3_timestep [row={rw}] overshoot_K", "per-step excursion Q_hvac dt / C_th, degC", lambda rw=rw: one("T2v3_timestep", "overshoot_K", row=rw, city="riyadh", arm="TUNED"))
-R3 = "occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter)"
-for dt, v in ((5.0, "0.000"), (15.0, "0.000"), (30.0, "0.025"), (60.0, "4.470")):
-    E(L, f"THERM deg-h at {dt:g} min", v, f"T2_timestep [dt_min={dt:g}] therm_deg_h", R3, lambda dt=dt: one("T2_timestep", "therm_deg_h", dt_min=dt))
-for cth, v in ((1200.0, "2.737"), (1800.0, "2.500"), (2400.0, "0.000"), (4800.0, "0.000"), (7200.0, "0.000"), (9600.0, "0.000")):
-    E(L, f"THERM deg-h at C_th {cth:g}", v, f"T3_capacity [C_th={cth:g}] therm_deg_h", R3, lambda cth=cth: one("T3_capacity", "therm_deg_h", C_th=cth))
-for cth, v in ((1200.0, "1.500"), (1800.0, "1.000"), (2400.0, "0.750"), (9600.0, "0.188")):
-    E(L, f"Q dt / C_th at C_th {cth:g}", v, f"T3_capacity [C_th={cth:g}] overshoot_K", "per-step excursion Q_hvac dt / C_th, degC", lambda cth=cth: one("T3_capacity", "overshoot_K", C_th=cth))
+TL = lambda dt, cth: f"T37_therm_leak_tl{dt}_{cth}"
+TL_HOW = ("THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows "
+          "(over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter")
+thermdh = lambda dt, cth, db=1.0: one(TL(dt, cth), "over_all7", deadband=db) + one(TL(dt, cth), "under_all7", deadband=db)
+for dt, v in ((5, "0.000"), (15, "0.000"), (30, "0.083"), (60, "34.576")):
+    E(L, f"THERM deg-h at {dt} min (4,800 kJ/K)", v, f"{TL(dt, 4800)} [deadband=1.0] over_all7 + under_all7", TL_HOW, lambda dt=dt: thermdh(dt, 4800))
+for cth, v in ((900, "34.155"), (1200, "28.458"), (1800, "14.365"), (2400, "0.124"), (4800, "0.000"), (7200, "0.000"), (9600, "0.000")):
+    E(L, f"THERM deg-h at C_th {cth} (15 min)", v, f"{TL(15, cth)} [deadband=1.0] over_all7 + under_all7", TL_HOW, lambda cth=cth: thermdh(15, cth))
+for cth, v in ((900, "2.000"), (1200, "1.500"), (1800, "1.000"), (2400, "0.750"), (9600, "0.188")):
+    E(L, f"Q dt / C_th at C_th {cth}", v, f"{TL(15, cth)} [deadband=1.0] step_excursion_K", "per-step excursion Q_hvac dt / C_th, degC", lambda cth=cth: one(TL(15, cth), "step_excursion_K", deadband=1.0))
+E(L, "Q dt / C_th at 60 min", "1.500", f"{TL(60, 4800)} [deadband=1.0] step_excursion_K", "per-step excursion Q_hvac dt / C_th, degC", lambda: one(TL(60, 4800), "step_excursion_K", deadband=1.0))
 for cth, t, m in (("2400", "-2.8", "12.2"), ("9600", "15.8", "16.2")):
     E(L, f"(b) C_th {cth}: TUNED / MPC", f"{t} / {m}", f"T1v3_heldout_cth{cth} / T21v3_riyadh_cth{cth} s_pooled_eq", S_HOW,
       lambda cth=cth: f"{fmt_like(one(f'T1v3_heldout_cth{cth}', 's_pooled_eq', city='riyadh', arm='TUNED', tariff='inforce'), t)} / {fmt_like(one(f'T21v3_riyadh_cth{cth}', 's_pooled_eq', horizon_h=24.0, forecast='perfect'), m)}")
@@ -654,6 +656,15 @@ E(L, "Taif: the four seeds below the guard save 1.0--2.4 points less", ("1.0", "
            max(one("T1v3_heldout", "s_pooled_eq", city="taif", arm="guard", tariff="inforce") - float(r["s_pooled_eq"]) for r in rows("rbrl_ppo5_v3_taif") if r["seed"] != "43")))
 E(L, "Taif: fitted ceilings of those four seeds (degC)", ("23.84", "23.86"), "rbrl_ppo5_v3_taif [seeds 42, 44, 45, 46] cap", "occupied ceiling fitted by Rule A for each seed",
   lambda: (min(float(r["cap"]) for r in rows("rbrl_ppo5_v3_taif") if r["seed"] != "43"), max(float(r["cap"]) for r in rows("rbrl_ppo5_v3_taif") if r["seed"] != "43")))
+L = "Remark 1 and §3 (THERM comfort record)"
+E(L, "centred 1.5 K deadband leaks (degC h, 15 min, 4,800 kJ/K)", "0.156", "T37_therm_leak_tl15_4800 [deadband=1.5] over_all7 + under_all7", TL_HOW.replace("THERM's", "a 1.5 K THERM's"), lambda: thermdh(15, 4800, 1.5))
+E(L, "THERM at 60 min accumulates (degC h)", "34.58", "T37_therm_leak_tl60_4800 [deadband=1.0] over_all7 + under_all7", TL_HOW, lambda: thermdh(60, 4800))
+E(L, "THERM leaks at 30 min / 2,400 kJ/K (degC h)", ("0.083", "0.124"), "T37_therm_leak_tl30_4800 / T37_therm_leak_tl15_2400 [deadband=1.0] over_all7 + under_all7", TL_HOW, lambda: (thermdh(30, 4800), thermdh(15, 2400)))
+L = "Scalability subsection (MPC decision time)"
+for h, v in ((6.0, "4.8"), (24.0, "8.9")):
+    E(L, f"MPC decision time at a {h:g} h horizon (ms per decision)", v, f"T36_decision_time [riyadh, window 121, horizon_h={h:g}] ms_per_decision",
+      "wall time of one held-out window (672 decisions, 1601 nodes) divided by 672; single process, two-core x86-64 VM, forecast supplied", lambda h=h: one("T36_decision_time", "ms_per_decision", horizon_h=h))
+E(L, "decisions per window", "672", "T36_decision_time steps", "steps of one 168 h window at 15 min", lambda: one("T36_decision_time", "steps", horizon_h=24.0))
 L = "main §8.4 (multi-zone)"
 E(L, "MPC-MZ avoids 28--32 % of on-commands", ("28", "32"), "T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 start_sav_eq", "min..max", lambda: (min(float(rows(m)[0]["start_sav_eq"]) for m in MZM), max(float(rows(m)[0]["start_sav_eq"]) for m in MZM)))
 E(L, "MPC-MZ electricity within +/-0.7 % (max |energy_sav_eq|)", "0.7", "T31_mz_mpc_riyadh_<6 multi-room layouts>_h24 energy_sav_eq", "max |.|", lambda: max(abs(float(rows(m)[0]["energy_sav_eq"])) for m in MZM))
@@ -665,7 +676,7 @@ E(L, "MPC-MZ commanded under-temperature, 2x2 (at most 0.00003)", "0.00003", "T3
 # ================================================================== text presence
 # Every printed string must also occur in the manuscript text it is attributed to, so a value
 # that the text no longer states (or states differently) is caught when the paper is edited.
-PAPER = os.path.join(REPO, "paper")
+PAPER = os.environ.get("RBRL_PAPER", os.path.join(REPO, "paper"))
 _TXT = {}
 
 
@@ -763,7 +774,9 @@ SECS = {
     "MPC-MZ avoids": ["Multi-Zone Dwellings"], "MPC-MZ electricity": ["Multi-Zone Dwellings"], "MPC-MZ occupied": ["Multi-Zone Dwellings"],
     "MPC-MZ commanded": ["Multi-Zone Dwellings"], "TUNED at 30 min": ["Actuation Step"], "MPC at 30 min": ["Actuation Step"],
     "bracket ": ["What Clairvoyance Is Worth"], "rows with s_a <= B_a": ["Verification and Validity"],
-    "Saudi Green": ["Introduction"], "net-zero": ["Introduction"], "Green Riyadh trees": ["Introduction"], "Green Riyadh air-temp": ["Introduction"],
+    "Saudi Green": ["Introduction"],
+    "centred 1.5 K deadband": ["RC Thermal Model"], "THERM at 60 min accumulates": ["RC Thermal Model"], "THERM leaks at 30 min": ["RC Thermal Model"],
+    "MPC decision time": ["Scalability"], "decisions per window": ["Scalability"], "net-zero": ["Introduction"], "Green Riyadh trees": ["Introduction"], "Green Riyadh air-temp": ["Introduction"],
     "RBRL reproduces the guard": ["Component Ablation and Sensitivity"], "Taif: the four seeds below": ["Component Ablation and Sensitivity"],
     "Taif: fitted ceilings": ["Component Ablation and Sensitivity"],
 }
@@ -867,7 +880,7 @@ JOBS = jobs()
 # t1_v2.evaluate / final_tables.equalise / final_tables.pooled_saving unless stated)
 FUNC = {"t1_v2.py": "run_t1 / run_t7 / run_csw -> evaluate()", "mpc_lambda.py": "main -> fit_lambda() (Rule A) -> t1_v2.evaluate()",
         "bound_v2.py": "main(mode) -> config() (bound, CLV via r3_dp.clv_fit)", "bound_at.py": "main() -> v3_names.B_a / r3_dp.certificate_margin",
-        "shield.py": "main() (latch / ppo) -> t1_v2.evaluate()", "rbrl_ppo.py": "evaluate() (policy rollout) -> t1_v2.evaluate()", "ppo_hold_gap.py": "main() (saved PPO models vs hold, training cost)", "greenriyadh_sens.py": "main() (outdoor dry-bulb shifted, thresholds fixed)", "fig_day_traces.py": "main() (THERM / TUNED / MPC-24 replay of one window)",
+        "shield.py": "main() (latch / ppo) -> t1_v2.evaluate()", "rbrl_ppo.py": "evaluate() (policy rollout) -> t1_v2.evaluate()", "ppo_hold_gap.py": "main() (saved PPO models vs hold, training cost)", "greenriyadh_sens.py": "main() (outdoor dry-bulb shifted, thresholds fixed)", "fig_day_traces.py": "main() (THERM / TUNED / MPC-24 replay of one window)", "therm_leak.py": "main() (THERM comfort record per actuation step and capacity)", "decision_time.py": "main() (MPC wall time per decision, one window)",
         "stats_v3.py": "main() (HL, Wilcoxon, sign, Holm)", "setback_arms.py": "main_rule() / main_mpc() -> evaluate_sb() (setback Rule C)",
         "t1_sens.py": "main() -> t1_v2.evaluate()", "timestep_table.py": "main() (collects tagged runs)",
         "mz_r3.py": "main_rules() (dwelling-mean Rule C)", "mz_mpc.py": "main() -> mpc_lambda.fit_lambda()",

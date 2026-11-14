@@ -107,7 +107,7 @@ the `code/results → ../results` link and the original-path link).
 
 ## 3. Check result
 
-`python3 docs/provenance_check.py` on this release: **EXTERNAL, CITED** 4, **NOT IN A RESULT FILE** 2, **OK** 843, **n/a** 2 of 851 mapped values.
+`python3 docs/provenance_check.py` on this release: **EXTERNAL, CITED** 4, **NOT IN A RESULT FILE** 2, **OK** 850, **n/a** 2 of 858 mapped values.
 
 Values that are not a plain match (pending, not in a result file, cross-references, or mismatches):
 
@@ -304,9 +304,7 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 | CLV raw, Taif: s | 16.7 | `T17v3_taif clv_s_raw` | clairvoyant schedule vs UNSHIFTED THERM, O4 terminal V_N | OK |
 | CLV raw, Taif: dT~ | -0.025 | `T17v3_taif clv_dT_pooled` | pooled clipped occupied mean of the arm minus THERM (unshifted), K | OK |
 | CLV raw, Taif: on | -26.1 | `T17v3_taif clv_start_sav` | -clv_start_sav (on-commands vs equalised THERM) | OK |
-| B* energy-only terminal, Riyadh | <=20.0 | `T17v2_riyadh [setback=False] bound_reported (unstamped file)` | relaxed Lagrangian dual bound, simulator (energy-only) terminal, rounded up to 0.1 | OK |
 | B* V_N terminal, Riyadh | <=20.0 | `T17v3_riyadh bound_reported` | relaxed dual bound under the O4 terminal V_N, min over relaxed grids, rounded up to 0.1 | OK |
-| B* energy-only terminal, Jeddah | <=20.1 | `T17v2_jeddah [setback=False] bound_reported (unstamped file)` | relaxed Lagrangian dual bound, simulator (energy-only) terminal, rounded up to 0.1 | OK |
 | B* V_N terminal, Jeddah | <=19.9 | `T17v3_jeddah bound_reported` | relaxed dual bound under the O4 terminal V_N, min over relaxed grids, rounded up to 0.1 | OK |
 | B* V_N terminal, Taif | <=21.0 | `T17v3_taif bound_reported` | as above | OK |
 | CLV in rules (raw), Riyadh | 12.9 | `T17v3_ruled_riyadh clv_s_raw` | clairvoyant schedule inside the training rules, vs unshifted THERM | OK |
@@ -662,20 +660,23 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 | Q dt / C_th (dt15) | 0.375 | `T2v3_timestep [row=dt15] overshoot_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
 | Q dt / C_th (dt30) | 0.750 | `T2v3_timestep [row=dt30] overshoot_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
 | Q dt / C_th (cth7200) | 0.250 | `T2v3_timestep [row=cth7200] overshoot_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
-| THERM deg-h at 5 min | 0.000 | `T2_timestep [dt_min=5] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at 15 min | 0.000 | `T2_timestep [dt_min=15] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at 30 min | 0.025 | `T2_timestep [dt_min=30] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at 60 min | 4.470 | `T2_timestep [dt_min=60] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at C_th 1200 | 2.737 | `T3_capacity [C_th=1200] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at C_th 1800 | 2.500 | `T3_capacity [C_th=1800] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at C_th 2400 | 0.000 | `T3_capacity [C_th=2400] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at C_th 4800 | 0.000 | `T3_capacity [C_th=4800] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at C_th 7200 | 0.000 | `T3_capacity [C_th=7200] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| THERM deg-h at C_th 9600 | 0.000 | `T3_capacity [C_th=9600] therm_deg_h` | occupied degree-hours of THERM on the first held-out Riyadh week (round-3 file, unstamped; THERM has no fitted parameter, so the round-4 protocol does not enter) | OK |
-| Q dt / C_th at C_th 1200 | 1.500 | `T3_capacity [C_th=1200] overshoot_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
-| Q dt / C_th at C_th 1800 | 1.000 | `T3_capacity [C_th=1800] overshoot_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
-| Q dt / C_th at C_th 2400 | 0.750 | `T3_capacity [C_th=2400] overshoot_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
-| Q dt / C_th at C_th 9600 | 0.188 | `T3_capacity [C_th=9600] overshoot_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
+| THERM deg-h at 5 min (4,800 kJ/K) | 0.000 | `T37_therm_leak_tl5_4800 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at 15 min (4,800 kJ/K) | 0.000 | `T37_therm_leak_tl15_4800 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at 30 min (4,800 kJ/K) | 0.083 | `T37_therm_leak_tl30_4800 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at 60 min (4,800 kJ/K) | 34.576 | `T37_therm_leak_tl60_4800 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at C_th 900 (15 min) | 34.155 | `T37_therm_leak_tl15_900 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at C_th 1200 (15 min) | 28.458 | `T37_therm_leak_tl15_1200 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at C_th 1800 (15 min) | 14.365 | `T37_therm_leak_tl15_1800 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at C_th 2400 (15 min) | 0.124 | `T37_therm_leak_tl15_2400 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at C_th 4800 (15 min) | 0.000 | `T37_therm_leak_tl15_4800 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at C_th 7200 (15 min) | 0.000 | `T37_therm_leak_tl15_7200 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM deg-h at C_th 9600 (15 min) | 0.000 | `T37_therm_leak_tl15_9600 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| Q dt / C_th at C_th 900 | 2.000 | `T37_therm_leak_tl15_900 [deadband=1.0] step_excursion_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
+| Q dt / C_th at C_th 1200 | 1.500 | `T37_therm_leak_tl15_1200 [deadband=1.0] step_excursion_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
+| Q dt / C_th at C_th 1800 | 1.000 | `T37_therm_leak_tl15_1800 [deadband=1.0] step_excursion_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
+| Q dt / C_th at C_th 2400 | 0.750 | `T37_therm_leak_tl15_2400 [deadband=1.0] step_excursion_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
+| Q dt / C_th at C_th 9600 | 0.188 | `T37_therm_leak_tl15_9600 [deadband=1.0] step_excursion_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
+| Q dt / C_th at 60 min | 1.500 | `T37_therm_leak_tl60_4800 [deadband=1.0] step_excursion_K` | per-step excursion Q_hvac dt / C_th, degC | OK |
 | (b) C_th 2400: TUNED / MPC | -2.8 / 12.2 | `T1v3_heldout_cth2400 / T21v3_riyadh_cth2400 s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
 | (b) C_th 9600: TUNED / MPC | 15.8 / 16.2 | `T1v3_heldout_cth9600 / T21v3_riyadh_cth9600 s_pooled_eq` | s = 100 (1 - sum_w J_arm / sum_w J_THERM(delta_w)) over the 7 held-out windows (Rule C) | OK |
 
@@ -1107,6 +1108,22 @@ Values that are not a plain match (pending, not in a result file, cross-referenc
 | Taif: the four seeds below the guard save 1.0--2.4 points less *(stated in: Component Ablation and Sensitivity)* | 1.0 -- 2.4 | `T1v3_heldout [taif, guard] - rbrl_ppo5_v3_taif [4 seeds] s_pooled_eq` | differences of unrounded savings, min..max | OK |
 | Taif: fitted ceilings of those four seeds (degC) *(stated in: Component Ablation and Sensitivity)* | 23.84 -- 23.86 | `rbrl_ppo5_v3_taif [seeds 42, 44, 45, 46] cap` | occupied ceiling fitted by Rule A for each seed | OK |
 
+### Remark 1 and §3 (THERM comfort record)
+
+| Item | Printed | Source: file [row filter] column | How it is computed | Check |
+|---|---|---|---|---|
+| centred 1.5 K deadband leaks (degC h, 15 min, 4,800 kJ/K) *(stated in: RC Thermal Model)* | 0.156 | `T37_therm_leak_tl15_4800 [deadband=1.5] over_all7 + under_all7` | a 1.5 K THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM at 60 min accumulates (degC h) *(stated in: RC Thermal Model)* | 34.58 | `T37_therm_leak_tl60_4800 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+| THERM leaks at 30 min / 2,400 kJ/K (degC h) *(stated in: RC Thermal Model)* | 0.083 -- 0.124 | `T37_therm_leak_tl30_4800 / T37_therm_leak_tl15_2400 [deadband=1.0] over_all7 + under_all7` | THERM's occupied degree-hours above T_max plus below T_min, summed over the seven held-out Riyadh windows (over_all7 + under_all7); THERM has no fitted parameter, so the protocol does not enter | OK |
+
+### Scalability subsection (MPC decision time)
+
+| Item | Printed | Source: file [row filter] column | How it is computed | Check |
+|---|---|---|---|---|
+| MPC decision time at a 6 h horizon (ms per decision) *(stated in: Scalability)* | 4.8 | `T36_decision_time [riyadh, window 121, horizon_h=6] ms_per_decision` | wall time of one held-out window (672 decisions, 1601 nodes) divided by 672; single process, two-core x86-64 VM, forecast supplied | OK |
+| MPC decision time at a 24 h horizon (ms per decision) *(stated in: Scalability)* | 8.9 | `T36_decision_time [riyadh, window 121, horizon_h=24] ms_per_decision` | wall time of one held-out window (672 decisions, 1601 nodes) divided by 672; single process, two-core x86-64 VM, forecast supplied | OK |
+| decisions per window *(stated in: Scalability)* | 672 | `T36_decision_time steps` | steps of one 168 h window at 15 min | OK |
+
 ### main §8.4 (multi-zone)
 
 | Item | Printed | Source: file [row filter] column | How it is computed | Check |
@@ -1171,10 +1188,6 @@ Every file cited above, with the stamp in its `.meta.json` (code sha → tag of 
 | `T17v3_jeddah_perwindow.csv` | `bound_v2.py`: main(mode) -> config() (bound, CLV via r3_dp.clv_fit) | `bound_v2.py main jeddah` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T16:18:15Z | code/jobs/r21.jsonl:R21_J8_9_bound_jeddah, docs/jobs/p10_r21.jsonl:R21_J8_9_bound_jeddah |
 | `T17v3_taif.csv` | `bound_v2.py`: main(mode) -> config() (bound, CLV via r3_dp.clv_fit) | `bound_v2.py main taif` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T17:40:32Z | code/jobs/r21.jsonl:R21_J8_9_bound_taif, docs/jobs/p10_r21.jsonl:R21_J8_9_bound_taif |
 | `T17v3_taif_perwindow.csv` | `bound_v2.py`: main(mode) -> config() (bound, CLV via r3_dp.clv_fit) | `bound_v2.py main taif` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T17:40:32Z | code/jobs/r21.jsonl:R21_J8_9_bound_taif, docs/jobs/p10_r21.jsonl:R21_J8_9_bound_taif |
-| `T17v2_riyadh.csv` | — | — | — | unstamped (no .meta.json) | — | — |
-| `T17v2_riyadh_perwindow.csv` | — | — | — | unstamped (no .meta.json) | — | — |
-| `T17v2_jeddah.csv` | — | — | — | unstamped (no .meta.json) | — | — |
-| `T17v2_jeddah_perwindow.csv` | — | — | — | unstamped (no .meta.json) | — | — |
 | `T17v3_ruled_riyadh.csv` | `bound_v2.py`: main(mode) -> config() (bound, CLV via r3_dp.clv_fit) | `bound_v2.py ruled riyadh` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T16:07:55Z | code/jobs/r21.jsonl:R21_J10_ruled_bound_riyadh, docs/jobs/p10_r21.jsonl:R21_J10_ruled_bound_riyadh |
 | `T17v3_ruled_riyadh_perwindow.csv` | `bound_v2.py`: main(mode) -> config() (bound, CLV via r3_dp.clv_fit) | `bound_v2.py ruled riyadh` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T16:07:55Z | code/jobs/r21.jsonl:R21_J10_ruled_bound_riyadh, docs/jobs/p10_r21.jsonl:R21_J10_ruled_bound_riyadh |
 | `T17v3_ruled_jeddah.csv` | `bound_v2.py`: main(mode) -> config() (bound, CLV via r3_dp.clv_fit) | `bound_v2.py ruled jeddah` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T17:18:32Z | code/jobs/r21.jsonl:R21_J10_ruled_bound_jeddah, docs/jobs/p10_r21.jsonl:R21_J10_ruled_bound_jeddah |
@@ -1222,8 +1235,16 @@ Every file cited above, with the stamp in its `.meta.json` (code sha → tag of 
 | `T21v3_riyadh_cth9600.csv` | `mpc_lambda.py`: main -> fit_lambda() (Rule A) -> t1_v2.evaluate() | `mpc_lambda.py --city riyadh --horizons 1,24` | `{"RBRL_CTH": "9600.0", "RBRL_TAG": "_cth9600"}` | `746846849b97` → p9 (9ce9142) | 2026-11-12T15:46:31Z | docs/jobs/p9_round4.jsonl:J13_mpc_cth9600_riyadh |
 | `T17v3_riyadh_cth7200.csv` | `bound_v2.py`: main(mode) -> config() (bound, CLV via r3_dp.clv_fit) | `bound_v2.py main riyadh` | `{"RBRL_CTH": "7200", "RBRL_TAG": "_cth7200"}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T22:00:58Z | code/jobs/r21.jsonl:J24_bound_cth7200_riyadh, docs/jobs/p10_r21.jsonl:J24_bound_cth7200_riyadh |
 | `T2v3_timestep.csv` | `timestep_table.py`: main() (collects tagged runs) | `timestep_table.py --headline /home/claude/rbrl/results:/home/claude/rbrl_p9/results:/home/claude/rbrl_p6/results` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T22:12:12Z | code/jobs/r21.jsonl:J24_table, docs/jobs/p10_r21_final.jsonl:J24_table |
-| `T2_timestep.csv` | — | — | — | unstamped (no .meta.json) | — | — |
-| `T3_capacity.csv` | — | — | — | unstamped (no .meta.json) | — | — |
+| `T37_therm_leak_tl5_4800.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "4800", "RBRL_DT_MIN": "5", "RBRL_TAG": "_tl5_4800"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl15_4800.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "4800", "RBRL_DT_MIN": "15", "RBRL_TAG": "_tl15_4800"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl30_4800.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "4800", "RBRL_DT_MIN": "30", "RBRL_TAG": "_tl30_4800"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl60_4800.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "4800", "RBRL_DT_MIN": "60", "RBRL_TAG": "_tl60_4800"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl15_900.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "900", "RBRL_DT_MIN": "15", "RBRL_TAG": "_tl15_900"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl15_1200.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "1200", "RBRL_DT_MIN": "15", "RBRL_TAG": "_tl15_1200"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl15_1800.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "1800", "RBRL_DT_MIN": "15", "RBRL_TAG": "_tl15_1800"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl15_2400.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "2400", "RBRL_DT_MIN": "15", "RBRL_TAG": "_tl15_2400"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl15_7200.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "7200", "RBRL_DT_MIN": "15", "RBRL_TAG": "_tl15_7200"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
+| `T37_therm_leak_tl15_9600.csv` | `therm_leak.py`: main() (THERM comfort record per actuation step and capacity) | `therm_leak.py` | `{"RBRL_CTH": "9600", "RBRL_DT_MIN": "15", "RBRL_TAG": "_tl15_9600"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T16:58:21Z | — |
 | `T1v3_sens.csv` | `t1_sens.py`: main() -> t1_v2.evaluate() | `t1_sens.py` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T15:51:08Z | code/jobs/r21.jsonl:R21_T1_sens, docs/jobs/p10_r21.jsonl:R21_T1_sens |
 | `T1v3_sens_perwindow.csv` | `t1_sens.py`: main() -> t1_v2.evaluate() | `t1_sens.py` | `{}` | `5ca2e0ff7e9d` → p10 (818f270) | 2026-11-12T15:51:08Z | code/jobs/r21.jsonl:R21_T1_sens, docs/jobs/p10_r21.jsonl:R21_T1_sens |
 | `T21v3_ls0.99_riyadh.csv` | `mpc_lambda.py`: main -> fit_lambda() (Rule A) -> t1_v2.evaluate() | `mpc_lambda.py --city riyadh --horizons 6,24 --lam-scale 0.99` | `{}` | `5020e03ec6ca` → p6 (c5c2fdb) | 2026-11-12T14:07:20Z | docs/jobs/p6_round4.jsonl:J7_lam0.99_riyadh |
@@ -1287,9 +1308,10 @@ Every file cited above, with the stamp in its `.meta.json` (code sha → tag of 
 | `T23v3_amy_spread.csv` | `amy_spread.py`: __main__ -> protocol() / evaluate_rule() -> t1_v2.evaluate() | `amy_spread.py` | `{}` | `746846849b97` → p9 (9ce9142) | 2026-11-12T15:46:55Z | docs/jobs/p6_round4.jsonl:J16_amy, docs/jobs/p9_round4.jsonl:J16_amy |
 | `rbrl_norules5_v3.csv` | `rbrl_ppo.py`: evaluate() (policy rollout) -> t1_v2.evaluate() | `rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 46` | `{}` | `5020e03ec6ca` → p6 (c5c2fdb) | 2026-11-12T12:56:15Z | docs/jobs/p6_round4.jsonl:J18_norules_taif_46 |
 | `rbrl_norules5_v3_perwindow.csv` | `rbrl_ppo.py`: evaluate() (policy rollout) -> t1_v2.evaluate() | `rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 46` | `{}` | `5020e03ec6ca` → p6 (c5c2fdb) | 2026-11-12T12:56:15Z | docs/jobs/p6_round4.jsonl:J18_norules_taif_46 |
-| `T17v3_Ba.csv` | `bound_at.py`: main() -> v3_names.B_a / r3_dp.certificate_margin | `bound_at.py` | `{}` | `5e8bc69a807c` → p20 (f430287) | 2026-11-13T14:25:18Z | code/jobs/r21.jsonl:R21_bound_at, docs/jobs/p10_r21_final.jsonl:R21_bound_at, docs/jobs/p12_p12.jsonl:P12_bound_at |
+| `T17v3_Ba.csv` | `bound_at.py`: main() -> v3_names.B_a / r3_dp.certificate_margin | `bound_at.py` | `{}` | `30ec35b0a020` → p21 (30604b9) | 2026-11-13T17:37:34Z | code/jobs/r21.jsonl:R21_bound_at, docs/jobs/p10_r21_final.jsonl:R21_bound_at, docs/jobs/p12_p12.jsonl:P12_bound_at |
 | `T25v3_cycling_energy.csv` | `cycling_energy.py`: main() -> from_summary() | `cycling_energy.py` | `{}` | `5020e03ec6ca` → p6 (c5c2fdb) | 2026-11-12T14:02:58Z | docs/jobs/p6_round4.jsonl:J23_cycling |
-| `T32_setpoint_sens.csv` | `setpoint_sens.py`: main() (THERM shifted on its own Rule C curve) | `setpoint_sens.py` | `{}` | `5e8bc69a807c` → p20 (f430287) | 2026-11-13T14:25:16Z | docs/jobs/p12_p12.jsonl:P13_setpoint |
+| `T32_setpoint_sens.csv` | `setpoint_sens.py`: main() (THERM shifted on its own Rule C curve) | `setpoint_sens.py` | `{}` | `30ec35b0a020` → p21 (30604b9) | 2026-11-13T17:37:32Z | docs/jobs/p12_p12.jsonl:P13_setpoint |
 | `T33_ppo_hold_gap.csv` | `ppo_hold_gap.py`: main() (saved PPO models vs hold, training cost) | `ppo_hold_gap.py` | `{}` | `5e8bc69a807c` → p20 (f430287) | 2026-11-13T14:25:34Z | docs/jobs/p12_p12.jsonl:P16_hold_gap |
-| `T34_greenriyadh_sens.csv` | `greenriyadh_sens.py`: main() (outdoor dry-bulb shifted, thresholds fixed) | `greenriyadh_sens.py` | `{}` | `5e8bc69a807c` → p20 (f430287) | 2026-11-13T14:25:14Z | docs/jobs/p12_p12.jsonl:P19_greenriyadh |
+| `T34_greenriyadh_sens.csv` | `greenriyadh_sens.py`: main() (outdoor dry-bulb shifted, thresholds fixed) | `greenriyadh_sens.py` | `{}` | `30ec35b0a020` → p21 (30604b9) | 2026-11-13T17:37:29Z | docs/jobs/p12_p12.jsonl:P19_greenriyadh |
 | `T35_day_traces.csv` | `fig_day_traces.py`: main() (THERM / TUNED / MPC-24 replay of one window) | `fig_day_traces.py` | `{}` | `5e8bc69a807c` → p20 (f430287) | 2026-11-13T14:25:35Z | docs/jobs/p12_p12.jsonl:P20_day_traces |
+| `T36_decision_time.csv` | `decision_time.py`: main() (MPC wall time per decision, one window) | `decision_time.py` | `{"RBRL_RESULTS": "/home/claude/rbrl_p12/results"}` | `34d014b49635` → p22 (7bae2aa) | 2026-11-14T17:07:35Z | docs/jobs/p12_p12.jsonl:P21_decision_time |

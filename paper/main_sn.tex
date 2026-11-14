@@ -36,12 +36,6 @@
 \setlength{\abovedisplayskip}{8pt plus 3pt minus 2pt}
 \setlength{\belowdisplayskip}{8pt plus 3pt minus 2pt}
  
-%% No \FloatBarrier at section or subsection level. With page-wide floats in a
-%% two-column layout a barrier forces constant flushing and leaves pages half
-%% empty; measured against this manuscript it cost one page of main text and
-%% left two pages with large trailing gaps, while every float landed on exactly
-%% the same page without it. The float fractions above keep floats near their
-%% references on their own.
  
 \renewcommand{\arraystretch}{0.90}
  
@@ -461,8 +455,8 @@ $2\min\!\bigl(\tfrac{1}{2}(\Tmax-\Tmin)-\Qhvac\Delta t/\Cth,\,
 Table~\ref{tab:params} the admissible interval is
 $0.375\le\deadband\le1.25\,^\circ$C, against the $2\,^\circ$C that the band
 width alone would allow. The distinction matters: a $1.5\,^\circ$C
-deadband satisfies the band-width bound yet leaks $0.132$ occupied
-degree-hours, so the looser form cannot adjudicate the admissibility sweeps it
+deadband centred on the band satisfies the band-width bound yet leaks $0.156$
+occupied degree-hours over the seven held-out Riyadh windows, so the looser form cannot adjudicate the admissibility sweeps it
 is used for. The THERM baseline of Section~\ref{subsec:compete} switches at
 $\Tmax-0.5$ and $\Tmin+0.5$, so $\deadband=1\,^\circ$C on the
 $[22,24]\,^\circ$C band: inside the interval admissible at a $15$-min step
@@ -471,10 +465,11 @@ and near its upper end (Section~\ref{subsec:abl_component}).
 This determines the interval used throughout. At $\Delta t=15\,$min the
 left-hand side is $0.375\,^\circ$C against $\deadband=1\,^\circ$C, a factor of
 $2.7$. At $\Delta t=1\,$h it is $1.50\,^\circ$C and the condition fails: THERM
-then accumulates $4.47$ occupied degree-hours in the first held-out Riyadh
-week, so the two arms are no longer held to the same constraint. At $30\,$min,
+then accumulates $34.58$ occupied degree-hours over the seven held-out Riyadh
+windows, so the two arms are no longer held to the same constraint. At $30\,$min,
 and equally at $2{,}400\,\text{kJ/K}$ and $15\,$min, the upper limit
-of~\eqref{eq:deadband_condition} is $0.99\,^\circ$C and fails narrowly. With
+of~\eqref{eq:deadband_condition} is $0.99\,^\circ$C and fails narrowly: THERM
+leaks $0.083$ and $0.124$ occupied degree-hours there. With
 the $690\,$W peak load of~\eqref{eq:guard}, an hourly interval would require
 $\Cth\ge(\Qhvac+690\,\mathrm{W})\Delta t/(\Tmax-\Tmin-\deadband)\approx9{,}700\,\text{kJ/K}$
 by~\eqref{eq:deadband_condition}, and $14{,}400\,\text{kJ/K}$ for a deadband
@@ -1717,8 +1712,7 @@ Here the bracket is $[18.0,\,20.0]\%$ in Riyadh, $[18.4,\,19.9]\%$ in
 Jeddah and $[16.7,\,21.0]\%$ in Taif, $2.0$, $1.5$ and $4.3$ points wide.
 Taif's relaxation slack ($0.75$ points) explains little of its width; the rest
 is duality gap and replay sub-optimality, and CLV meets the comfort target in
-none of Taif's windows. Under the simulator's energy-only terminal $B^\ast$
-is $20.0$ and $20.1\%$ in Riyadh and Jeddah (not computed for Taif). CLV's
+none of Taif's windows. CLV's
 equalised saving is $18.3\%$ against $B_{\mathrm{CLV}}=19.6\%$ (rounded to
 nearest, as is $B_a$) in Riyadh, $18.5\%$ against $19.4\%$ in Jeddah and
 $16.5\%$ against $20.2\%$ in Taif; end-of-window temperatures are in
@@ -1756,7 +1750,7 @@ rules'': each city's fitted guard thresholds. D1 rows at $\sigma=0$. CLV:
 \emph{raw} saving against unshifted THERM, the best attained schedule no
 warmer than THERM; its Rule~C saving is paired with $B_{\mathrm{CLV}}$ in the
 text. Causal arms use the simulator's energy-only terminal; the CLV and bound
-rows use $V_N$ (Section~\ref{subsec:compete}); $B^\ast$ is given under both.}
+rows use $V_N$ (Section~\ref{subsec:compete}).}
 \label{tab:main}
 \setlength{\tabcolsep}{1.5pt}
 \footnotesize
@@ -1787,7 +1781,7 @@ MPC $1\,$h, guard rules & $2.5^{a}$ & $+0.038$ & $-4.5$ & $1.5^{b}$ & $+0.051$ &
 MPC $6\,$h, guard rules & $6.4^{a}$ & $+0.025$ & $-11.7$ & $7.6^{a}$ & $+0.024$ & $-13.5$ & $9.5^{b}$ & $+0.076$ & $-16.7$ \\
 MPC $24\,$h, guard rules & $6.7^{a}$ & $+0.028$ & $-12.3$ & $4.4^{b}$ & $+0.068$ & $-7.7$ & $10.5^{a}$ & $+0.043$ & $-18.6$ \\
 CLV, raw$^{o}$ & $18.0$ & $-0.036$ & $-31.1$ & $18.4$ & $-0.018$ & $-31.2$ & $16.7$ & $-0.025$ & $-26.1$ \\
-$B^{\ast}$, energy-only / $V_N$ & \multicolumn{3}{c}{$\le20.0$ / $\le20.0$} & \multicolumn{3}{c}{$\le20.1$ / $\le19.9$} & \multicolumn{3}{c}{--- / $\le21.0$} \\
+$B^{\ast}$ ($V_N$) & \multicolumn{3}{c}{$\le20.0$} & \multicolumn{3}{c}{$\le19.9$} & \multicolumn{3}{c}{$\le21.0$} \\
 CLV in rules$^{o}$ / ruled bound & \multicolumn{3}{c}{$12.9$ / $\le14.9$} & \multicolumn{3}{c}{$13.8$ / $\le15.6$} & \multicolumn{3}{c}{$12.3$ / $\le16.2$} \\
 \bottomrule
 \end{tabular*}
@@ -1972,8 +1966,8 @@ $9{,}600\,\text{kJ/K}$, while the on-commands it avoids barely move ($42.4$
 and $40.7\%$). On the light plant tested ($2{,}400\,\text{kJ/K}$) the
 commissioned thermostat does not beat a $1\,^\circ$C deadband: each on-step
 overshoots by $0.75\,$K, TUNED's fitted deadband shrinks to $0.96\,^\circ$C,
-and THERM's own fails~\eqref{eq:deadband_condition} narrowly; THERM's
-self-score under Rule~C was not computed there, so the small negative savings
+and THERM's own fails~\eqref{eq:deadband_condition} narrowly and leaks
+(Remark~\ref{rem:rc}); THERM's self-score under Rule~C was not computed there, so the small negative savings
 are not resolved from zero. On a heavy plant TUNED captures almost all of what
 MPC does. The ordering and its size therefore depend on the assumed
 capacity, and because the capacity acting over a cycle is probably below the
@@ -2281,8 +2275,7 @@ the fallback, $0.11\,$K cooler than TUNED. At $30\,$min TUNED has no resolved
 saving over THERM: it issues $2.2$--$2.8\%$ more on-commands and saves $-1.2$ to
 $-1.5\%$, while the $24\,$h MPC avoids $12.5$, $21.0$ and $20.4\%$ and
 keeps $6.6$--$11.4\%$. There THERM's own deadband fails~\eqref{eq:deadband_condition}
-narrowly and THERM leaks $0.025$ occupied degree-hours in the first held-out
-Riyadh week, which favours THERM. The mechanism is the deadband of
+narrowly and THERM leaks (Remark~\ref{rem:rc}), which favours THERM. The mechanism is the deadband of
 Section~\ref{subsec:consumption}: the fitted deadband is $1.78$--$1.79\,^\circ$C
 at $5\,$min and $0.94$--$0.99\,^\circ$C, about THERM's own, at $30\,$min, as
 the per-step excursion allows. The step also changes the sampling of the
@@ -2303,7 +2296,7 @@ narrowly.
 $^{b}$$801$ grid nodes (headline $1{,}601$), pooled $0.10\,$K fallback,
 $\Delta\tilde T=-0.078\,$K. $^{c}$$\lambda/\lambda^\ast=6.27$: for
 $\lambda\le0.21$ the controller holds the room about $0.2\,$K warmer than THERM
-on the tuning windows (pooled $23.12$--$23.14$ against $22.91\,^\circ$C,
+on the tuning windows (pooled $23.12$--$23.15$ against $22.91\,^\circ$C,
 inadmissible), and at $\lambda\ge0.29$ the mean jumps to $22.88\,^\circ$C; the
 coarse step widens the sensitivity to $\lambda$ of Section~\ref{subsec:ladder}, the cheapest
 admissible $\lambda$ is $1.51$ (tuning cost $0.972$ against $0.932$ at the
@@ -2337,10 +2330,11 @@ $15\,$min, $7{,}200$ & TUNED & $16.0$ & $16.7$ & $17.7$ \\
 \label{subsec:abl_cost}
 
 The single-zone dynamic programme of MPC has $1{,}601$ grid states and two
-actions per step. Training cost, decision time and embedded deployability are
-not reported: the only timing run predates the MPC implementation used here
-and carries no record of the code that produced it, so no decision time is
-claimed.
+actions per step. On one held-out Riyadh window ($672$ decisions) a single
+process on a two-core x86-64 virtual machine takes $4.8\,$ms per decision at a
+$6\,$h horizon and $8.9\,$ms at $24\,$h, against a $900\,$s control
+interval; this is a single timing on one machine, with the forecast supplied.
+PPO training cost and embedded deployability are not measured.
 
 What can be stated is structural. A clairvoyant programme over $N_z$ coupled
 zones with $G$ grid points per zone carries $G^{N_z}2^{N_z}$ states (the
@@ -2372,8 +2366,8 @@ produced, a test suite of $188$ numerical invariants in nine classes (physical
 sanity, bound consistency, accounting identities, parameter provenance,
 monotonicity, decomposition closure, feasibility, the deadband actuation
 condition, and the protocol checks on every results file) exits non-zero on
-any failure; all pass, although the feasibility class retains some checks
-written for the band of an earlier version of the model. On the $1\times1$
+any failure, and all pass; the classes and the checks each one runs are
+documented in the repository (\texttt{docs/invariant-suite.md}). On the $1\times1$
 instance the multi-zone simulator reproduces the single-zone results exactly
 (Section~\ref{subsec:multizone}), and every results file records the code
 version that produced it.
@@ -2714,9 +2708,8 @@ the stated seeds. The repository comprises
 the thermal model, every controller and oracle, the protocol module that
 applies Rules~A--C to every arm, the statistics, the invariant test suite of
 Section~\ref{subsec:validity}, and the scripts that generate every table from
-the results files. The time-step and capacity comfort records of THERM in
-Supplementary Table~S1 come from a separate THERM run on the first held-out
-Riyadh week.
+the results files. Every printed value is mapped to its results file, column and
+producing script in the repository (\texttt{docs/PROVENANCE.md}).
 Code paths that the paper does not report (an outdoor-dependent COP, a
 behaviour-cloning variant, a shared-plant multi-zone arbitration) are in the
 repository and marked as unreported.

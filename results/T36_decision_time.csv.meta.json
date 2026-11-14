@@ -1,0 +1,20 @@
+{
+ "code_sha": "34d014b49635",
+ "code_sha_at_write": "34d014b49635",
+ "code_changed_during_run": false,
+ "git": "7bae2aa",
+ "impl": "decision_time.py",
+ "argv": "decision_time.py",
+ "env": {
+  "RBRL_RESULTS": "/home/claude/rbrl_p12/results"
+ },
+ "inputs": {
+  "../rbrl_p12/results/T21v3_riyadh.csv": "34c1820d28c0174b",
+  "../rbrl_p12/results/tuned_params_v2.json": "018af48fb56ba521"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 1324,
+ "utc": "2026-11-14T17:07:35Z"
+}

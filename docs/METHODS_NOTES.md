@@ -152,9 +152,12 @@ three-city family), `p_floor` (smallest attainable p: 0.0156, Holm 0.047), `at_f
 | `T25v3_cycling_energy` (`cycling_energy.py`): `wh_per_start`, `tau_eff_min`, `E_tp_arm`, `E_tp_eq`, `energy_identity_rel`, `d_starts_per_day`, `energy_saving_pct` | energy charged per start; equivalent start-up time; terminal-priced energy; identity check; starts avoided per day; energy saving when each start also costs that energy |
 | `T32_setpoint_sens` (`setpoint_sens.py`): `point`, `delta`, `mean0`, `mean`, `dmean_K`, `deg_h_occ`, `energy_pct`, `cost_pct`, `starts_pct` | THERM shifted by +0.1, +0.2 K or the largest admissible shift on its own curve: % change in electricity, cost and on-commands |
 | `E1v3_hold_dp` (`rbrl_e2.py`): `J_hold`, `J_dp`, `L_relaxed`, `ratio_hold_dp`, `ratio_hold_bound`, `hold_is_optimum` | inside the rules, the hold policy's cost against the λ = 0 DP optimum and the relaxed bound; hold is "optimal" within 1 % |
+| `T37_therm_leak_tl<dt>_<cth>` (`therm_leak.py`): `dt_min`, `C_th`, `deadband`, `step_excursion_K`, `first_window`, `over_first`, `under_first`, `over_all7`, `under_all7`, `fs_mean` | THERM (unshifted) at actuation step `dt_min` and capacity `C_th` with a centred deadband of `deadband` K: per-step excursion Q Δt / C_th; occupied degree-hours above T_max / below T_min on the first held-out window and summed over all seven; mean on-commands per day. Table S1 prints `over_all7 + under_all7` at deadband 1.0 |
+| `T36_decision_time` (`decision_time.py`): `window`, `horizon_h`, `n_grid`, `steps`, `total_s`, `ms_per_decision`, `step_s`, `cpu`, `ncpu` | wall time of MPC over one held-out window (672 decisions at 1601 nodes), per decision in ms, against the 900 s control interval; machine description |
 | `prov_code_sha`, `prov_impl`, `prov_env`, `prov_inputs`, `prov_utc` (every CSV; `rbrl_io.py`) | code sha of the producing process (sha256 of every top-level `.py`, 12 hex), producer script, `RBRL_*` environment, sha of every input read, write time. The full record (argv, git rev, Python/numpy versions, `code_changed_during_run`, refused rows) is in `<file>.meta.json` |
 
-Files without the `v3` / `T31` / `T32` / `T_D1` / `E1v3` prefix (e.g. `T1_heldout_three_cities.csv`,
-`T17v2_*`, `T2_timestep.csv`, `T3_capacity.csv`, `T4_tariff.csv`) are round-2/round-3 outputs
-kept for the record; `VALUES_REGISTRY.md` lists them under "Not cited", except the few the
-manuscript still uses, which `PROVENANCE.md` names explicitly.
+Files without the `v3` / `T31`–`T37` / `T_D1` / `E1v3` prefix (e.g. `T1_heldout_three_cities.csv`,
+`T17v2_*`, `T2_timestep.csv`, `T3_capacity.csv`, `T4_tariff.csv`) are round-2/round-3 outputs kept
+for the record. None of them is printed in the manuscript any more; `VALUES_REGISTRY.md` lists them
+under "Not cited", except `T4_tariff.csv`, which is FROZEN because only the unprinted tariff figure
+reads it.

@@ -1,0 +1,3 @@
+city,dt_min,C_th,deadband,step_excursion_K,first_window,over_first,under_first,over_all7,under_all7,fs_mean,prov_code_sha,prov_impl,prov_env,prov_inputs,prov_utc
+riyadh,30.0,4800.0,1.0,0.75,121,0.0,0.025106,0.0,0.082568,3.673469,34d014b49635,therm_leak.py,"{""RBRL_CTH"": ""4800"", ""RBRL_DT_MIN"": ""30"", ""RBRL_TAG"": ""_tl30_4800""}",{},2026-11-14T16:58:21Z
+riyadh,30.0,4800.0,1.5,0.75,121,0.0,1.385352,0.0,11.702127,2.653061,34d014b49635,therm_leak.py,"{""RBRL_CTH"": ""4800"", ""RBRL_DT_MIN"": ""30"", ""RBRL_TAG"": ""_tl30_4800""}",{},2026-11-14T16:58:21Z
