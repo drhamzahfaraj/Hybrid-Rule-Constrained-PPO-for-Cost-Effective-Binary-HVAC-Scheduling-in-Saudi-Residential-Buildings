@@ -1,0 +1,4 @@
+city,horizon_h,n_grid,lam,relaxed_pooled,fallback_steps,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,max_abs_dT_w,start_sav_eq,energy_sav_eq,J_arm_mean,J_eq_mean,J_therm0_mean,deg_h_over,deg_h_under,s_w_mean,s_w_sd,max_bracket_gap
+jeddah,24.0,801,0.813868,True,0,7,TUNE_W,17.250882,16.548289,-0.029323,0.084378,30.425298,0.807547,0.828323,1.001006,0.992578,0.0,0.0,17.21031,1.956739,0.028616
+jeddah,48.0,801,0.41364,True,0,7,TUNE_W,17.960637,17.520119,-0.016571,0.052933,31.725146,-0.146831,0.818677,0.997908,0.992578,0.0,0.0,17.99802,1.931913,0.028616
+jeddah,6.0,801,0.25099,True,0,7,TUNE_W,16.041662,16.066134,0.008107,0.087215,28.415301,0.403551,0.833109,0.992289,0.992578,0.0,0.0,16.03082,1.326114,0.024531

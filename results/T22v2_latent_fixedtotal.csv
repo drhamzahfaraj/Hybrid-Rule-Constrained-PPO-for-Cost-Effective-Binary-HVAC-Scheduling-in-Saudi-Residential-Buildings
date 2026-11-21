@@ -1,0 +1,4 @@
+city,model,t_adp,gen_l_day,shr_at_rating,on,off,fit_windows,s_pooled_eq,s_raw,energy_sav_eq,start_sav_eq,dT_pooled,w_over_pct_tuned,w_over_pct_therm,w_out_over_pct,rh_max,lat_active_pct_of_runtime,max_deg_h
+riyadh,latent_fixedtotal,10.0,7.0,0.725,23.5,22.5,TUNE_W,-0.241,0.0,0.112,-0.392,0.0,3.72,3.77,0.6,79.6,100.0,0.0
+jeddah,latent_fixedtotal,10.0,7.0,0.684,23.6,22.4,TUNE_W,6.863,7.067,1.205,12.784,-0.0026,72.45,72.53,99.06,100.0,100.0,0.0
+taif,latent_fixedtotal,10.0,7.0,0.794,23.5,22.5,TUNE_W,-0.071,0.0,0.201,-0.052,0.0,49.11,49.41,11.22,100.0,100.0,0.13888

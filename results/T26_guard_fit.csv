@@ -1,0 +1,4 @@
+tariff,price,city,arm,params,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,max_abs_dT_w,start_sav_eq,energy_sav_eq,J_arm_mean,J_eq_mean,J_therm0_mean,deg_h_over,deg_h_under,s_w_mean,s_w_sd,max_bracket_gap
+inforce,0.18,riyadh,guard,"{""cap"": 23.79, ""on"": 23.59, ""off"": 22.4, ""relaxed_pooled"": false}",7,TUNE_W,6.00471,6.664627,0.030791,0.08072,10.957161,-0.286284,1.043764,1.110443,1.118295,0.0,0.0,6.18362,1.633264,0.027022
+inforce,0.18,jeddah,guard,"{""cap"": 23.77, ""on"": 23.57, ""off"": 22.4, ""relaxed_pooled"": false}",7,TUNE_W,6.505572,6.468534,-0.002174,0.053274,11.5251,0.186861,0.928373,0.992971,0.992578,0.0,0.0,6.554074,1.405664,0.013067
+inforce,0.18,taif,guard,"{""cap"": 23.86, ""on"": 23.66, ""off"": 22.4, ""relaxed_pooled"": true}",7,TUNE_W,11.002017,11.271097,0.056361,0.18227,19.298246,-0.007998,0.544709,0.612047,0.613903,0.0,0.338963,10.951459,1.792191,0.069635

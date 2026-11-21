@@ -12,16 +12,21 @@ tensorboard/
 *.zip
 *.pkl
 
-# Results produced locally
-results/*.json
-results/*.csv
-tables/
+# Results: CSV/JSON and their .meta.json provenance are tracked; runtime artefacts are not
+results/*.lock
+results/models/
+results/mz_cache/
+code/results
+
+# Weather files are not redistributed (licence); see README
+*.epw
 
 # LaTeX build products
 *.aux
 *.bbl
 *.blg
 *.log
+!results/gate_p12.log
 *.out
 *.synctex.gz
 *.fls

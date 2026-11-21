@@ -1,0 +1,4 @@
+schedule,price,sw_share_pct,therm_J,on_at,off_at,tuned_sav,tuned_sd,opt_sav,opt_sd,n_eval,n_dp
+historical,0.05,81.5,0.755,23.6,22.35,13.6,2.1,22.7,5.5,7,7
+inforce,0.18,55.0,1.1183,23.6,22.35,9.3,1.6,14.7,2.8,7,7
+y2027,0.21,51.2,1.2021,23.6,22.35,8.6,1.5,13.3,2.9,7,7

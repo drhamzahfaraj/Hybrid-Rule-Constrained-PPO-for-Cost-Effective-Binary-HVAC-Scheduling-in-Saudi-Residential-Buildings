@@ -1,0 +1,8 @@
+city,dT,deg_h,kind,off,ok,on,sav,sav_sd,year
+riyadh,,,RETUNED_fine,,False,,,,2013
+riyadh,-0.0165,0.0,RETUNED_fine,22.48,True,23.5,1.58,1.25,2018
+jeddah,0.0154,0.0,RETUNED_fine,22.34,True,23.66,12.3,1.06,2011
+jeddah,0.0071,0.0,RETUNED_fine,22.34,True,23.62,9.69,0.7,2023
+taif,-0.015,63.9376,RETUNED_fine,22.48,True,23.5,0.66,1.95,2013
+taif,-0.0016,2.2286,RETUNED_fine,22.46,True,23.54,2.91,3.27,2012
+taif,-0.0173,0.4041,RETUNED_fine,22.48,True,23.54,1.38,2.04,2021

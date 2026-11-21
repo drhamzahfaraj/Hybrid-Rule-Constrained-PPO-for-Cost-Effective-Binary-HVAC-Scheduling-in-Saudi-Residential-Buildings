@@ -1,0 +1,19 @@
+{
+ "code_sha": "34d014b49635",
+ "code_sha_at_write": "34d014b49635",
+ "code_changed_during_run": false,
+ "git": "7bae2aa",
+ "impl": "therm_leak.py",
+ "argv": "therm_leak.py",
+ "env": {
+  "RBRL_CTH": "4800",
+  "RBRL_DT_MIN": "15",
+  "RBRL_TAG": "_tl15_4800"
+ },
+ "inputs": {},
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 433,
+ "utc": "2026-11-14T16:58:21Z"
+}

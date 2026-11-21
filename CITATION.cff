@@ -1,17 +1,33 @@
 cff-version: 1.2.0
 message: "If you use this software or the accompanying paper, please cite it as below."
-title: "Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings"
+type: software
+title: "Optimising Binary HVAC Switching in Saudi Residential Buildings with Model Predictive Control and Rule-Constrained PPO"
+version: "round4"
+doi: 10.5281/zenodo.24199676
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.24199676
+    description: "Zenodo archive of release v4.0-round4"
+date-released: "2026-11-13"
 authors:
   - family-names: Faraj
     given-names: Hamzah
-    affiliation: "Department of Science and Technology, Ranyah College, Taif University"
-    email: [email removed]
+    affiliation: "Taif University"
 license: MIT
+repository-code: "https://github.com/drhamzahfaraj/hybrid-rule-constrained-ppo-for-cost-effective-binary-hvac-scheduling-in-saudi-residential-buildings"
+keywords:
+  - Binary HVAC switching
+  - model predictive control
+  - constrained reinforcement learning
+  - Saudi Vision 2030
+  - Green Riyadh
+  - energy efficiency
 preferred-citation:
   type: article
-  title: "Hybrid Rule-Constrained PPO for Cost-Effective Binary HVAC Scheduling in Saudi Residential Buildings"
+  title: "Optimising Binary HVAC Switching in Saudi Residential Buildings with Model Predictive Control and Rule-Constrained PPO"
   authors:
     - family-names: Faraj
       given-names: Hamzah
+      affiliation: "Taif University"
   journal: "Journal of King Saud University - Engineering Sciences"
   year: 2026

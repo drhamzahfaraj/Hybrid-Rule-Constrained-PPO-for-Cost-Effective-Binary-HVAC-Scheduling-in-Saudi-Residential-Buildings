@@ -1,0 +1,7 @@
+{"id": "P12_bound_at", "cmd": "python3 bound_at.py", "env": {}, "outputs": ["results/T17v3_Ba.csv"], "after": []}
+{"id": "P12_gate", "cmd": "python3 invariants.py > results/gate_p12.log 2>&1; rc=$?; cat results/gate_p12.log | tail -40; exit $rc", "env": {}, "outputs": ["results/gate_p12.log"], "after": ["P12_bound_at"]}
+{"id": "P13_setpoint", "cmd": "python3 setpoint_sens.py", "env": {}, "outputs": ["results/T32_setpoint_sens.csv"], "after": []}
+{"id": "P16_hold_gap", "cmd": "python3 ppo_hold_gap.py", "env": {}, "outputs": ["results/T33_ppo_hold_gap.csv"], "after": []}
+{"id": "P19_greenriyadh", "cmd": "python3 greenriyadh_sens.py", "env": {}, "outputs": ["results/T34_greenriyadh_sens.csv"], "after": []}
+{"id": "P20_day_traces", "cmd": "python3 fig_day_traces.py", "env": {}, "outputs": ["results/T35_day_traces.csv"], "after": []}
+{"id": "P21_decision_time", "cmd": "python3 decision_time.py", "env": {}, "outputs": ["results/T36_decision_time.csv"], "after": []}

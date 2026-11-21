@@ -1,0 +1,11 @@
+what,nz,median_ms,iqr_ms,n,per_step_us,kind
+simulator window,1,38.426,6.698,5,57.182,measured
+simulator window,4,21.312,3.448,5,31.714,measured
+simulator window,9,20.823,1.589,5,30.987,measured
+simulator window,16,21.32,0.371,5,31.727,measured
+rule layer decision,1,0.000835,2.4e-05,2000,0.835,measured
+rule layer decision,4,0.00084,2.5e-05,2000,0.84,measured
+rule layer decision,9,0.000838,2.3e-05,2000,0.838,measured
+rule layer decision,16,0.000844,2.5e-05,2000,0.844,measured
+MPC decision H=6h,1,1435.638,41.355,3,2136.4,measured
+MPC decision H=24h,1,5462.89,167.33,3,8129.3,measured

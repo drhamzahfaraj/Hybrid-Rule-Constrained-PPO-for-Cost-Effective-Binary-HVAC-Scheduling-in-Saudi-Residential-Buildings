@@ -1,0 +1,39 @@
+\begin{figure}[htbp]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+  mode/.style={rectangle,rounded corners=8pt,draw=black!70,thick,
+               minimum width=3.4cm,minimum height=1.5cm,
+               fill=blue!7,align=center,font=\small},
+  arr/.style={-Latex,thick,shorten <=5pt,shorten >=5pt},
+  lbl/.style={font=\scriptsize,fill=white,inner sep=4pt,
+              draw=gray!30,rounded corners=2pt,align=center}]
+%% ── State nodes — placed 12 cm apart ────────────────────────────────────
+\node[mode](idle) at (0,0)
+  {\textbf{IDLE}\;($q_0$)\\[4pt]
+   $\dot{T}=a_0>0$\\[2pt]
+   \footnotesize cost rate: $0$};
+\node[mode](cool) at (7,0)
+  {\textbf{COOL}\;($q_1$)\\[4pt]
+   $\dot{T}=a_1<0$\\[2pt]
+   \footnotesize cost rate: $c_r\Phvac$};
+%% ── Transition: IDLE → COOL (top arc, label above) ─────────────────────
+\draw[arr,out=28,in=152](idle.north east)
+  to node[lbl,above]{guard:\ $T\ge\Tmax-\epsilon_{\mathrm{hot}}$ \\ cost:\ $\csw$}
+  (cool.north west);
+%% ── Transition: COOL → IDLE (bottom arc, label below) ──────────────────
+\draw[arr,out=-152,in=-28](cool.south west)
+  to node[lbl,below]{guard:\ $T\le\Tmin+\epsilon_{\mathrm{cold}}$ \\ cost:\ $0$}
+  (idle.south east);
+%% ── Invariant labels — safely below nodes, not touching arcs ────────────
+\node[font=\scriptsize,gray!60,anchor=north] at (0,-1.20)
+  {Invariant:\ $T\le\Tmax$};
+\node[font=\scriptsize,gray!60,anchor=north] at (7,-1.20)
+  {Invariant:\ $T\ge\Tmin$};
+\end{tikzpicture}}% end resizebox
+\caption{SLHA automaton (Definition~\ref{def:slha}).
+$q_0$: HVAC off, temperature rises at rate $a_0{>}0$;
+$q_1$: HVAC on, cools at rate $a_1{<}0$ with cost rate $c_r\Phvac$.
+Transitions are guarded by comfort boundaries; $\csw$ is incurred on switch-on.}
+\label{fig:slha_auto}
+\end{figure}

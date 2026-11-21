@@ -1,0 +1,38 @@
+{
+ "riyadh|inforce|TUNED": {
+  "on": 24.49,
+  "off": 23.49
+ },
+ "jeddah|inforce|TUNED": {
+  "on": 24.49,
+  "off": 23.48
+ },
+ "taif|inforce|TUNED": {
+  "on": 24.49,
+  "off": 23.47
+ },
+ "riyadh|y2027|TUNED": {
+  "on": 24.49,
+  "off": 23.49
+ },
+ "jeddah|y2027|TUNED": {
+  "on": 24.49,
+  "off": 23.48
+ },
+ "taif|y2027|TUNED": {
+  "on": 24.49,
+  "off": 23.47
+ },
+ "riyadh|historical|TUNED": {
+  "on": 24.49,
+  "off": 23.49
+ },
+ "jeddah|historical|TUNED": {
+  "on": 24.49,
+  "off": 23.48
+ },
+ "taif|historical|TUNED": {
+  "on": 24.49,
+  "off": 23.47
+ }
+}

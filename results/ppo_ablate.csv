@@ -1,0 +1,5 @@
+city,topo,cost_model,variant,seed,J_per_zone_day,cost_sw_share,E_per_zone_day,f_s,v_c,T_mean,peak_kW
+riyadh,4x4,S,full,42,0.2596,0.6059,2.0639,1.0429,1.0689,24.2222,9.5589
+riyadh,4x4,S,full,43,0.2596,0.6059,2.0639,1.0429,1.0689,24.2222,9.5589
+riyadh,4x4,S,full,44,0.2596,0.6059,2.0639,1.0429,1.0689,24.2222,9.5589
+riyadh,4x4,S,nocc,42,2.1569,0.9426,2.4933,13.5479,4.0526,22.514,6.8118

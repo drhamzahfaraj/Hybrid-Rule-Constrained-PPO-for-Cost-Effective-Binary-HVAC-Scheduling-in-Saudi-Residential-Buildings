@@ -1,0 +1,29 @@
+{
+ "_provenance": {
+  "code_sha": "5020e03ec6ca",
+  "code_sha_at_write": "5020e03ec6ca",
+  "code_changed_during_run": false,
+  "git": null,
+  "impl": "mz_r3.py",
+  "argv": "mz_r3.py rules riyadh 1x4",
+  "env": {},
+  "inputs": {
+   "riyadh.epw": "a2e88409591c158f"
+  },
+  "python": "3.13.18",
+  "numpy": "2.5.3",
+  "host": "vm",
+  "pid": 10122,
+  "utc": "2026-11-12T14:02:33Z"
+ },
+ "on": 23.71,
+ "off": 22.34,
+ "fit_status": "pooled_0.03",
+ "lead": null,
+ "city": "riyadh",
+ "topology": "1x4",
+ "lam_ij": 12.5,
+ "setback": false,
+ "C_th": 4800.0,
+ "c_sw": 0.15
+}
