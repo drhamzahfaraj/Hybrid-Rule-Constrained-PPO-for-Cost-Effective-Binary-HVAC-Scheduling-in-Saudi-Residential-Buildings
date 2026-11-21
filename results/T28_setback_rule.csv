@@ -1,0 +1,4 @@
+city,arm,params,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,start_sav_eq,energy_sav_eq,deg_h_over,deg_h_under
+riyadh,TUNED-SB,"{""on"": 23.65, ""off"": 22.35, ""lead_steps"": 8, ""relaxed_pooled"": false}",7,TUNE_W,16.679918,16.459466,-0.013169,29.647028,0.45107,0.0,0.0
+jeddah,TUNED-SB,"{""on"": 23.6, ""off"": 22.35, ""lead_steps"": 8, ""relaxed_pooled"": false}",7,TUNE_W,12.452703,12.217497,0.006604,21.720157,1.106518,0.0,0.0
+taif,TUNED-SB,"{""on"": 23.6, ""off"": 22.5, ""lead_steps"": 24, ""relaxed_pooled"": false}",7,TUNE_W,3.989112,4.19946,0.028138,6.883221,-0.268791,0.0,0.0

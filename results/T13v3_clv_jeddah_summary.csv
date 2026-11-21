@@ -1,0 +1,2 @@
+city,setback,fit_status,clv_s_pooled,clv_n_tol_met,clv_B_a,clv_le_B_a,clv_cert_min_margin,prov_code_sha,prov_impl,prov_env,prov_inputs,prov_utc
+jeddah,False,oracle,18.5142977658061,1,19.410708030392122,True,0.004256963053707041,5ca2e0ff7e9d,clv_refine.py,{},"{""results/T17v3_jeddah_dualcurves.json"": ""7beb2c397d600fcf"", ""results/T17v3_jeddah_perwindow.csv"": ""300bc8475d5ab47e""}",2026-11-12T17:19:20Z

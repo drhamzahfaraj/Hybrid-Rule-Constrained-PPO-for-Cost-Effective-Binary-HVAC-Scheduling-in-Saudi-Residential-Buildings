@@ -1,0 +1,2 @@
+city,arm,horizon_h,lam,relaxed_pooled,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,start_sav_eq,energy_sav_eq,deg_h_over,deg_h_under
+jeddah,MPC-SB,24.0,0.326591,True,7,TUNE_W,24.473368,24.624931,0.029611,41.973256,1.139352,0.0,0.0

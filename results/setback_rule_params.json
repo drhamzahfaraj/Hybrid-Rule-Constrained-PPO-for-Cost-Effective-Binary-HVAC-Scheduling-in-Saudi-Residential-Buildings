@@ -1,0 +1,20 @@
+{
+ "riyadh": {
+  "on": 23.65,
+  "off": 22.35,
+  "lead_steps": 8,
+  "relaxed_pooled": false
+ },
+ "jeddah": {
+  "on": 23.6,
+  "off": 22.35,
+  "lead_steps": 8,
+  "relaxed_pooled": false
+ },
+ "taif": {
+  "on": 23.6,
+  "off": 22.5,
+  "lead_steps": 24,
+  "relaxed_pooled": false
+ }
+}

@@ -1,0 +1,2 @@
+city,setback,fit_status,clv_s_pooled,clv_n_tol_met,clv_B_a,clv_le_B_a,clv_cert_min_margin,prov_code_sha,prov_impl,prov_env,prov_inputs,prov_utc
+taif,False,oracle,16.506116394364923,0,20.227459830158367,True,0.002536817794454471,5ca2e0ff7e9d,clv_refine.py,{},"{""results/T17v3_taif_dualcurves.json"": ""43d26d6019d607b1"", ""results/T17v3_taif_perwindow.csv"": ""24a4779711a603aa""}",2026-11-12T17:42:37Z

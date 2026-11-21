@@ -1,0 +1,2 @@
+city,arm,horizon_h,lam,relaxed_pooled,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,start_sav_eq,energy_sav_eq,deg_h_over,deg_h_under
+riyadh,MPC-SB,24.0,0.40761,True,7,TUNE_W,24.117477,24.198691,0.043655,42.821394,1.002851,0.0,0.0

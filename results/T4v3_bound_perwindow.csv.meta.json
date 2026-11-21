@@ -1,0 +1,15 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "bound_v2.py",
+ "argv": "bound_v2.py tariff",
+ "env": {},
+ "inputs": {},
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 18653,
+ "utc": "2026-11-12T18:40:21Z"
+}

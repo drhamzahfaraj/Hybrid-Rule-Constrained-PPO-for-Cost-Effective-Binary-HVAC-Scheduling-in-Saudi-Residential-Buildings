@@ -1,0 +1,87 @@
+{
+ "_provenance": {
+  "code_sha": "746846849b97",
+  "code_sha_at_write": "746846849b97",
+  "code_changed_during_run": false,
+  "git": null,
+  "impl": "t1_v2.py",
+  "argv": "t1_v2.py t1",
+  "env": {
+   "RBRL_CTH": "9600.0",
+   "RBRL_TAG": "_cth9600"
+  },
+  "inputs": {
+   "riyadh.epw": "a2e88409591c158f",
+   "jeddah.epw": "690cae887558f09e",
+   "taif.epw": "dc35449564eea0ae"
+  },
+  "python": "3.13.18",
+  "numpy": "2.5.3",
+  "host": "vm",
+  "pid": 15036,
+  "utc": "2026-11-12T15:35:49Z"
+ },
+ "riyadh|inforce|TUNED": {
+  "on": 23.9,
+  "off": 22.16,
+  "fit_status": "pooled_0.03"
+ },
+ "riyadh|inforce|guard": {
+  "cap": 23.83,
+  "on": 23.63,
+  "off": 22.4,
+  "fit_status": "pooled_0.03"
+ },
+ "jeddah|inforce|TUNED": {
+  "on": 23.83,
+  "off": 22.17,
+  "fit_status": "pooled_0.03"
+ },
+ "jeddah|inforce|guard": {
+  "cap": 23.8,
+  "on": 23.6,
+  "off": 22.4,
+  "fit_status": "pooled_0.03"
+ },
+ "taif|inforce|TUNED": {
+  "on": 23.9,
+  "off": 22.2,
+  "fit_status": "pooled_0.03"
+ },
+ "taif|inforce|guard": {
+  "cap": 23.96,
+  "on": 23.76,
+  "off": 22.4,
+  "fit_status": "pooled_0.03"
+ },
+ "riyadh|y2027|TUNED": {
+  "on": 23.9,
+  "off": 22.16,
+  "fit_status": "pooled_0.03"
+ },
+ "jeddah|y2027|TUNED": {
+  "on": 23.83,
+  "off": 22.17,
+  "fit_status": "pooled_0.03"
+ },
+ "taif|y2027|TUNED": {
+  "on": 23.9,
+  "off": 22.2,
+  "fit_status": "pooled_0.03"
+ },
+ "riyadh|historical|TUNED": {
+  "on": 23.9,
+  "off": 22.16,
+  "fit_status": "pooled_0.03"
+ },
+ "jeddah|historical|TUNED": {
+  "on": 23.83,
+  "off": 22.17,
+  "fit_status": "pooled_0.03"
+ },
+ "taif|historical|TUNED": {
+  "on": 23.9,
+  "off": 22.2,
+  "fit_status": "pooled_0.03"
+ }
+}

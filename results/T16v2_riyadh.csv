@@ -1,0 +1,2 @@
+city,horizon_h,n_grid,lam,relaxed_pooled,fallback_steps,n_eval,fit_windows,s_pooled_eq,s_raw,dT_pooled,max_abs_dT_w,start_sav_eq,energy_sav_eq,J_arm_mean,J_eq_mean,J_therm0_mean,deg_h_over,deg_h_under,s_w_mean,s_w_sd,max_bracket_gap
+riyadh,24.0,801,0.244092,True,0,7,TUNE_W,13.386409,13.751694,0.021232,0.058907,24.38546,0.396923,0.96451,1.113578,1.118295,0.0,0.0,13.411568,1.25813,0.03024

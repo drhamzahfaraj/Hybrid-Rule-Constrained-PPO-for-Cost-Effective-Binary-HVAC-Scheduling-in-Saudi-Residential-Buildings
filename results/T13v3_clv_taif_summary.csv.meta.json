@@ -1,0 +1,18 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "clv_refine.py",
+ "argv": "clv_refine.py taif",
+ "env": {},
+ "inputs": {
+  "results/T17v3_taif_perwindow.csv": "24a4779711a603aa",
+  "results/T17v3_taif_dualcurves.json": "43d26d6019d607b1"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 17930,
+ "utc": "2026-11-12T17:42:37Z"
+}

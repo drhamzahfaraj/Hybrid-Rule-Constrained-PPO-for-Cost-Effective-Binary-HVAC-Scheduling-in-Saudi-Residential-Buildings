@@ -1,0 +1,18 @@
+{
+ "code_sha": "5ca2e0ff7e9d",
+ "code_sha_at_write": "5ca2e0ff7e9d",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "clv_refine.py",
+ "argv": "clv_refine.py jeddah",
+ "env": {},
+ "inputs": {
+  "results/T17v3_jeddah_perwindow.csv": "300bc8475d5ab47e",
+  "results/T17v3_jeddah_dualcurves.json": "7beb2c397d600fcf"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 16484,
+ "utc": "2026-11-12T17:19:20Z"
+}

@@ -1,0 +1,18 @@
+{
+ "code_sha": "f8fb2cd89384",
+ "code_sha_at_write": "f8fb2cd89384",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "mz_mpc.py",
+ "argv": "mz_mpc.py riyadh 1x1 --lam-ij 12.5 --horizon 24 --budget-min 80 --final",
+ "env": {},
+ "inputs": {
+  "results/mz_tuned_riyadh_1x1_lij12.5.json": "96d41debd9162bd8",
+  "riyadh.epw": "a2e88409591c158f"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 18649,
+ "utc": "2026-11-12T18:28:22Z"
+}

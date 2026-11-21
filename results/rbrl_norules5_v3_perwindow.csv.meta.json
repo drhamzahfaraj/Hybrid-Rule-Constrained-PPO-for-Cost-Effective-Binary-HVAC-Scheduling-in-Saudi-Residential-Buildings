@@ -1,0 +1,19 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "rbrl_ppo.py",
+ "argv": "rbrl_ppo.py --norules --cities taif --seeds 1 --seed0 46",
+ "env": {},
+ "inputs": {
+  "results/rbrl_norules5_v3.csv": "e7f5f82263635d9e",
+  "results/rbrl_norules5_v3_perwindow.csv": "2ba744d844f61baf",
+  "taif.epw": "dc35449564eea0ae"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 9397,
+ "utc": "2026-11-12T12:56:15Z"
+}

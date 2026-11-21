@@ -1,0 +1,18 @@
+{
+ "code_sha": "5020e03ec6ca",
+ "code_sha_at_write": "5020e03ec6ca",
+ "code_changed_during_run": false,
+ "git": null,
+ "impl": "rbrl_ppo.py",
+ "argv": "rbrl_ppo.py --e2 --lam 0.241584 --cities riyadh --seeds 1 --seed0 44",
+ "env": {},
+ "inputs": {
+  "results/rbrl_e2_v3_riyadh.csv": "65be83ac6c4b2659",
+  "riyadh.epw": "a2e88409591c158f"
+ },
+ "python": "3.13.18",
+ "numpy": "2.5.3",
+ "host": "vm",
+ "pid": 10183,
+ "utc": "2026-11-12T14:07:15Z"
+}
